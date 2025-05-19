@@ -1,12 +1,15 @@
 <script>
+	// Import utilities
 	import { onMount } from 'svelte';
 
+	// Import stores
+	import { currentPartition } from '$lib/stores';
+
 	// Import components
-	import PartitionList from './PartitionList.svelte';
-	import { selectedPartition } from '$lib/stores';
+	import PartitionList from '$lib/components/partitions/PartitionList.svelte';
 
 	onMount(() => {
-		selectedPartition.set(null);
+		currentPartition.set(null);
 	});
 </script>
 

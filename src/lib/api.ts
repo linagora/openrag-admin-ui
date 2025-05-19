@@ -1,82 +1,109 @@
 // API client for backend services
+import type { RagondinPartition } from './types';
 
-// API base URL with fixed port 8081
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// Removes the trailing slash from the base URL if it exists
+const normalizeUrl = (url: string): string => {
+  return url.endsWith('/') ? url.slice(0, -1) : url;
+};
+
+// Retrieve the API base URL from the environment
+export const API_BASE_URL = normalizeUrl(import.meta.env.VITE_API_BASE_URL);
 
 /**
  * Fetches all available partitions
  */
-export const fetchPartitions = async () => {
-  try {
-    console.log("Fetching partitions from API...");
-    const response = await fetch(`${API_BASE_URL}/partition/`);
+export const fetchPartitions = async (): Promise<RagondinPartition[]> => {
+  console.log("Fecthing partitions...");
+  const response = await fetch(`${API_BASE_URL}/partition/`);
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch partitions: ${response.status} ${response.statusText}`);
-    }
-
-    console.log("done")
-    return (await response.json()).partitions;
-  } catch (error) {
-    console.error("Error fetching partitions:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Failed to fetch partitions: ${response.status} ${response.statusText}`);
   }
-}
 
-export const deletePartition = async (partition: string) => {
-  try {
-    console.log("Deleting partition from API...");
-    const response = await fetch(`${API_BASE_URL}/partition/${partition}`, {
-      method: "DELETE",
-    });
+  const data = (await response.json()).partitions;
+  console.log("Partitions fetched : ", data)
+  return data;
+};
 
-    if (!response.ok) {
-      throw new Error(`Failed to delete partition: ${response.status} ${response.statusText}`);
-    }
+/**
+ * Fetches files from a partition
+ */
+export const fetchFilesFromPartition = async (partition: string): Promise<string[]> => {
+  console.log(`Fetching files from partition "${partition}"...`)
+  const response = await fetch(`${API_BASE_URL}/partition/${partition}`);
 
-    return (await response.json()).message;
-  } catch (error) {
-    console.error("Error deleting partition:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Failed to get files: ${response.status} ${response.statusText}`);
   }
-}
 
-export const indexFile = async (file: File, partition: string, file_id: string, metadata?: string) => {
-  try {
-    console.log("Indexing file to partition...");
-    const formData = new FormData();
-    formData.append("file", file);
-    if (metadata)
-      formData.append("metadata", metadata);
+  const data = (await response.json()).files;
+  console.log("Files fetched successfully : ", data);
+  return data;
+};
 
-    const response = await fetch(`${API_BASE_URL}/indexer/partition/${partition}/file/${file_id}`, {
+/**
+ * Deletes a partition
+ */
+export const deletePartition = async (partition: string): Promise<boolean> => {
+  console.log(`Deleting partition "${partition}"...`)
+  const response = await fetch(`${API_BASE_URL}/partition/${partition}`,
+    { method: "DELETE" }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete partition: ${response.status} ${response.statusText}`);
+  }
+
+  console.log(`Partition "${partition}" deleted successfully.`);
+  return true;
+};
+
+/**
+ * Adds a file to a partition
+ */
+export const addFile = async (
+  file: File,
+  partition: string,
+  file_id: string,
+  metadata?: string
+): Promise<string> => {
+  console.log(`Starting indexing file "${file.name}" to partition "${partition}"...`);
+  const formData = new FormData();
+
+  formData.append("file", file);
+  if (metadata) formData.append("metadata", metadata);
+
+
+  const response = await fetch(`${API_BASE_URL}/indexer/partition/${partition}/file/${file_id}`,
+    {
       method: "POST",
       body: formData,
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to add file: ${response.status} ${response.statusText}`);
     }
+  );
 
-    return (response);
-  } catch (error) {
-    console.error("Error adding file:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Failed to index file: ${response.status} ${response.statusText}`);
   }
-}
 
-export const getFilesFromPartition = async (partition: string) => {
-  try {
-    console.log("Fetching files from partition...");
-    const response = await fetch(`${API_BASE_URL}/partition/${partition}`);
+  const data = (await response.json()).task_status_url;
+  console.log(`Indexing started successfully.`)
+  return data;
+};
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch files: ${response.status} ${response.statusText}`);
-    }
+/**
+ * Deletes a file from a partition
+ */
+export const deleteFile = async (partition: string, file_id: string): Promise<boolean> => {
+  console.log(`Deleting file "${file_id}" from partition "${partition}"...`)
+  const response = await fetch(
+    `${API_BASE_URL}/indexer/partition/${partition}/file/${file_id}`,
+    { method: "DELETE" }
+  );
 
-    return (await response.json()).files;
-  } catch (error) {
-    console.error("Error fetching files:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error(`Failed to delete file: ${response.status} ${response.statusText}`);
   }
-}
+
+  console.log(`File "${file_id}" deleted successfully.`);
+  return true;
+};

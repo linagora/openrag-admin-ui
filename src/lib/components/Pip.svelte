@@ -15,6 +15,6 @@
 	};
 </script>
 
-<span class="rounded-full {colors[color]} px-1 py-0.5 text-[0.5rem] font-bold uppercase text-white">
+<span class="rounded-full {colors[color]} px-1 py-0.5 text-[0.5rem] font-bold text-white uppercase">
 	{text}
 </span>

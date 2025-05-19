@@ -5,20 +5,28 @@
 	let id = uuidv4();
 	let {
 		text,
+		textPosition = 'right',
+		textClass,
 		checked = false,
 		className,
-		onClickHandler
+		onChange
 	}: {
 		text?: string;
+		textPosition?: 'left' | 'right';
+		textClass?: string;
 		checked?: boolean;
 		className?: string;
-		onClickHandler?: () => void;
+		onChange?: () => void;
 	} = $props();
 </script>
 
+{#if text && textPosition === 'left'}
+	<label for={id} class="cursor-pointer {textClass}"> {text}</label>
+{/if}
+
 <label
 	for={id}
-	class="size-5 relative flex cursor-pointer items-center justify-center rounded border {className} {checked
+	class="relative flex size-5 cursor-pointer items-center justify-center rounded border {className} {checked
 		? ' border-pink-500 bg-pink-500'
 		: ' border-slate-300 bg-white'}"
 >
@@ -27,8 +35,8 @@
 	/>
 </label>
 
-{#if text}
-	<label for={id}> {text}</label>
+{#if text && textPosition === 'right'}
+	<label for={id} class="cursor-pointer {textClass}"> {text}</label>
 {/if}
 
-<input {id} type="checkbox" class="hidden" bind:checked />
+<input {id} type="checkbox" class="hidden" bind:checked onchange={onChange} />

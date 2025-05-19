@@ -7,11 +7,14 @@
 	import * as api from '$lib/api';
 
 	// Import stores
-	import { partitions, showUploadModal } from '$lib/stores';
+	import { showUploadModal, partitions } from '$lib/stores';
 
 	// Import components
-	import Header from './Header.svelte';
-	import UploadModal from './UploadModal.svelte';
+	import Header from '$lib/components/Header.svelte';
+	import UploadModal from '$lib/components/UploadModal/UploadModal.svelte';
+
+	// Properties
+	let { children } = $props();
 
 	// When the component is first initialised
 	onMount(async () => {
@@ -23,7 +26,7 @@
 	<Header />
 
 	<main class="m-4 h-full overflow-scroll rounded-lg border border-slate-200 bg-slate-50 shadow-sm">
-		<slot />
+		{@render children()}
 	</main>
 
 	{#if $showUploadModal}
