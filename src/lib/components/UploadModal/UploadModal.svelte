@@ -1,24 +1,24 @@
 <script lang="ts">
-	// Import utilities
+	// Utilities
 	import { onMount } from 'svelte';
 	import { v4 as uuidv4 } from 'uuid';
+	import * as api from '$lib/api';
 
-	// Import stores
-	import { partitions, showUploadModal } from '$lib/stores';
+	// Stores
+	import { currentPartition, partitions, showUploadModal } from '$lib/stores';
 
-	// Import components
+	// Components
 	import PartitionInput from './PartitionInput.svelte';
 	import Pip from '$lib/components/Pip.svelte';
 
-	// Import icons
+	// Icons
 	import Upload from '$lib/icons/Upload.svelte';
 	import Close from '$lib/icons/Close.svelte';
 	import ChevronDown from '$lib/icons/ChevronDown.svelte';
 	import File from '$lib/icons/File.svelte';
 
-	// Import types
+	// Types
 	import type { RagondinPartition } from '$lib/types';
-	import * as api from '$lib/api';
 
 	// Form properties
 	let selectedPartition: RagondinPartition | null = $state(null);
@@ -139,7 +139,7 @@
 	// When the component is first initialised
 	onMount(() => {
 		// $partitions = []; // TESTING
-		selectedPartition = $partitions[0];
+		selectedPartition = $currentPartition ?? $partitions[0];
 
 		// Add event listeners for keydown and outside clicks
 		window.addEventListener('keydown', handleKeyboardShortcuts);
@@ -155,7 +155,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
-	class="absolute z-10 h-screen w-screen bg-slate-500/20 backdrop-blur-xs"
+	class="absolute z-100 h-screen w-screen bg-slate-500/20 backdrop-blur-xs"
 	onclick={closeUploadModal}
 	role="dialog"
 	tabindex="-1"
@@ -164,7 +164,7 @@
 
 <!-- Upload modal -->
 <div
-	class="absolute top-1/2 left-1/2 z-10 flex w-1/3 min-w-144 -translate-x-1/2 -translate-y-1/2 flex-col space-y-4 rounded-lg bg-white p-6 shadow-lg"
+	class="absolute top-1/2 left-1/2 z-100 flex w-1/3 min-w-144 -translate-x-1/2 -translate-y-1/2 flex-col space-y-4 rounded-lg bg-white p-6 shadow-lg"
 >
 	<!-- Modal title and close button -->
 	<div class="flex justify-between">

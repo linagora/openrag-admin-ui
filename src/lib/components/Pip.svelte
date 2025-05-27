@@ -1,12 +1,14 @@
 <script lang="ts">
+	// Properties
 	let {
 		text,
 		color = 'pink'
 	}: {
-		text: string;
-		color?: 'pink' | 'red' | 'blue' | 'green';
+		text: string; // Text of the pip
+		color?: 'pink' | 'red' | 'blue' | 'green'; // Color of the pip (limited selections)
 	} = $props();
 
+	// Available colors (force tailwind parsing)
 	const colors = {
 		pink: 'bg-pink-500',
 		red: 'bg-red-500',

@@ -1,8 +1,8 @@
 <script lang="ts">
-	// Import utilities
+	// Utilities
 	import { v4 as uuidv4 } from 'uuid';
 
-	// Import icons
+	// Icons
 	import Check from '$lib/icons/Check.svelte';
 
 	// Export types
@@ -25,7 +25,8 @@
 		onChange?: (value: TernaryCheckboxStatus) => void; // Fire an event when the status changes
 	} = $props();
 
-	let id = uuidv4();
+	// Generate a random id to associate the label to the input
+	const id = uuidv4();
 
 	/**
 	 * Toggles the checkbox and fires an event.

@@ -1,8 +1,8 @@
 <script lang="ts">
-	// Import stores
+	// Stores
 	import { partitions } from '$lib/stores';
 
-	// Import types
+	// Types
 	import type { RagondinPartition } from '$lib/types';
 
 	// Properties

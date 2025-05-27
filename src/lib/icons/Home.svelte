@@ -3,12 +3,7 @@
 	let { className = 'size-5 stroke-3' }: { className?: string } = $props();
 </script>
 
-<svg
-	viewBox="0 0 24 24"
-	fill="inherit"
-	class={className}
-	xmlns="http://www.w3.org/2000/svg"
->
+<svg viewBox="0 0 24 24" fill="inherit" class={className} xmlns="http://www.w3.org/2000/svg">
 	<path
 		d="M3 10.5L5 8.8V5C5 4.44772 5.44772 4 6 4H8C8.55228 4 9 4.44772 9 5V5.5L12 3L21 10.5"
 		stroke="inherit"
@@ -30,4 +25,4 @@
 		stroke-linecap="round"
 		stroke-linejoin="round"
 	/>
-</svg> 
+</svg>

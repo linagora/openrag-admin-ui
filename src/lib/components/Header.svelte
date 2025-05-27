@@ -1,8 +1,8 @@
 <script lang="ts">
-	// Import stores
+	// Stores
 	import { currentPartition, showUploadModal } from '$lib/stores';
 
-	// Import icons
+	// Icons
 	import ChevronDown from '$lib/icons/ChevronDown.svelte';
 	import Upload from '$lib/icons/Upload.svelte';
 	import Home from '$lib/icons/Home.svelte';

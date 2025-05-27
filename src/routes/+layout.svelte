@@ -1,15 +1,15 @@
 <script lang="ts">
-	// Import tailwind styles for the app
+	// Styles
 	import '../app.css';
 
-	// Import utilities
+	// Utilities
 	import { onMount } from 'svelte';
 	import * as api from '$lib/api';
 
-	// Import stores
+	// Stores
 	import { showUploadModal, partitions } from '$lib/stores';
 
-	// Import components
+	// Components
 	import Header from '$lib/components/Header.svelte';
 	import UploadModal from '$lib/components/UploadModal/UploadModal.svelte';
 
@@ -22,14 +22,14 @@
 	});
 </script>
 
-<div class="flex h-screen flex-col font-mono">
+{#if $showUploadModal}
+	<UploadModal />
+{/if}
+
+<div class="flex h-screen flex-col">
 	<Header />
 
 	<main class="m-4 h-full overflow-scroll rounded-lg border border-slate-200 bg-slate-50 shadow-sm">
 		{@render children()}
 	</main>
-
-	{#if $showUploadModal}
-		<UploadModal />
-	{/if}
 </div>

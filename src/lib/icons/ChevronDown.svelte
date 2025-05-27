@@ -8,7 +8,7 @@
 	viewBox="0 0 24 24"
 	class={className}
 	fill="none"
-	stroke="currentColor"
+	stroke="inherit"
 	stroke-linecap="round"
 	stroke-linejoin="round"
 >

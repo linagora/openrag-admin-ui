@@ -1,5 +1,5 @@
 // API client for backend services
-import type { RagondinPartition } from './types';
+import type { RagondinFile, RagondinPartition } from './types';
 
 // Removes the trailing slash from the base URL if it exists
 const normalizeUrl = (url: string): string => {
@@ -28,7 +28,7 @@ export const fetchPartitions = async (): Promise<RagondinPartition[]> => {
 /**
  * Fetches files from a partition
  */
-export const fetchFilesFromPartition = async (partition: string): Promise<string[]> => {
+export const fetchFilesFromPartition = async (partition: string): Promise<RagondinFile[]> => {
   console.log(`Fetching files from partition "${partition}"...`)
   const response = await fetch(`${API_BASE_URL}/partition/${partition}`);
 

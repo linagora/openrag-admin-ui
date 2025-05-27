@@ -1,20 +1,20 @@
 <script lang="ts">
-	// Import utilities
+	// Utilities
 	import * as api from '$lib/api';
 	import { formatDate } from '$lib/utils';
 
-	// Import stores
+	// Stores
 	import { partitions } from '$lib/stores';
 
-	// Import components
+	// Components
 	import Checkbox from '$lib/components/Checkbox.svelte';
 	import TernaryCheckbox from '$lib/components/TernaryCheckbox.svelte';
 
-	// Import icons
+	// Icons
 	import Folder from '$lib/icons/Folder.svelte';
 	import Trash from '$lib/icons/Trash.svelte';
 
-	// Import types
+	// Types
 	import type { RagondinPartition } from '$lib/types';
 	import type { TernaryCheckboxStatus } from '$lib/components/TernaryCheckbox.svelte';
 
