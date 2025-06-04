@@ -1,5 +1,5 @@
 // API client for backend services
-import type { RagondinFile, RagondinPartition } from './types';
+import type { RagondinExtract, RagondinFile, RagondinFileInList, RagondinPartition } from '$lib/types';
 
 // Removes the trailing slash from the base URL if it exists
 const normalizeUrl = (url: string): string => {
@@ -28,16 +28,48 @@ export const fetchPartitions = async (): Promise<RagondinPartition[]> => {
 /**
  * Fetches files from a partition
  */
-export const fetchFilesFromPartition = async (partition: string): Promise<RagondinFile[]> => {
+export const fetchFilesFromPartition = async (partition: string): Promise<RagondinFileInList[]> => {
   console.log(`Fetching files from partition "${partition}"...`)
   const response = await fetch(`${API_BASE_URL}/partition/${partition}`);
 
   if (!response.ok) {
-    throw new Error(`Failed to get files: ${response.status} ${response.statusText}`);
+    throw new Error(`Failed to fetch files: ${response.status} ${response.statusText}`);
   }
 
   const data = (await response.json()).files;
   console.log("Files fetched successfully : ", data);
+  return data;
+};
+
+/**
+ * Fetches files from a partition
+ */
+export const fetchFile = async (partition: string, file_id: string): Promise<RagondinFile> => {
+  console.log(`Fetching file "${file_id}" from partition "${partition}"...`)
+  const response = await fetch(`${API_BASE_URL}/partition/${partition}/file/${file_id}`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
+  }
+
+  const data = (await response.json());
+  console.log("File fetched successfully : ", data);
+  return data;
+};
+
+/**
+ * Fetches the extract of a file
+ */
+export const fetchExtract = async (extract_id: string): Promise<RagondinExtract> => {
+  console.log(`Fetching extract "${extract_id}"...`)
+  const response = await fetch(`${API_BASE_URL}/extract/${extract_id}`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch extract: ${response.status} ${response.statusText}`);
+  }
+
+  const data = (await response.json());
+  console.log("Extract fetched successfully : ", data);
   return data;
 };
 

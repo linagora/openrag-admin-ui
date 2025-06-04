@@ -1,13 +1,12 @@
 <script lang="ts">
 	// Utilities
 	import { onMount } from 'svelte';
-	import { redirect } from '@sveltejs/kit';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import * as api from '$lib/api';
 
 	// Stores
-	import { partitions, currentPartition } from '$lib/stores';
+	import { partitions, currentPartition, currentFile } from '$lib/stores';
 
 	// Componxents
 	import Checkbox from '$lib/components/Checkbox.svelte';
@@ -18,21 +17,21 @@
 	import Trash from '$lib/icons/Trash.svelte';
 
 	// Types
-	import type { RagondinFile } from '$lib/types';
+	import type { RagondinFileInList } from '$lib/types';
 	import type { TernaryCheckboxStatus } from '$lib/components/TernaryCheckbox.svelte';
 
 	// Properties
-	let files = $state<RagondinFile[]>([]); // Files in the current partition
+	let files = $state<RagondinFileInList[]>([]); // Files in the current partition
 
 	// File selection properties
-	let selectedFiles: Set<RagondinFile> = $state(new Set()); // Track selected files
+	let selectedFiles: Set<RagondinFileInList> = $state(new Set()); // Track selected files
 	let selectAllStatus: TernaryCheckboxStatus = $state('none'); // Compute ternary checkbox state
 
 	/**
 	 * Toggles a file's selection status
 	 * @param file the file to toggle
 	 */
-	const toggleSelect = (file: RagondinFile) => {
+	const toggleSelect = (file: RagondinFileInList) => {
 		if (selectedFiles.has(file)) {
 			selectedFiles.delete(file);
 		} else {
@@ -85,7 +84,7 @@
 	 * Deletes a file
 	 * @param file the file to delete
 	 */
-	const deleteFile = async (file: RagondinFile) => {
+	const deleteFile = async (file: RagondinFileInList) => {
 		if ($currentPartition?.partition) {
 			const link: string | undefined = file.link.split('/').pop();
 			if (link) {
@@ -119,6 +118,8 @@
 	});
 
 	onMount(async () => {
+		currentFile.set(null); // Reset current file
+
 		if (!$partitions || $partitions.length === 0) {
 			// Fetch partitions if not already fetched
 			partitions.set(await api.fetchPartitions());
@@ -166,7 +167,10 @@
 					class="group flex items-center space-x-4 border-b border-slate-200 px-4 hover:bg-slate-100"
 				>
 					<Checkbox checked={selectedFiles.has(file)} onChange={() => toggleSelect(file)} />
-					<a href={file.link} class="flex w-full items-center space-x-3 py-4">
+					<a
+						href="/partition/{$currentPartition?.partition}/file/{file.link.split('/').pop()}"
+						class="flex w-full items-center space-x-3 py-4"
+					>
 						<File className="size-6 fill-pink-500 stroke-3" />
 						<span class="grow">{file.link.split('/').pop()}</span>
 					</a>

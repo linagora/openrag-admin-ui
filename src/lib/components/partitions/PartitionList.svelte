@@ -124,7 +124,7 @@
 					/>
 					<a
 						href="/partition/{partition.partition}"
-						class="flex w-full items-center space-x-3 py-4"
+						class="flex w-full items-center space-x-3 py-4 group-hover:"
 					>
 						<Folder className="size-6 fill-pink-500 stroke-3" />
 						<span class="grow">{partition.partition}</span>

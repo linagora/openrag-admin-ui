@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Stores
-	import { currentPartition, showUploadModal } from '$lib/stores';
+	import { currentPartition, currentFile, showUploadModal } from '$lib/stores';
 
 	// Icons
 	import ChevronDown from '$lib/icons/ChevronDown.svelte';
@@ -22,8 +22,17 @@
 		</a>
 		{#if $currentPartition}
 			<ChevronDown className="size-4 -rotate-90 stroke-3 stroke-pink-500" />
-			<span class="px-2">
+			<a
+				href="/partition/{$currentPartition.partition}"
+				class="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-slate-100"
+			>
 				{$currentPartition.partition}
+			</a>
+		{/if}
+		{#if $currentFile}
+			<ChevronDown className="size-4 -rotate-90 stroke-3 stroke-pink-500" />
+			<span class="px-2">
+				{$currentFile}
 			</span>
 		{/if}
 	</div>
