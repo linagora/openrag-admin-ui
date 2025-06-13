@@ -6,15 +6,17 @@
 	import * as api from '$lib/api';
 
 	// Stores
-	import { partitions, currentPartition, currentFile } from '$lib/stores';
+	import { partitions, currentPartition, currentFile, displayMode } from '$lib/stores';
 
-	// Componxents
+	// Components
 	import Checkbox from '$lib/components/Checkbox.svelte';
 	import TernaryCheckbox from '$lib/components/TernaryCheckbox.svelte';
 
 	// Icons
 	import File from '$lib/icons/File.svelte';
 	import Trash from '$lib/icons/Trash.svelte';
+	import Grid from '$lib/icons/Grid.svelte';
+	import List from '$lib/icons/List.svelte';
 
 	// Types
 	import type { RagondinFileInList } from '$lib/types';
@@ -147,9 +149,9 @@
 	<div class="relative flex h-full flex-col overflow-y-auto">
 		<!-- List header -->
 		<div
-			class="sticky top-0 z-10 flex justify-between border-b border-slate-200 bg-white px-4 py-3"
+			class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white"
 		>
-			<div class="flex items-center gap-3">
+			<div class="flex items-center gap-3 py-3 pl-4">
 				<TernaryCheckbox checked={selectAllStatus} onChange={toggleSelectAll} />
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<button
@@ -160,29 +162,99 @@
 					{selectedFiles.size} of {files.length} files selected
 				</button>
 			</div>
-		</div>
-		<div class="flex flex-col">
-			{#each files as file}
-				<div
-					class="group flex items-center space-x-4 border-b border-slate-200 px-4 hover:bg-slate-100"
+			<div class="flex items-center pr-3">
+				<button
+					class="cursor-pointer {$displayMode === 'list' ? 'font-bold' : ''}"
+					onclick={() => {
+						displayMode.set('list');
+					}}
 				>
-					<Checkbox checked={selectedFiles.has(file)} onChange={() => toggleSelect(file)} />
-					<a
-						href="/partition/{$currentPartition?.partition}/file/{file.link.split('/').pop()}"
-						class="flex w-full items-center space-x-3 py-4"
-					>
-						<File className="size-6 fill-pink-500 stroke-3" />
-						<span class="grow">{file.link.split('/').pop()}</span>
-					</a>
-					<button onclick={() => deleteFile(file)} aria-label={`Delete file ${file.link}`}>
-						<Trash
-							className="size-8 fill-transparent stroke-red-500 hover:stroke-red-600 cursor-pointer rounded p-1 hover:bg-slate-200"
-						/>
-					</button>
-				</div>
-			{/each}
+					<List
+						className="inline size-8 p-1 hover:bg-slate-100 rounded {$displayMode === 'list'
+							? 'fill-slate-500'
+							: 'fill-slate-300'}"
+					/>
+				</button>
+				<button
+					class="cursor-pointer {$displayMode === 'grid' ? 'font-bold' : ''}"
+					onclick={() => {
+						displayMode.set('grid');
+					}}
+				>
+					<Grid
+						className="inline size-8 hover:bg-slate-100 p-1 rounded {$displayMode === 'grid'
+							? 'fill-slate-500'
+							: 'fill-slate-300'}"
+					/>
+				</button>
+			</div>
 		</div>
+
+		{#if $displayMode === 'list'}
+			<!-- File list -->
+			<div class="flex flex-col">
+				{#each files as file}
+					<div
+						class="group flex items-center space-x-4 border-b border-slate-200 px-4 hover:bg-slate-100"
+					>
+						<Checkbox checked={selectedFiles.has(file)} onChange={() => toggleSelect(file)} />
+						<a
+							href="/partition/{$currentPartition?.partition}/file/{file.link.split('/').pop()}"
+							class="flex w-full items-center space-x-3 py-4"
+						>
+							<File className="size-6 fill-pink-500 stroke-3" />
+							<span class="grow">{file.link.split('/').pop()}</span>
+						</a>
+						<button onclick={() => deleteFile(file)} aria-label={`Delete file ${file.link}`}>
+							<Trash
+								className="size-8 fill-transparent stroke-red-500 hover:stroke-red-600 cursor-pointer rounded p-1 hover:bg-slate-200"
+							/>
+						</button>
+					</div>
+				{/each}
+			</div>
+		{:else}
+			<!-- Partition grid -->
+			<div class="grid grid-cols-8 gap-4 p-4">
+				{#each files as file}
+					<div
+						class="group relative rounded-lg border border-slate-200 bg-white p-2 shadow-md hover:shadow-lg"
+					>
+						<Checkbox
+							checkboxClasses="absolute self-start top-1 left-1 z-10"
+							checked={selectedFiles.has(file)}
+							onChange={() => toggleSelect(file)}
+						/>
+						<button
+							class="absolute top-1.5 right-1.5 z-10"
+							onclick={() => deleteFile(file)}
+							aria-label={`Delete file ${file.link}`}
+						>
+							<Trash
+								className="size-7 fill-transparent stroke-red-500 hover:stroke-red-600 cursor-pointer rounded p-0.5 hover:bg-red-50"
+							/>
+						</button>
+						<a
+							href="/partition/{$currentPartition?.partition}/file/{file.link.split('/').pop()}"
+							class="flex h-full flex-col items-center py-4 text-center"
+						>
+							<File className="size-10 fill-pink-500 stroke-3" />
+							<span
+								title={file.link.split('/').pop()}
+								class="mt-2 line-clamp-2 text-sm font-bold break-all"
+							>
+								{file.link.split('/').pop()}
+							</span>
+						</a>
+					</div>
+				{/each}
+			</div>
+		{/if}
+
+		<!-- Empty growing div to ensure footer is at the bottom -->
 		<div class="grow"></div>
+
+		<!-- Delete all selected files footer -->
 		{#if selectedFiles.size > 0}
 			<footer
 				class="sticky bottom-0 left-0 z-10 flex w-full items-center justify-between border-t border-slate-200 bg-white p-4"

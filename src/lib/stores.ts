@@ -11,3 +11,4 @@ export const currentFile: Writable<string | null> = writable(null);
 
 // UI Stores
 export const showUploadModal: Writable<boolean> = writable(false);
+export const displayMode: Writable<"grid" | "list"> = writable("list");

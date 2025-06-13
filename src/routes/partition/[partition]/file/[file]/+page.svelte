@@ -11,10 +11,10 @@
 
 	// Icons
 	import File from '$lib/icons/File.svelte';
+	import ChevronDown from '$lib/icons/ChevronDown.svelte';
 
 	// Types
 	import type { RagondinExtract, RagondinFile } from '$lib/types';
-	import ChevronDown from '$lib/icons/ChevronDown.svelte';
 
 	// Properties
 	let file: RagondinFile | null = null; // The file to display
