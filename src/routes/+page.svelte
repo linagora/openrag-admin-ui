@@ -2,14 +2,14 @@
 	// Utilities
 	import { onMount } from 'svelte';
 	import * as api from '$lib/api';
-	import { formatDate } from '$lib/utils';
+	import { formatDate, getStyleFromTaskState } from '$lib/utils';
 
 	// Stores
-	import { partitions, displayMode, currentPartition, currentFile } from '$lib/stores';
+	import { partitions, tasks, displayMode, currentPartition, currentFile } from '$lib/stores';
 
 	// Components
-	import Checkbox from '$lib/components/Checkbox.svelte';
-	import TernaryCheckbox from '$lib/components/TernaryCheckbox.svelte';
+	import Checkbox from '$lib/components/ui/Checkbox.svelte';
+	import TernaryCheckbox from '$lib/components/ui/TernaryCheckbox.svelte';
 
 	// Icons
 	import Folder from '$lib/icons/Folder.svelte';
@@ -19,7 +19,9 @@
 
 	// Types
 	import type { RagondinPartition } from '$lib/types';
-	import type { TernaryCheckboxStatus } from '$lib/components/TernaryCheckbox.svelte';
+	import type { TernaryCheckboxStatus } from '$lib/components/ui/TernaryCheckbox.svelte';
+	import TaskCategoryDropdown from '$lib/components/TaskCategoryDropdown.svelte';
+	import PartialCircle from '$lib/icons/PartialCircle.svelte';
 
 	// Partition selection properties
 	let selectedPartitions: Set<RagondinPartition> = $state(new Set()); // Track selected partitions
@@ -90,21 +92,14 @@
 					: 'partial';
 	});
 
-	onMount(() => {
+	onMount(async () => {
 		currentPartition.set(null);
 		currentFile.set(null);
 	});
 </script>
 
-{#if $partitions.length === 0}
-	<div class="flex h-full items-center justify-center">
-		<span class="text-sm text-slate-500">
-			No partitions available. Please wait a bit for the partitions to be fetched, or start indexing
-			files now.
-		</span>
-	</div>
-{:else}
-	<div class="relative flex h-full flex-col overflow-y-auto">
+<div class="flex h-full">
+	<div class="relative flex grow flex-col overflow-y-auto">
 		<!-- List header -->
 		<div
 			class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white"
@@ -148,7 +143,14 @@
 			</div>
 		</div>
 
-		{#if $displayMode === 'list'}
+		{#if $partitions.length === 0}
+			<div class="flex h-full w-full items-center justify-center">
+				<span class="text-center text-sm text-slate-500">
+					No partitions available. Please wait a bit for the partitions to be fetched, or start
+					indexing files now.
+				</span>
+			</div>
+		{:else if $displayMode === 'list'}
 			<!-- Partition list -->
 			<div class="flex flex-col">
 				{#each $partitions as partition}
@@ -174,7 +176,7 @@
 							aria-label={`Delete partition ${partition.partition}`}
 						>
 							<Trash
-								className="size-8 fill-transparent stroke-red-500 hover:stroke-red-600 cursor-pointer rounded p-1 hover:bg-slate-200"
+								className="size-7 fill-transparent stroke-red-300 hover:stroke-red-500 cursor-pointer rounded p-1 hover:bg-red-100/75"
 							/>
 						</button>
 					</div>
@@ -182,7 +184,7 @@
 			</div>
 		{:else}
 			<!-- Partition grid -->
-			<div class="grid grid-cols-8 gap-4 p-4">
+			<div class="grid {$tasks.length > 0 ? 'grid-cols-6' : 'grid-cols-8'} gap-4 p-4">
 				{#each $partitions as partition}
 					<div
 						class="group relative rounded-lg border border-slate-200 bg-white p-2 shadow-md hover:shadow-lg"
@@ -198,7 +200,7 @@
 							aria-label={`Delete partition ${partition.partition}`}
 						>
 							<Trash
-								className="size-7 fill-transparent stroke-red-500 hover:stroke-red-600 cursor-pointer rounded p-0.5 hover:bg-red-50"
+								className="size-7 fill-transparent stroke-red-300 hover:stroke-red-500 cursor-pointer rounded p-0.5 hover:bg-red-50"
 							/>
 						</button>
 						<a
@@ -207,7 +209,7 @@
 						>
 							<Folder className="size-12 fill-pink-500 stroke-3" />
 							<span class="grow font-bold">{partition.partition}</span>
-							<span class="text-xs text-slate-500">
+							<span class="mb-1 text-xs text-slate-500">
 								Created: {formatDate(partition.created_at)}
 							</span>
 						</a>
@@ -236,4 +238,56 @@
 			</footer>
 		{/if}
 	</div>
-{/if}
+
+	{#if $tasks.length > 0}
+		<!-- Current tasks -->
+		<div class="flex w-96 min-w-96 flex-col border-l border-slate-200">
+			<span
+				class="flex font-bold items-center justify-center border-b border-slate-200 bg-white py-3 text-sm text-slate-600"
+			>
+				Tasks
+			</span>
+
+			<div
+				class="sticky top-0 z-10 flex w-full items-center justify-center space-x-1 border-b border-slate-200 bg-slate-100 py-2 shadow"
+			>
+				<span class="text-xs font-semibold text-slate-500">
+					ACTIVE ({$tasks.filter(
+						(task) =>
+							task.state === 'SERIALIZING' || task.state === 'CHUNKING' || task.state == 'INSERTING'
+					).length})
+				</span>
+			</div>
+			<div class="h-full min-h-96 divide-y divide-slate-200 overflow-y-auto">
+				{#each $tasks.filter((task) => task.state !== 'COMPLETED' && task.state !== 'FAILED' && task.state !== 'QUEUED') as task}
+					<div
+						class="flex flex-col space-y-1 space-x-2 overflow-x-hidden border-b border-slate-200 px-4 py-3 break-all"
+					>
+						<div class="flex items-center space-x-1">
+							<Folder className="size-4 fill-pink-500" />
+							<span class="text-xs text-slate-500">{task.details.partition}</span>
+						</div>
+						<span class="text-sm">{task.details.file_id}</span>
+						<div class="mt-1 flex items-center space-x-2 self-end">
+							<span class="text-xs font-bold {getStyleFromTaskState(task.state)}">
+								{task.state}
+							</span>
+							<PartialCircle className="inline size-3 stroke-5 fill-blue-500 animate-spin" />
+						</div>
+					</div>
+				{/each}
+			</div>
+			<!-- Queued tasks -->
+			<TaskCategoryDropdown
+				category="QUEUED"
+				opened={$tasks.filter((task) => task.state === 'QUEUED').length > 0}
+			/>
+
+			<!-- Completed tasks -->
+			<TaskCategoryDropdown category="COMPLETED" />
+
+			<!-- Failed tasks -->
+			<TaskCategoryDropdown category="FAILED" />
+		</div>
+	{/if}
+</div>

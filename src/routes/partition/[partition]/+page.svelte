@@ -9,8 +9,8 @@
 	import { partitions, currentPartition, currentFile, displayMode } from '$lib/stores';
 
 	// Components
-	import Checkbox from '$lib/components/Checkbox.svelte';
-	import TernaryCheckbox from '$lib/components/TernaryCheckbox.svelte';
+	import Checkbox from '$lib/components/ui/Checkbox.svelte';
+	import TernaryCheckbox from '$lib/components/ui/TernaryCheckbox.svelte';
 
 	// Icons
 	import File from '$lib/icons/File.svelte';
@@ -20,7 +20,7 @@
 
 	// Types
 	import type { RagondinFileInList } from '$lib/types';
-	import type { TernaryCheckboxStatus } from '$lib/components/TernaryCheckbox.svelte';
+	import type { TernaryCheckboxStatus } from '$lib/components/ui/TernaryCheckbox.svelte';
 
 	// Properties
 	let files = $state<RagondinFileInList[]>([]); // Files in the current partition
@@ -149,7 +149,7 @@
 	<div class="relative flex h-full flex-col overflow-y-auto">
 		<!-- List header -->
 		<div
-			class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white"
+			class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white"
 		>
 			<div class="flex items-center gap-3 py-3 pl-4">
 				<TernaryCheckbox checked={selectAllStatus} onChange={toggleSelectAll} />

@@ -6,6 +6,29 @@ export interface RagondinPartition {
     created_at: number;
 }
 
+export type RagondinTaskStatus = "QUEUED" | "SERIALIZING" | "CHUNKING" | "INSERTING" | "COMPLETED" | "FAILED";
+
+export interface RagondinTaskInList {
+    task_id: string;
+    state: RagondinTaskStatus
+    details: {
+        file_id: string;
+        partition: string;
+        metadata: {};
+    };
+    url: string;
+}
+
+export interface RagondinTask {
+    task_id: string;
+    task_state: RagondinTaskStatus;
+    details: {
+        file_id: string;
+        partition: string;
+        metadata: {};
+    };
+}
+
 /**
  * Represents a file in a partition (from the GET /partition/{partition}/file/{file_id} endpoint)
  */

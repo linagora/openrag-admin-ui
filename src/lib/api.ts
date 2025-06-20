@@ -1,5 +1,5 @@
 // API client for backend services
-import type { RagondinExtract, RagondinFile, RagondinFileInList, RagondinPartition } from '$lib/types';
+import type { RagondinExtract, RagondinFile, RagondinFileInList, RagondinPartition, RagondinTask, RagondinTaskInList, RagondinTaskStatus } from '$lib/types';
 
 // Removes the trailing slash from the base URL if it exists
 const normalizeUrl = (url: string): string => {
@@ -24,6 +24,40 @@ export const fetchPartitions = async (): Promise<RagondinPartition[]> => {
   console.log("Partitions fetched : ", data)
   return data;
 };
+
+/**
+ * Fetches tasks
+ */
+export const fetchTasks = async (status?: RagondinTaskStatus | "ACTIVE"): Promise<RagondinTaskInList[]> => {
+  console.log(`Fetching tasks${status ? ` with ${status} status` : ``}...`);
+  const response = await fetch(`${API_BASE_URL}/queue/tasks${status ? `?status=${status}` : ''}`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch tasks: ${response.status} ${response.statusText}`);
+  }
+
+  const data = (await response.json()).tasks;
+  console.log("Tasks fetched : ", data)
+  return data;
+};
+
+/**
+ * Fetches one task
+ */
+export const fetchTask = async (task: string): Promise<RagondinTask> => {
+  console.log(`Fetching task ${task}...`);
+  const response = await fetch(`${API_BASE_URL}/indexer/task/${task}`);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch task: ${response.status} ${response.statusText}`);
+  }
+
+  const data = (await response.json());
+  console.log("Task fetched : ", data)
+  return data;
+};
+
+
 
 /**
  * Fetches files from a partition

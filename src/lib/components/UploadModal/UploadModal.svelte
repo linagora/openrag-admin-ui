@@ -5,11 +5,11 @@
 	import * as api from '$lib/api';
 
 	// Stores
-	import { currentPartition, partitions, showUploadModal } from '$lib/stores';
+	import { currentPartition, partitions, showUploadModal, tasks } from '$lib/stores';
 
 	// Components
 	import PartitionInput from './PartitionInput.svelte';
-	import Pip from '$lib/components/Pip.svelte';
+	import Pip from '$lib/components/ui/Pip.svelte';
 
 	// Icons
 	import Upload from '$lib/icons/Upload.svelte';
@@ -19,6 +19,8 @@
 
 	// Types
 	import type { RagondinPartition } from '$lib/types';
+	import PartialCircle from '$lib/icons/PartialCircle.svelte';
+	import FileIdSwitch from './FileIDSwitch.svelte';
 
 	// Form properties
 	let selectedPartition: RagondinPartition | null = $state(null);
@@ -30,6 +32,7 @@
 
 	// UI properties
 	let showDropdown = $state(false);
+	let uploading = $state(false);
 
 	// UI elements
 	let dropdownRef: HTMLDivElement | undefined = $state();
@@ -76,26 +79,25 @@
 			return;
 		}
 
+		uploading = true;
 		try {
-			if (files.length === 1 && fileID) {
-				// Upload the file
-				await api.addFile(files[0], selectedPartition.partition, fileID, metadata);
-			} else {
-				// Upload all the files
-				for (const file of files) {
-					await api.addFile(
-						file,
-						selectedPartition.partition,
-						fileIDMethodSelected === 'random' ? uuidv4() : file.name,
-						metadata
-					);
-				}
+			// Upload all the files
+			for (const file of files) {
+				await api.addFile(
+					file,
+					selectedPartition.partition,
+					fileIDMethodSelected === 'random' ? uuidv4() : file.name,
+					metadata
+				);
 			}
+
 			hasUnsavedChanges = false;
+			tasks.set(await api.fetchTasks()); // Refresh tasks
 			closeUploadModal();
 		} catch (error) {
 			console.error('Error uploading file(s) :', error);
 		}
+		uploading = false;
 	};
 
 	// Closes the upload modal (and the dropdown, so it's not opened when the modal appears again)
@@ -306,42 +308,9 @@
 		<!-- File ID -->
 		<div class="relative flex flex-col">
 			<label class="mb-2 cursor-pointer font-medium" for="file-id-input">
-				{files.length === 1 ? 'File ID' : 'Select an option to generate file IDs'}
+				Select an option for file IDs
 			</label>
-			{#if files.length === 1}
-				<!-- Single file ID text input -->
-				<input
-					id="file-id-input"
-					type="text"
-					placeholder={uuidv4()}
-					bind:value={fileID}
-					class="rounded-md border border-slate-200 px-4 py-2 transition-colors placeholder:text-slate-400
-					hover:cursor-text hover:border-slate-300 hover:bg-slate-50
-					focus:border-slate-400 focus:bg-slate-100 focus:outline-none"
-				/>
-			{:else}
-				<!-- Option to select a file ID generation method for all the files -->
-				<div class="flex items-center space-x-2">
-					<input
-						name="file-id-input"
-						type="radio"
-						id="random"
-						value="random"
-						bind:group={fileIDMethodSelected}
-					/>
-					<label for="random"> Generate a random UUID for each file </label>
-				</div>
-				<div class="flex items-center space-x-2">
-					<input
-						name="file-id-input"
-						type="radio"
-						id="filename"
-						value="filename"
-						bind:group={fileIDMethodSelected}
-					/>
-					<label for="filename"> Use the file names as file IDs </label>
-				</div>
-			{/if}
+			<FileIdSwitch bind:selectedOption={fileIDMethodSelected} />
 		</div>
 
 		<!-- File metadata -->
@@ -374,9 +343,14 @@
 			class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-pink-500 px-4 py-2 font-semibold text-white transition-colors
 			hover:bg-pink-600 focus:border-pink-700 focus:outline-none disabled:cursor-not-allowed disabled:bg-pink-300"
 			onclick={uploadFiles}
-			disabled={!files || !selectedPartition}
+			disabled={!files || !selectedPartition || uploading}
 		>
-			<Upload className="size-5 stroke-3" /> Upload File
+			{#if uploading}
+				<PartialCircle className="size-5 stroke-3 animate-spin fill-white" /> Uploading...
+			{:else}
+				<Upload className="size-5 stroke-3" />
+				Upload File
+			{/if}
 		</button>
 	</div>
 </div>

@@ -1,8 +1,16 @@
 @import 'tailwindcss';
 @plugin "@tailwindcss/typography";
 
+@font-face {
+	font-family: Inter;
+	font-style: normal;
+	font-weight: 100 200 300 400 500 600 700 800 900;
+	font-display: swap;
+	src: url("/fonts/Inter.ttf");
+}
+
 @layer base {
 	body {
-		@apply font-mono text-slate-900 antialiased;
+		@apply font-["Inter"] text-slate-900 antialiased;
 	}
 }

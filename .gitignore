@@ -1,4 +1,6 @@
 node_modules
+.npmrc
+package-lock.json
 
 # Output
 .output
@@ -21,3 +23,7 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Prettier
+.prettierignore
+.prettierrc
