@@ -2,5 +2,5 @@ services:
   indexer-ui:
     build: .
     ports:
-      - "3042:3000"
+      - "${APP_PORT:-3042}:3000"
     restart: unless-stopped
