@@ -242,7 +242,7 @@
             <input
                 id="partition-btn"
                 class="w-full cursor-pointer rounded-md border border-slate-200 px-4 py-2 text-left
-				transition-colors placeholder:text-pink-500 hover:border-slate-300 hover:bg-slate-50
+				transition-colors placeholder:text-linagora-500 hover:border-slate-300 hover:bg-slate-50
 				focus:cursor-text focus:border-slate-400 focus:bg-slate-100 focus:outline-none focus:placeholder:text-slate-400"
                 type="text"
                 placeholder="+ Add a new partition"
@@ -257,28 +257,28 @@
 
         <label
             class="group cursor-pointer rounded-md border-2 border-dashed border-slate-300 px-4 py-6 transition-colors
-			hover:border-pink-300 hover:bg-pink-50/30 focus:outline-none"
+			hover:border-linagora-300 hover:bg-linagora-50/30 focus:outline-none"
             for="file-upload-btn"
         >
             {#if files}
                 {#if files.length === 1}
                     <!-- Display file name -->
                     <div class="flex items-center gap-2">
-                        <File className="size-5 stroke-2 fill-pink-500 stroke-pink-500" />
-                        <span class="text-slate-700 transition-colors group-hover:text-pink-500">
+                        <File className="size-5 stroke-2 fill-linagora-500 stroke-linagora-500" />
+                        <span class="text-slate-700 transition-colors group-hover:text-linagora-500">
                             {files[0].name.split(".")[0]}
                         </span>
                     </div>
                 {:else if files && files?.length > 1}
                     <!-- Display file list with count -->
                     <div class="flex max-h-60 flex-col gap-2 overflow-y-scroll">
-                        <span class="text-xs text-slate-500 transition-colors group-hover:text-pink-400">
+                        <span class="text-xs text-slate-500 transition-colors group-hover:text-linagora-400">
                             {files.length} files selected :
                         </span>
                         {#each files as file}
                             <div class="flex items-center gap-2">
-                                <File className="size-5 stroke-2 fill-pink-500 stroke-pink-500" />
-                                <span class="text-slate-700 transition-colors group-hover:text-pink-500">
+                                <File className="size-5 stroke-2 fill-linagora-500 stroke-linagora-500" />
+                                <span class="text-slate-700 transition-colors group-hover:text-linagora-500">
                                     {file.name.split(".")[0]}
                                 </span>
                             </div>
@@ -289,9 +289,9 @@
                 <!-- Display file upload button button -->
                 <div class="flex flex-col items-center justify-center">
                     <Upload
-                        className="size-10 stroke-2 stroke-slate-500 transition-colors group-hover:stroke-pink-500 mb-2"
+                        className="size-10 stroke-2 stroke-slate-500 transition-colors group-hover:stroke-linagora-500 mb-2"
                     />
-                    <p class="text-slate-500 transition-colors group-hover:text-pink-500">Click to browse files</p>
+                    <p class="text-slate-500 transition-colors group-hover:text-linagora-500">Click to browse files</p>
                 </div>
             {/if}
         </label>
@@ -333,8 +333,8 @@
         </button>
 
         <button
-            class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-pink-500 px-4 py-2 font-semibold text-white transition-colors
-			hover:bg-pink-600 focus:border-pink-700 focus:outline-none disabled:cursor-not-allowed disabled:bg-pink-300"
+            class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-linagora-500 px-4 py-2 font-semibold text-white transition-colors
+			hover:bg-linagora-600 focus:border-linagora-700 focus:outline-none disabled:cursor-not-allowed disabled:bg-linagora-300"
             onclick={uploadFiles}
             disabled={!files || !selectedPartition || uploading}
         >

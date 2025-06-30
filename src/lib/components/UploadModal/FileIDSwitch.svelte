@@ -7,7 +7,7 @@
 	<button
 		class="w-1/2 cursor-pointer rounded-l-md border border-r-0 py-2
         {selectedOption === 'random'
-			? 'border-pink-500 bg-pink-500 font-semibold text-white'
+			? 'border-linagora-500 bg-linagora-500 font-semibold text-white'
 			: 'border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 hover:transition-colors'}"
 		title="Generate a random UUID for each file"
 		onclick={() => (selectedOption = 'random')}
@@ -17,7 +17,7 @@
 	<button
 		class="w-1/2 cursor-pointer rounded-r-md border border-l-0 py-2
         {selectedOption === 'filename'
-			? 'border-pink-500 bg-pink-500 font-semibold text-white'
+			? 'border-linagora-500 bg-linagora-500 font-semibold text-white'
 			: 'border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50 hover:transition-colors'}"
 		title="Use the file names as file IDs"
 		onclick={() => (selectedOption = 'filename')}

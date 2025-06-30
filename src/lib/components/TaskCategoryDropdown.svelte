@@ -50,7 +50,7 @@
                         class="flex flex-col space-y-1 space-x-2 overflow-x-hidden px-4 py-3 break-all hover:bg-slate-100"
                     >
                         <div class="flex items-center space-x-1">
-                            <Folder className="size-4 fill-pink-500" />
+                            <Folder className="size-4 fill-linagora-500" />
                             <span class="text-xs text-slate-500">{task.details.partition}</span>
                         </div>
                         <span class="text-sm">{task.details.file_id}</span>
@@ -63,7 +63,7 @@
                 {#each tasks.tasks.filter((task) => task.state === category) as task}
                     <div class="flex flex-col space-y-1 space-x-2 overflow-x-hidden px-4 py-3 break-all">
                         <div class="flex items-center space-x-1">
-                            <Folder className="size-4 fill-pink-500" />
+                            <Folder className="size-4 fill-linagora-500" />
                             <span class="text-xs text-slate-500">{task.details.partition}</span>
                         </div>
                         <span class="text-sm">{task.details.file_id}</span>

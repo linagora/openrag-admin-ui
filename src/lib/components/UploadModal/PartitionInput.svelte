@@ -72,7 +72,7 @@
     <div class="relative flex w-full items-center">
         <input
             id="new-partition-input"
-            class="text w-full px-4 py-2 placeholder:text-pink-500 hover:bg-slate-50 {selectedPartition?.created_at ===
+            class="text w-full px-4 py-2 placeholder:text-linagora-500 hover:bg-slate-50 {selectedPartition?.created_at ===
             -1
                 ? ''
                 : 'cursor-pointer'} focus:cursor-text focus:outline-none focus:placeholder:text-slate-400"
@@ -89,7 +89,7 @@
                 onclick={() => {
                     if (onSelect && selectedPartition) onSelect(selectedPartition);
                 }}
-                class="absolute right-2 cursor-pointer rounded bg-pink-500 px-2 py-1 text-xs font-semibold text-white transition-all hover:bg-pink-600"
+                class="absolute right-2 cursor-pointer rounded bg-linagora-500 px-2 py-1 text-xs font-semibold text-white transition-all hover:bg-linagora-600"
             >
                 Create
             </button>

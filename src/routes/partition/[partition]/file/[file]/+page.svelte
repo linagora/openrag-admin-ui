@@ -122,7 +122,7 @@
                             : 'hover:bg-slate-100 '}"
                         onclick={() => selectExtract(document.link.split("/").pop() || "")}
                     >
-                        <File className="fill-pink-500 size-6" />
+                        <File className="fill-linagora-500 size-6" />
                         <span class="group-hover: text-sm">
                             {document.link.split("/").pop()}
                         </span>

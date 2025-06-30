@@ -26,6 +26,7 @@
     import Trash from "$lib/icons/Trash.svelte";
     import List from "$lib/icons/List.svelte";
     import Grid from "$lib/icons/Grid.svelte";
+    import Sort from "$lib/icons/Sort.svelte";
 
     // Types
     import type { RAGPartition } from "$lib/types";
@@ -34,9 +35,37 @@
     // Partition selection properties
     let selectedPartitions: Set<RAGPartition> = $state(new Set()); // Track selected partitions
     let selectAllStatus: TernaryCheckboxStatus = $state("none"); // Compute ternary checkbox state
+
+    // Sorting method for partitions, does not do anything by default
     let sortingMethod: (a: RAGPartition, b: RAGPartition) => number = $state((a, b) => {
-        return 0;
+        return 1 * invertedSorting;
     });
+    let invertedSorting: 1 | -1 = $state(1);
+
+    /**
+     * Changes the partition sorting method.
+     * @param method The method to use
+     */
+    function changeSortingMethod(method: "name" | "date" | "default") {
+        switch (method) {
+            case "name":
+                sortingMethod = (a: RAGPartition, b: RAGPartition) => {
+                    return a.partition < b.partition ? -1 * invertedSorting : 1 * invertedSorting;
+                };
+                break;
+            case "date":
+                sortingMethod = (a: RAGPartition, b: RAGPartition) => {
+                    return a.created_at < b.created_at ? -1 * invertedSorting : 1 * invertedSorting;
+                };
+                break;
+            case "default":
+            default:
+                sortingMethod = (a: RAGPartition, b: RAGPartition) => {
+                    return 1 * invertedSorting;
+                };
+                break;
+        }
+    }
 
     /**
      * Toggles a partition's selection status
@@ -112,7 +141,7 @@
 <div class="flex h-full">
     <div class="relative flex grow flex-col overflow-y-auto">
         <!-- List header -->
-        <div class="sticky top-0 z-10 flex items-center border-b border-slate-200 bg-white pl-4 pr-3">
+        <div class="sticky top-0 z-20 flex items-center border-b border-slate-200 bg-white pl-4 pr-3">
             <!-- Partition selection -->
             <div class="flex items-center gap-3 py-3 grow">
                 <TernaryCheckbox checked={selectAllStatus} onChange={toggleSelectAll} />
@@ -122,18 +151,24 @@
                 </button>
             </div>
 
-            <!-- Sorting method -->
-            <button
-                class="mr-4 cursor-pointer"
-                onclick={() => {
-                    console.log("sort")
-                    sortingMethod = (a: RAGPartition, b: RAGPartition) => {
-                        return a.partition < b.partition ? -1 : 1;
-                    };
-                }}
-            >
-                Sort by...
-            </button>
+            <div class="flex items-center mr-3 pr-3 border-r border-slate-300">
+                <!-- Sorting method -->
+                <button
+                    class="cursor-pointer rounded p-1 hover:bg-slate-100"
+                    onclick={() => {
+                        invertedSorting = invertedSorting === 1 ? -1 : 1;
+                    }}
+                >
+                    <Sort className="size-5 fill-slate-500 {invertedSorting === -1 ? 'rotate-x-180' : ''}" />
+                </button>
+                <select
+                    class="cursor-pointer rounded hover:bg-slate-100 py-1 px-2 text-sm text-slate-500 appearance-none"
+                >
+                    <option onclick={() => changeSortingMethod("default")}>Default</option>
+                    <option onclick={() => changeSortingMethod("name")}>Name</option>
+                    <option onclick={() => changeSortingMethod("date")}>Date</option>
+                </select>
+            </div>
 
             <!-- Display mode -->
             <button
@@ -180,7 +215,7 @@
                             onChange={() => toggleSelect(partition)}
                         />
                         <a href="/partition/{partition.partition}" class="flex w-full items-center space-x-3 py-4">
-                            <Folder className="size-6 fill-pink-500 stroke-3" />
+                            <Folder className="size-6 fill-linagora-500 stroke-3" />
                             <span class="grow">{partition.partition}</span>
                             <span class="text-xs text-slate-500">
                                 Created: {formatDate(partition.created_at)}
@@ -200,7 +235,7 @@
         {:else}
             <!-- Partition grid -->
             <div class="grid {tasks.tasks.length > 0 ? 'grid-cols-6' : 'grid-cols-8'} gap-4 p-4">
-                {#each partitions.partitions as partition}
+                {#each partitions.partitions.toSorted(sortingMethod) as partition}
                     <div
                         class="group relative rounded-lg border border-slate-200 bg-white p-2 shadow-md hover:shadow-lg"
                     >
@@ -222,7 +257,7 @@
                             href="/partition/{partition.partition}"
                             class="flex h-full flex-col items-center py-4 text-center"
                         >
-                            <Folder className="size-12 fill-pink-500 stroke-3" />
+                            <Folder className="size-12 fill-linagora-500 stroke-3" />
                             <span class="grow font-bold">{partition.partition}</span>
                             <span class="mb-1 text-xs text-slate-500">
                                 Created: {formatDate(partition.created_at)}
@@ -281,7 +316,7 @@
                                 <div class="relative h-1 w-full bg-slate-200 rounded-full">
                                     <div
                                         style="width: {progress.progress}%;"
-                                        class="absolute h-1 bg-pink-500 rounded-full"
+                                        class="absolute h-1 bg-linagora-500 rounded-full"
                                     ></div>
                                 </div>
                                 <span class="text-[0.7rem] text-right w-6">
@@ -307,7 +342,7 @@
                         class="flex flex-col space-y-1 space-x-2 overflow-x-hidden border-b border-slate-200 px-4 py-3 break-all"
                     >
                         <div class="flex items-center space-x-1">
-                            <Folder className="size-4 fill-pink-500" />
+                            <Folder className="size-4 fill-linagora-500" />
                             <span class="text-xs text-slate-500">{task.details.partition}</span>
                         </div>
                         <span class="text-sm">{task.details.file_id}</span>

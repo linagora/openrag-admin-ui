@@ -18,6 +18,7 @@
     import Trash from "$lib/icons/Trash.svelte";
     import Grid from "$lib/icons/Grid.svelte";
     import List from "$lib/icons/List.svelte";
+    import Sort from "$lib/icons/Sort.svelte";
 
     // Types
     import type { RAGFileInList } from "$lib/types";
@@ -29,6 +30,32 @@
     // File selection properties
     let selectedFiles: Set<RAGFileInList> = $state(new Set()); // Track selected files
     let selectAllStatus: TernaryCheckboxStatus = $state("none"); // Compute ternary checkbox state
+
+    // Sorting method for files, does not do anything by default
+    let sortingMethod: (a: RAGFileInList, b: RAGFileInList) => number = $state((a, b) => {
+        return 1 * invertedSorting;
+    });
+    let invertedSorting: 1 | -1 = $state(1);
+
+    /**
+     * Changes the file sorting method.
+     * @param method The method to use
+     */
+    function changeSortingMethod(method: "id" | "default") {
+        switch (method) {
+            case "id":
+                sortingMethod = (a: RAGFileInList, b: RAGFileInList) => {
+                    return a.link < b.link ? -1 * invertedSorting : 1 * invertedSorting;
+                };
+                break;
+            case "default":
+            default:
+                sortingMethod = (a: RAGFileInList, b: RAGFileInList) => {
+                    return 1 * invertedSorting;
+                };
+                break;
+        }
+    }
 
     /**
      * Toggles a file's selection status
@@ -144,12 +171,30 @@
     <div class="relative flex h-full flex-col overflow-y-auto">
         <!-- List header -->
         <div class="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200 bg-white">
-            <div class="flex items-center gap-3 py-3 pl-4">
+            <div class="flex grow items-center gap-3 py-3 pl-4">
                 <TernaryCheckbox checked={selectAllStatus} onChange={toggleSelectAll} />
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <button onclick={toggleSelectAll} class="ml-2 cursor-pointer text-sm text-slate-600" tabindex="0">
                     {selectedFiles.size} of {files.length} files selected
                 </button>
+            </div>
+
+            <div class="flex items-center mr-3 pr-3 border-r border-slate-300">
+                <!-- Sorting method -->
+                <button
+                    class="cursor-pointer rounded p-1 hover:bg-slate-100"
+                    onclick={() => {
+                        invertedSorting = invertedSorting === 1 ? -1 : 1;
+                    }}
+                >
+                    <Sort className="size-5 fill-slate-500 {invertedSorting === -1 ? 'rotate-x-180' : ''}" />
+                </button>
+                <select
+                    class="cursor-pointer rounded hover:bg-slate-100 py-1 px-2 text-sm text-slate-500 appearance-none"
+                >
+                    <option onclick={() => changeSortingMethod("default")}>Default</option>
+                    <option onclick={() => changeSortingMethod("id")}>ID</option>
+                </select>
             </div>
             <div class="flex items-center pr-3">
                 <button
@@ -182,14 +227,14 @@
         {#if displayMode.current === "list"}
             <!-- File list -->
             <div class="flex flex-col">
-                {#each files as file}
+                {#each files.toSorted(sortingMethod) as file}
                     <div class="group flex items-center space-x-4 border-b border-slate-200 px-4 hover:bg-slate-100">
                         <Checkbox checked={selectedFiles.has(file)} onChange={() => toggleSelect(file)} />
                         <a
                             href="/partition/{partitions.currentPartition?.partition}/file/{file.link.split('/').pop()}"
                             class="flex w-full items-center space-x-3 py-4"
                         >
-                            <File className="size-6 fill-pink-500 stroke-3" />
+                            <File className="size-6 fill-linagora-500 stroke-3" />
                             <span class="grow">{file.link.split("/").pop()}</span>
                         </a>
                         <button onclick={() => deleteFile(file)} aria-label={`Delete file ${file.link}`}>
@@ -203,7 +248,7 @@
         {:else}
             <!-- Partition grid -->
             <div class="grid grid-cols-8 gap-4 p-4">
-                {#each files as file}
+                {#each files.toSorted(sortingMethod) as file}
                     <div
                         class="group relative rounded-lg border border-slate-200 bg-white p-2 shadow-md hover:shadow-lg"
                     >
@@ -225,7 +270,7 @@
                             href="/partition/{partitions.currentPartition?.partition}/file/{file.link.split('/').pop()}"
                             class="flex h-full flex-col items-center py-4 text-center"
                         >
-                            <File className="size-10 fill-pink-500 stroke-3" />
+                            <File className="size-10 fill-linagora-500 stroke-3" />
                             <span
                                 title={file.link.split("/").pop()}
                                 class="mt-2 line-clamp-2 text-sm font-bold break-all"

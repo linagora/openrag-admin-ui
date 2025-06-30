@@ -32,7 +32,7 @@ export function getStyleFromTaskState(state: string): string {
         case "INSERTING":
             return "text-blue-500";
         case "COMPLETED":
-            return "text-pink-500";
+            return "text-linagora-500";
         case "FAILED":
             return "text-red-500";
         default:

@@ -28,10 +28,10 @@
     <!-- Navigation between files and partitions -->
     <div class="flex items-center space-x-2 text-xl font-bold">
         <a href="/" class="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-slate-100">
-            <Home className="size-6 stroke-pink-500 fill-transparent" /> RAGondin Indexer
+            <Home className="size-6 stroke-linagora-500 fill-transparent" /> RAGondin Indexer
         </a>
         {#if partitions.currentPartition}
-            <ChevronDown className="size-4 -rotate-90 stroke-3 stroke-pink-500" />
+            <ChevronDown className="size-4 -rotate-90 stroke-3 stroke-linagora-500" />
             <a
                 href="/partition/{partitions.currentPartition.partition}"
                 class="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-slate-100"
@@ -40,7 +40,7 @@
             </a>
         {/if}
         {#if files.currentFile}
-            <ChevronDown className="size-4 -rotate-90 stroke-3 stroke-pink-500" />
+            <ChevronDown className="size-4 -rotate-90 stroke-3 stroke-linagora-500" />
             <span class="px-2">
                 {files.currentFile}
             </span>
@@ -64,7 +64,7 @@
 
         <!-- Upload files -->
         <button
-            class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-pink-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-pink-600 focus:outline-none"
+            class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-linagora-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-linagora-600 focus:outline-none"
             onclick={openUploadModal}
         >
             <Upload className="size-5 stroke-3" /> Upload files

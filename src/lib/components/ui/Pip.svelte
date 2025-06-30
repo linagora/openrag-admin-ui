@@ -2,15 +2,15 @@
 	// Properties
 	let {
 		text,
-		color = 'pink'
+		color = 'linagora'
 	}: {
 		text: string; // Text of the pip
-		color?: 'pink' | 'red' | 'blue' | 'green'; // Color of the pip (limited selections)
+		color?: 'linagora' | 'red' | 'blue' | 'green'; // Color of the pip (limited selections)
 	} = $props();
 
 	// Available colors (force tailwind parsing)
 	const colors = {
-		pink: 'bg-pink-500',
+		linagora: 'bg-linagora-500',
 		red: 'bg-red-500',
 		blue: 'bg-blue-500',
 		green: 'bg-green-500'

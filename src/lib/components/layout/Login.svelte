@@ -84,7 +84,7 @@
 </script>
 
 <div class="flex flex-col items-center justify-end relative h-[50vh] w-screen">
-    <Lock className="size-36 fill-pink-500 mb-4" />
+    <Lock className="size-36 fill-linagora-500 mb-4" />
     <span class="font-bold text-2xl mb-6">Access protected</span>
     <input
         bind:this={authTokenInput}
@@ -98,12 +98,12 @@
     />
     {#if showSubmitButton}
         <button
-            class="absolute top-full mt-2 cursor-pointer flex items-center justify-center w-64 font-semibold rounded-md bg-pink-500 px-4 py-2 text-white transition-colors hover:bg-pink-600"
+            class="absolute top-full mt-2 cursor-pointer flex items-center justify-center w-64 font-semibold rounded-md bg-linagora-500 px-4 py-2 text-white transition-colors hover:bg-linagora-600"
             onclick={handleSubmit}
         >
             <span> Unlock </span>
         </button>
     {:else if loading}
-        <PartialCircle className="absolute top-full mt-4 size-6 fill-pink-500 animate-spin" />
+        <PartialCircle className="absolute top-full mt-4 size-6 fill-linagora-500 animate-spin" />
     {/if}
 </div>
