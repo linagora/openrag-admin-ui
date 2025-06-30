@@ -1,16 +1,30 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
+@theme {
+    --color-linagora-50: #fce8ec;
+    --color-linagora-100: #f8cdd3;
+    --color-linagora-200: #f19eb8;
+    --color-linagora-300: #ea6e9e;
+    --color-linagora-400: #e33e83;
+    --color-linagora-500: #c71f45;
+    --color-linagora-600: #a51939;
+    --color-linagora-700: #83132d;
+    --color-linagora-800: #620d21;
+    --color-linagora-900: #400815;
+    --color-linagora-950: #2b040c;
+}
+
 @font-face {
-	font-family: Inter;
-	font-style: normal;
-	font-weight: 100 200 300 400 500 600 700 800 900;
-	font-display: swap;
-	src: url("/fonts/Inter.ttf");
+    font-family: Inter;
+    font-style: normal;
+    font-weight: 100 200 300 400 500 600 700 800 900;
+    font-display: swap;
+    src: url("/fonts/Inter.ttf");
 }
 
 @layer base {
-	body {
-		@apply font-["Inter"] text-slate-900 antialiased;
-	}
+    body {
+        @apply font-["Inter"] text-slate-900 antialiased;
+    }
 }

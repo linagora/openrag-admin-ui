@@ -34,6 +34,9 @@
     // Partition selection properties
     let selectedPartitions: Set<RAGPartition> = $state(new Set()); // Track selected partitions
     let selectAllStatus: TernaryCheckboxStatus = $state("none"); // Compute ternary checkbox state
+    let sortingMethod: (a: RAGPartition, b: RAGPartition) => number = $state((a, b) => {
+        return 0;
+    });
 
     /**
      * Toggles a partition's selection status
@@ -109,42 +112,57 @@
 <div class="flex h-full">
     <div class="relative flex grow flex-col overflow-y-auto">
         <!-- List header -->
-        <div class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-200 bg-white">
-            <div class="flex items-center gap-3 py-3 pl-4">
+        <div class="sticky top-0 z-10 flex items-center border-b border-slate-200 bg-white pl-4 pr-3">
+            <!-- Partition selection -->
+            <div class="flex items-center gap-3 py-3 grow">
                 <TernaryCheckbox checked={selectAllStatus} onChange={toggleSelectAll} />
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <button onclick={toggleSelectAll} class="ml-2 cursor-pointer text-sm text-slate-600" tabindex="0">
                     {selectedPartitions.size} of {partitions.partitions.length} partitions selected
                 </button>
             </div>
-            <div class="flex items-center pr-3">
-                <button
-                    class="cursor-pointer {displayMode.current === 'list' ? 'font-bold' : ''}"
-                    onclick={() => {
-                        displayMode.current = "list";
-                    }}
-                >
-                    <List
-                        className="inline size-8 p-1 hover:bg-slate-100 rounded {displayMode.current === 'list'
-                            ? 'fill-slate-500'
-                            : 'fill-slate-300'}"
-                    />
-                </button>
-                <button
-                    class="cursor-pointer {displayMode.current === 'grid' ? 'font-bold' : ''}"
-                    onclick={() => {
-                        displayMode.current = "grid";
-                    }}
-                >
-                    <Grid
-                        className="inline size-8 hover:bg-slate-100 p-1 rounded {displayMode.current === 'grid'
-                            ? 'fill-slate-500'
-                            : 'fill-slate-300'}"
-                    />
-                </button>
-            </div>
+
+            <!-- Sorting method -->
+            <button
+                class="mr-4 cursor-pointer"
+                onclick={() => {
+                    console.log("sort")
+                    sortingMethod = (a: RAGPartition, b: RAGPartition) => {
+                        return a.partition < b.partition ? -1 : 1;
+                    };
+                }}
+            >
+                Sort by...
+            </button>
+
+            <!-- Display mode -->
+            <button
+                class="cursor-pointer {displayMode.current === 'list' ? 'font-bold' : ''}"
+                onclick={() => {
+                    displayMode.current = "list";
+                }}
+            >
+                <List
+                    className="inline size-8 p-1 hover:bg-slate-100 rounded {displayMode.current === 'list'
+                        ? 'fill-slate-500'
+                        : 'fill-slate-300'}"
+                />
+            </button>
+            <button
+                class="cursor-pointer {displayMode.current === 'grid' ? 'font-bold' : ''}"
+                onclick={() => {
+                    displayMode.current = "grid";
+                }}
+            >
+                <Grid
+                    className="inline size-8 hover:bg-slate-100 p-1 rounded {displayMode.current === 'grid'
+                        ? 'fill-slate-500'
+                        : 'fill-slate-300'}"
+                />
+            </button>
         </div>
 
+        <!-- No partitions -->
         {#if partitions.partitions.length === 0}
             <div class="flex h-full w-full items-center justify-center">
                 <span class="text-center text-sm text-slate-500">
@@ -155,7 +173,7 @@
         {:else if displayMode.current === "list"}
             <!-- Partition list -->
             <div class="flex flex-col">
-                {#each partitions.partitions as partition}
+                {#each partitions.partitions.toSorted(sortingMethod) as partition}
                     <div class="group flex items-center space-x-4 border-b border-slate-200 px-4 hover:bg-slate-100">
                         <Checkbox
                             checked={selectedPartitions.has(partition)}

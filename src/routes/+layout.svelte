@@ -99,7 +99,7 @@
     <!-- Loading screen -->
     <div class="flex h-screen w-screen flex-col space-y-4 justify-center items-center">
         <span> Loading... </span>
-        <PartialCircle className="animate-spin fill-pink-500 size-32" />
+        <PartialCircle className="animate-spin fill-pink-500 size-8" />
     </div>
 {:else if ui.showLoginPage}
     <!-- Login screen -->
