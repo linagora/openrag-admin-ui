@@ -50,12 +50,12 @@
         switch (method) {
             case "name":
                 sortingMethod = (a: RAGPartition, b: RAGPartition) => {
-                    return a.partition < b.partition ? -1 * invertedSorting : 1 * invertedSorting;
+                    return (a.partition.toLowerCase() < b.partition.toLowerCase() ? -1 : 1) * invertedSorting;
                 };
                 break;
             case "date":
                 sortingMethod = (a: RAGPartition, b: RAGPartition) => {
-                    return a.created_at < b.created_at ? -1 * invertedSorting : 1 * invertedSorting;
+                    return (a.created_at < b.created_at ? -1 : 1) * invertedSorting;
                 };
                 break;
             case "default":

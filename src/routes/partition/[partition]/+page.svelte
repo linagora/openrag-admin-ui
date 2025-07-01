@@ -45,7 +45,7 @@
         switch (method) {
             case "id":
                 sortingMethod = (a: RAGFileInList, b: RAGFileInList) => {
-                    return a.link < b.link ? -1 * invertedSorting : 1 * invertedSorting;
+                    return (a.link.toLowerCase() < b.link.toLowerCase() ? -1 : 1) * invertedSorting;
                 };
                 break;
             case "default":
