@@ -28,7 +28,7 @@
     <!-- Navigation between files and partitions -->
     <div class="flex items-center space-x-2 text-xl font-bold">
         <a href="/" class="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-slate-100">
-            <Home className="size-6 stroke-linagora-500 fill-transparent" /> RAGondin Indexer
+            <Home className="size-6 stroke-linagora-500 fill-transparent" /> OpenRAG Indexer
         </a>
         {#if partitions.currentPartition}
             <ChevronDown className="size-4 -rotate-90 stroke-3 stroke-linagora-500" />
