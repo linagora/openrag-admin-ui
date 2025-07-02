@@ -38,10 +38,13 @@
     let invertedSorting: 1 | -1 = $state(1);
 
     /**
-     * Changes the file sorting method.
-     * @param method The method to use
+     * Handles changing the file sorting method.
+     * @param event The event fired by the select element
      */
-    function changeSortingMethod(method: "id" | "default") {
+    function changeSortingMethod(event: Event) {
+        const target = event.target as HTMLSelectElement;
+        const method = target.value as "id" | "default";
+
         switch (method) {
             case "id":
                 sortingMethod = (a: RAGFileInList, b: RAGFileInList) => {
@@ -191,9 +194,10 @@
                 </button>
                 <select
                     class="cursor-pointer rounded hover:bg-slate-100 py-1 px-2 text-sm text-slate-500 appearance-none"
+                    onchange={changeSortingMethod}
                 >
-                    <option onclick={() => changeSortingMethod("default")}>Default</option>
-                    <option onclick={() => changeSortingMethod("id")}>ID</option>
+                    <option value="default">Default</option>
+                    <option value="id">ID</option>
                 </select>
             </div>
             <div class="flex items-center pr-3">

@@ -43,10 +43,13 @@
     let invertedSorting: 1 | -1 = $state(1);
 
     /**
-     * Changes the partition sorting method.
-     * @param method The method to use
+     * Handles changing the partition sorting method.
+     * @param event The event fired by the select element
      */
-    function changeSortingMethod(method: "name" | "date" | "default") {
+    function changeSortingMethod(event: Event) {
+        const target = event.target as HTMLSelectElement;
+        const method = target.value as "name" | "date" | "default";
+
         switch (method) {
             case "name":
                 sortingMethod = (a: RAGPartition, b: RAGPartition) => {
@@ -163,10 +166,11 @@
                 </button>
                 <select
                     class="cursor-pointer rounded hover:bg-slate-100 py-1 px-2 text-sm text-slate-500 appearance-none"
+                    onchange={changeSortingMethod}
                 >
-                    <option onclick={() => changeSortingMethod("default")}>Default</option>
-                    <option onclick={() => changeSortingMethod("name")}>Name</option>
-                    <option onclick={() => changeSortingMethod("date")}>Date</option>
+                    <option value="default">Default</option>
+                    <option value="name">Name</option>
+                    <option value="date">Date</option>
                 </select>
             </div>
 
