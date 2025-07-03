@@ -8,5 +8,6 @@
  */
 export interface RAGPartition {
     partition: string;
-    created_at: number;
+    created_at: string;
+    file_count: number;
 }

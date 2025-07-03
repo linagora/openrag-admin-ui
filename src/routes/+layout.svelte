@@ -83,13 +83,13 @@
                 tasks.tasks = await api.fetchTasks();
                 setInterval(refreshTasks, 5000); // Refresh every 5 seconds
 
-                if (activeUploads.current) {
-                    activeUploads.current.forEach((upload) => {
-                        if (getUploadProgress(upload).status === "SUCCESS") {
-                            activeUploads.current = activeUploads.current.filter((u) => u !== upload); // Remove completed uploads
-                        }
-                    });
-                }
+                // if (activeUploads.current) {
+                //     activeUploads.current.forEach((upload) => {
+                //         if (["SUCCESS", "FAILED"].includes(getUploadProgress(upload).status)) {
+                //             activeUploads.current = activeUploads.current.filter((u) => u !== upload); // Remove completed uploads
+                //         }
+                //     });
+                // }
             })();
         }
     });

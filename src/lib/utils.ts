@@ -11,11 +11,11 @@ import type { ActiveUpload } from "$lib/types";
 
 /**
  * Formats a date
- * @param timestamp a timestamp, in seconds
- * @returns a date to the french format
+ * @param dateString an ISO 8601 formatted date string
+ * @returns a date in the French format
  */
-export function formatDate(timestamp: number): string {
-    return new Date(timestamp * 1000).toLocaleString("fr");
+export function formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleString("fr");
 }
 
 /**
@@ -60,7 +60,7 @@ export function getUploadProgress(upload: ActiveUpload): {
         (task) => upload.file_ids.includes(task.details.file_id) && task.state === "FAILED"
     ).length;
 
-    const progress = totalFiles > 0 ? Math.round((completedFiles / totalFiles) * 100) : 0;
+    const progress = totalFiles > 0 ? Math.round(((completedFiles + failedFiles) / totalFiles) * 100) : 0;
     const status =
         completedFiles === totalFiles
             ? "SUCCESS"

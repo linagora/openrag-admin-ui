@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
     import { page } from "$app/state";
     import { goto } from "$app/navigation";
+    import { formatDate } from "$lib/utils";
     import * as api from "$lib/api";
 
     // States & persisted states
@@ -43,12 +44,27 @@
      */
     function changeSortingMethod(event: Event) {
         const target = event.target as HTMLSelectElement;
-        const method = target.value as "id" | "default";
+        const method = target.value as "id" | "name" | "size" | "date" | "default";
 
         switch (method) {
             case "id":
                 sortingMethod = (a: RAGFileInList, b: RAGFileInList) => {
-                    return (a.link.toLowerCase() < b.link.toLowerCase() ? -1 : 1) * invertedSorting;
+                    return (a.file_id.toLowerCase() < b.file_id.toLowerCase() ? -1 : 1) * invertedSorting;
+                };
+                break;
+            case "name":
+                sortingMethod = (a: RAGFileInList, b: RAGFileInList) => {
+                    return (a.filename.toLowerCase() < b.filename.toLowerCase() ? -1 : 1) * invertedSorting;
+                };
+                break;
+            case "size":
+                sortingMethod = (a: RAGFileInList, b: RAGFileInList) => {
+                    return (a.file_size > b.file_size ? -1 : 1) * invertedSorting;
+                };
+                break;
+            case "date":
+                sortingMethod = (a: RAGFileInList, b: RAGFileInList) => {
+                    return (a.created_at < b.created_at ? -1 : 1) * invertedSorting;
                 };
                 break;
             case "default":
@@ -119,7 +135,7 @@
      */
     const deleteFile = async (file: RAGFileInList) => {
         if (partitions.currentPartition?.partition) {
-            const link: string | undefined = file.link.split("/").pop();
+            const link: string | undefined = file.file_id;
             if (link) {
                 const success: boolean = await api.deleteFile(partitions.currentPartition?.partition, link);
                 if (success) {
@@ -198,6 +214,9 @@
                 >
                     <option value="default">Default</option>
                     <option value="id">ID</option>
+                    <option value="name">Name</option>
+                    <option value="size">Size</option>
+                    <option value="date">Date created</option>
                 </select>
             </div>
             <div class="flex items-center pr-3">
@@ -235,13 +254,22 @@
                     <div class="group flex items-center space-x-4 border-b border-slate-200 px-4 hover:bg-slate-100">
                         <Checkbox checked={selectedFiles.has(file)} onChange={() => toggleSelect(file)} />
                         <a
-                            href="/partition/{partitions.currentPartition?.partition}/file/{file.link.split('/').pop()}"
+                            href="/partition/{partitions.currentPartition?.partition}/file/{file.file_id}"
                             class="flex w-full items-center space-x-3 py-4"
+                            title="id: {file.file_id}"
                         >
                             <File className="size-6 fill-linagora-500 stroke-3" />
-                            <span class="grow">{file.link.split("/").pop()}</span>
+                            <div class="grow relative flex items-center space-x-2">
+                                <span>{file.filename}</span>
+                                <span class="text-xs text-slate-500">
+                                    {file.file_size}
+                                </span>
+                            </div>
+                            <span class="text-xs text-slate-500">
+                                Created: {formatDate(file.created_at)}
+                            </span>
                         </a>
-                        <button onclick={() => deleteFile(file)} aria-label={`Delete file ${file.link}`}>
+                        <button onclick={() => deleteFile(file)} aria-label={`Delete file ${file.file_id}`}>
                             <Trash
                                 className="size-8 fill-transparent stroke-red-500 hover:stroke-red-600 cursor-pointer rounded p-1 hover:bg-slate-200"
                             />
@@ -253,33 +281,37 @@
             <!-- Partition grid -->
             <div class="grid grid-cols-8 gap-4 p-4">
                 {#each files.toSorted(sortingMethod) as file}
-                    <div
-                        class="group relative rounded-lg border border-slate-200 bg-white p-2 shadow-md hover:shadow-lg"
-                    >
+                    {@const selected = selectedFiles.has(file)}
+                    <div class="group relative aspect-square">
                         <Checkbox
-                            checkboxClasses="absolute self-start top-1 left-1 z-10"
-                            checked={selectedFiles.has(file)}
+                            checkboxClasses="{selected
+                                ? 'block'
+                                : 'hidden group-hover:block'} absolute self-start top-3 left-3 z-10"
+                            checked={selected}
                             onChange={() => toggleSelect(file)}
                         />
                         <button
-                            class="absolute top-1.5 right-1.5 z-10"
+                            class="hidden group-hover:block absolute top-2 right-2 z-10"
                             onclick={() => deleteFile(file)}
-                            aria-label={`Delete file ${file.link}`}
+                            aria-label={`Delete file ${file.file_id}`}
                         >
                             <Trash
-                                className="size-7 fill-transparent stroke-red-500 hover:stroke-red-600 cursor-pointer rounded p-0.5 hover:bg-red-50"
+                                className="size-7 fill-transparent stroke-red-300 hover:stroke-red-500 cursor-pointer rounded p-0.5 hover:bg-red-50"
                             />
                         </button>
                         <a
-                            href="/partition/{partitions.currentPartition?.partition}/file/{file.link.split('/').pop()}"
-                            class="flex h-full flex-col items-center py-4 text-center"
+                            href="/partition/{partitions.currentPartition?.partition}/file/{file.file_id}"
+                            class="absolute w-full h-full top-0 left-0 flex flex-col items-center rounded-lg border border-slate-200 bg-white shadow-md hover:shadow-lg p-2 text-center"
+                            title="id: {file.file_id}"
                         >
-                            <File className="size-10 fill-linagora-500 stroke-3" />
-                            <span
-                                title={file.link.split("/").pop()}
-                                class="mt-2 line-clamp-2 text-sm font-bold break-all"
-                            >
-                                {file.link.split("/").pop()}
+                            <File className="mt-6 size-12 fill-linagora-500 stroke-3" />
+                            <span class="font-bold">{file.filename}</span>
+                            <span class="mt-0.5 text-xs text-slate-500">
+                                {file.file_size}
+                            </span>
+                            <div class="grow"></div>
+                            <span class="mb-1 text-xs text-slate-500">
+                                {formatDate(file.created_at)}
                             </span>
                         </a>
                     </div>

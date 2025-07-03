@@ -48,7 +48,7 @@
         if (input.value === "") {
             selectedPartition = partitions.partitions[0];
         } else {
-            selectedPartition = { partition: input.value, created_at: -1 };
+            selectedPartition = { partition: input.value, created_at: "-1", file_count: -1 };
         }
     };
 
@@ -199,7 +199,7 @@
                 {partitions.partitions.length === 0 ? "Create a partition" : "Select or create a partition"}
             </span>
 
-            {#if selectedPartition?.created_at === -1}
+            {#if selectedPartition?.file_count === -1}
                 <Pip text="New" />
             {/if}
         </label>
@@ -220,7 +220,7 @@
                     <span>
                         {selectedPartition?.partition}
                     </span>
-                    {#if selectedPartition?.created_at === -1}
+                    {#if selectedPartition?.file_count === -1}
                         <Pip text="new" />
                     {/if}
                 </span>

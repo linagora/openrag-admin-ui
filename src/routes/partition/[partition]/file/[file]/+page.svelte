@@ -5,6 +5,7 @@
     import { goto } from "$app/navigation";
     import { marked } from "marked";
     import * as api from "$lib/api";
+    import { formatDate } from "$lib/utils";
 
     // Stores
     import { partitions, files } from "$lib/states.svelte";
@@ -69,7 +70,7 @@
         <div class="flex w-128 flex-col bg-slate-50">
             <span class="top-0 w-full border-b border-slate-200 bg-white px-4 py-2 font-bold"> File metadata </span>
             <div class="flex max-h-full flex-col overflow-y-auto p-4 text-sm">
-                <span class="mb-4 self-center font-bold">Default metadata</span>
+                <span class="mb-4 self-center font-bold">Basic metadata</span>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">File ID</span>
                     <span>{file?.metadata.file_id}</span>
@@ -87,18 +88,22 @@
                     <span>{file?.metadata.source}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
+                    <span class="font-bold">Created</span>
+                    <span>{formatDate(file?.metadata.created_at)}</span>
+                </div>
+                <div class="mb-2 flex flex-col space-y-1">
+                    <span class="font-bold">Size</span>
+                    <span>{file?.metadata.file_size}</span>
+                </div>
+                <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Page</span>
                     <span>{file?.metadata.page}</span>
                 </div>
-                <div class="mb-2 flex flex-col space-y-1">
-                    <span class="font-bold">Page separator</span>
-                    <span>{file?.metadata.page_sep}</span>
-                </div>
-                {#if Object.entries(file.metadata).length > 6}
+                {#if Object.entries(file.metadata).length > 7}
                     <div class="mx-4 my-4 border-t border-slate-200"></div>
                     <span class="mb-4 self-center font-bold">Additional metadata</span>
                     {#each Object.entries(file.metadata) as [key, value]}
-                        {#if !["file_id", "filename", "partition", "source", "page", "page_sep"].includes(key)}
+                        {#if !["file_id", "filename", "partition", "source", "page", "file_size", "created_at"].includes(key)}
                             <div class="mb-2 flex flex-col space-y-1">
                                 <span class="font-bold">{key}</span>
                                 <span>{value}</span>

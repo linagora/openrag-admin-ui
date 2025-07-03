@@ -48,7 +48,7 @@
      */
     function changeSortingMethod(event: Event) {
         const target = event.target as HTMLSelectElement;
-        const method = target.value as "name" | "date" | "default";
+        const method = target.value as "name" | "date" | "size" | "default";
 
         switch (method) {
             case "name":
@@ -59,6 +59,11 @@
             case "date":
                 sortingMethod = (a: RAGPartition, b: RAGPartition) => {
                     return (a.created_at < b.created_at ? -1 : 1) * invertedSorting;
+                };
+                break;
+            case "size":
+                sortingMethod = (a: RAGPartition, b: RAGPartition) => {
+                    return (a.file_count > b.file_count ? -1 : 1) * invertedSorting;
                 };
                 break;
             case "default":
@@ -170,7 +175,8 @@
                 >
                     <option value="default">Default</option>
                     <option value="name">Name</option>
-                    <option value="date">Date</option>
+                    <option value="date">Date created</option>
+                    <option value="size">File count</option>
                 </select>
             </div>
 
@@ -220,7 +226,13 @@
                         />
                         <a href="/partition/{partition.partition}" class="flex w-full items-center space-x-3 py-4">
                             <Folder className="size-6 fill-linagora-500 stroke-3" />
-                            <span class="grow">{partition.partition}</span>
+                            <div class="grow flex items-center space-x-2">
+                                <span>{partition.partition}</span>
+                                <span class="text-xs text-slate-500">
+                                    ({partition.file_count}
+                                    {partition.file_count === 1 ? "file" : "files"})
+                                </span>
+                            </div>
                             <span class="text-xs text-slate-500">
                                 Created: {formatDate(partition.created_at)}
                             </span>
@@ -240,16 +252,17 @@
             <!-- Partition grid -->
             <div class="grid {tasks.tasks.length > 0 ? 'grid-cols-6' : 'grid-cols-8'} gap-4 p-4">
                 {#each partitions.partitions.toSorted(sortingMethod) as partition}
-                    <div
-                        class="group relative rounded-lg border border-slate-200 bg-white p-2 shadow-md hover:shadow-lg"
-                    >
+                    {@const selected = selectedPartitions.has(partition)}
+                    <div class="group relative aspect-square">
                         <Checkbox
-                            checkboxClasses="absolute self-start top-1 left-1 z-10"
-                            checked={selectedPartitions.has(partition)}
+                            checkboxClasses="{selected
+                                ? 'block'
+                                : 'hidden group-hover:block'} absolute self-start top-3 left-3 z-10"
+                            checked={selected}
                             onChange={() => toggleSelect(partition)}
                         />
                         <button
-                            class="absolute top-1.5 right-1.5 z-10"
+                            class="hidden group-hover:block absolute top-2 right-2 z-10"
                             onclick={() => deletePartition(partition)}
                             aria-label={`Delete partition ${partition.partition}`}
                         >
@@ -259,12 +272,17 @@
                         </button>
                         <a
                             href="/partition/{partition.partition}"
-                            class="flex h-full flex-col items-center py-4 text-center"
+                            class="absolute w-full h-full top-0 left-0 flex flex-col items-center rounded-lg border border-slate-200 bg-white shadow-md hover:shadow-lg p-2 text-center"
                         >
-                            <Folder className="size-12 fill-linagora-500 stroke-3" />
-                            <span class="grow font-bold">{partition.partition}</span>
+                            <Folder className="mt-6 size-12 fill-linagora-500 stroke-3" />
+                            <span class="font-bold">{partition.partition}</span>
+                            <span class="mt-0.5 text-xs text-slate-500">
+                                {partition.file_count}
+                                {partition.file_count === 1 ? "file" : "files"}
+                            </span>
+                            <div class="grow"></div>
                             <span class="mb-1 text-xs text-slate-500">
-                                Created: {formatDate(partition.created_at)}
+                                {formatDate(partition.created_at)}
                             </span>
                         </a>
                     </div>
@@ -307,26 +325,32 @@
                     {#each activeUploads.current as activeTask}
                         {@const progress = getUploadProgress(activeTask)}
                         <div class="bg-white px-4 py-3 space-y-1 flex flex-col">
-                            <span class="text-xs">
-                                {#if progress.status === "SUCCESS"}
-                                    {`${activeTask.file_ids.length} file(s) uploaded to partition "${activeTask.partition}".`}
-                                {:else if progress.status === "FAILED"}
-                                    {`Upload failed for ${activeTask.file_ids.length} file(s) to partition "${activeTask.partition}".`}
-                                {:else}
-                                    {`Uploading ${activeTask.file_ids.length} file(s) to partition "${activeTask.partition}"... (${activeTask.file_ids.length - progress.completedFiles} left)`}
-                                {/if}
-                            </span>
-                            <div class="flex items-center space-x-2">
-                                <div class="relative h-1 w-full bg-slate-200 rounded-full">
-                                    <div
-                                        style="width: {progress.progress}%;"
-                                        class="absolute h-1 bg-linagora-500 rounded-full"
-                                    ></div>
-                                </div>
-                                <span class="text-[0.7rem] text-right w-6">
-                                    {progress.progress}%
+                            {#if progress.status === "IN PROGRESS"}
+                                <span class="text-xs">
+                                    Uploading {activeTask.file_ids.length} file(s) to partition "{activeTask.partition}"...
+                                    ({activeTask.file_ids.length - progress.completedFiles - progress.failedFiles} left)
                                 </span>
-                            </div>
+                                <div class="flex items-center space-x-2">
+                                    <div class="relative h-1 w-full bg-slate-200 rounded-full">
+                                        <div
+                                            style="width: {progress.progress}%;"
+                                            class="absolute h-1 bg-linagora-500 rounded-full"
+                                        ></div>
+                                    </div>
+                                    <span class="text-[0.7rem] text-right w-6">
+                                        {progress.progress}%
+                                    </span>
+                                </div>
+                            {:else if progress.status === "FAILED"}
+                                <div class="text-xs text-red-500">
+                                    Upload failed for {progress.failedFiles} out of {activeTask.file_ids.length} file(s)
+                                    to partition "{activeTask.partition}".
+                                </div>
+                            {:else}
+                                <div class="text-xs text-green-500">
+                                    {activeTask.file_ids.length} file(s) uploaded to partition "{activeTask.partition}".
+                                </div>
+                            {/if}
                         </div>
                     {/each}
                 </div>

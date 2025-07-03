@@ -7,7 +7,13 @@
  * Represents a file in a partition (from the GET /partition/{partition}/ endpoint)
  */
 export interface RAGFileInList {
+    file_id: string;
+    filename: string;
     link: string;
+    partition: string;
+    source: string;
+    created_at: string;
+    file_size: string;
 }
 
 /**
@@ -15,12 +21,13 @@ export interface RAGFileInList {
  */
 export interface RAGFile {
     metadata: {
-        partition: string;
         file_id: string;
         filename: string;
-        page: number;
-        page_sep: string;
+        partition: string;
         source: string;
+        page: number;
+        file_size: string;
+        created_at: string;
     };
     documents: Array<{ link: string }>;
 }
