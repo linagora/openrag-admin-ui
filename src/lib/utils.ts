@@ -4,7 +4,7 @@
  */
 
 // Import states
-import { tasks } from "$lib/states.svelte";
+import { data } from "$lib/states.svelte";
 
 // Import types
 import type { ActiveUpload } from "$lib/types";
@@ -52,11 +52,11 @@ export function getUploadProgress(upload: ActiveUpload): {
     failedFiles: number;
 } {
     const totalFiles = upload.file_ids.length;
-    const completedFiles = tasks.tasks.filter(
+    const completedFiles = data.tasks.filter(
         (task) => upload.file_ids.includes(task.details.file_id) && task.state === "COMPLETED"
     ).length;
 
-    const failedFiles = tasks.tasks.filter(
+    const failedFiles = data.tasks.filter(
         (task) => upload.file_ids.includes(task.details.file_id) && task.state === "FAILED"
     ).length;
 

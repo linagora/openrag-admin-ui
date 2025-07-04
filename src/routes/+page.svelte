@@ -7,12 +7,11 @@
      */
 
     // Utilities
-    import { onMount } from "svelte";
     import { formatDate, getUploadProgress, getStyleFromTaskState } from "$lib/utils";
     import * as api from "$lib/api";
 
     // States & persisted states
-    import { partitions, tasks, files } from "$lib/states.svelte";
+    import { data } from "$lib/states.svelte";
     import { activeUploads, displayMode } from "$lib/persisted.svelte";
 
     // Components
@@ -100,7 +99,7 @@
             selectedPartitions = new Set(selectedPartitions); // Force refresh
         } else {
             // Select all partitions
-            selectedPartitions = new Set(partitions.partitions);
+            selectedPartitions = new Set(data.partitions);
         }
     }
 
@@ -111,7 +110,7 @@
     async function deletePartition(partition: RAGPartition) {
         const success = await api.deletePartition(partition.partition);
         if (success) {
-            partitions.partitions = await api.fetchPartitions();
+            data.partitions = await api.fetchPartitions();
             selectedPartitions.delete(partition);
         }
     }
@@ -129,20 +128,15 @@
                 await deletePartition(partition);
             }
     }
-
+    
     $effect(() => {
         // Refresh selectAllStatus
         selectAllStatus =
             selectedPartitions.size === 0
                 ? "none"
-                : selectedPartitions.size === partitions.partitions.length
+                : selectedPartitions.size === data.partitions.length
                   ? "full"
                   : "partial";
-    });
-
-    onMount(async () => {
-        partitions.currentPartition = null;
-        files.currentFile = null;
     });
 </script>
 
@@ -155,7 +149,7 @@
                 <TernaryCheckbox checked={selectAllStatus} onChange={toggleSelectAll} />
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <button onclick={toggleSelectAll} class="ml-2 cursor-pointer text-sm text-slate-600" tabindex="0">
-                    {selectedPartitions.size} of {partitions.partitions.length} partitions selected
+                    {selectedPartitions.size} of {data.partitions.length} partitions selected
                 </button>
             </div>
 
@@ -208,7 +202,7 @@
         </div>
 
         <!-- No partitions -->
-        {#if partitions.partitions.length === 0}
+        {#if data.partitions.length === 0}
             <div class="flex h-full w-full items-center justify-center">
                 <span class="text-center text-sm text-slate-500">
                     No partitions available. Please wait a bit for the partitions to be fetched, or start indexing files
@@ -218,7 +212,7 @@
         {:else if displayMode.current === "list"}
             <!-- Partition list -->
             <div class="flex flex-col">
-                {#each partitions.partitions.toSorted(sortingMethod) as partition}
+                {#each data.partitions.toSorted(sortingMethod) as partition}
                     <div class="group flex items-center space-x-4 border-b border-slate-200 px-4 hover:bg-slate-100">
                         <Checkbox
                             checked={selectedPartitions.has(partition)}
@@ -250,8 +244,8 @@
             </div>
         {:else}
             <!-- Partition grid -->
-            <div class="grid {tasks.tasks.length > 0 ? 'grid-cols-6' : 'grid-cols-8'} gap-4 p-4">
-                {#each partitions.partitions.toSorted(sortingMethod) as partition}
+            <div class="grid {data.tasks.length > 0 ? 'grid-cols-6' : 'grid-cols-8'} gap-4 p-4">
+                {#each data.partitions.toSorted(sortingMethod) as partition}
                     {@const selected = selectedPartitions.has(partition)}
                     <div class="group relative aspect-square">
                         <Checkbox
@@ -302,7 +296,7 @@
                     {selectedPartitions.size} partition{selectedPartitions.size > 1 ? "s" : ""} selected
                 </span>
                 <button
-                    class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-red-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-red-600 focus:outline-none"
+                    class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-red-500 px-4 py-2 font-semibold text-white  hover:bg-red-600 focus:outline-none"
                     onclick={deleteAllSelectedPartitions}
                 >
                     <Trash className="size-5 fill-transparent stroke-white" /> Delete selected
@@ -311,7 +305,7 @@
         {/if}
     </div>
 
-    {#if tasks.tasks.length > 0}
+    {#if data.tasks.length > 0}
         <!-- Current tasks -->
         <div class="flex w-96 min-w-96 flex-col border-l border-slate-200">
             <span
@@ -359,13 +353,13 @@
                 class="sticky top-0 z-10 flex w-full items-center justify-center space-x-1 border-b shadow border-slate-200 bg-slate-100 py-2"
             >
                 <span class="text-xs font-semibold text-slate-500">
-                    ACTIVE ({tasks.tasks.filter(
+                    ACTIVE ({data.tasks.filter(
                         (task) => task.state === "SERIALIZING" || task.state === "CHUNKING" || task.state == "INSERTING"
                     ).length})
                 </span>
             </div>
             <div class="h-full min-h-96 divide-y divide-slate-200 overflow-y-auto">
-                {#each tasks.tasks.filter((task) => task.state !== "COMPLETED" && task.state !== "FAILED" && task.state !== "QUEUED") as task}
+                {#each data.tasks.filter((task) => task.state !== "COMPLETED" && task.state !== "FAILED" && task.state !== "QUEUED") as task}
                     <div
                         class="flex flex-col space-y-1 space-x-2 overflow-x-hidden border-b border-slate-200 px-4 py-3 break-all"
                     >
@@ -386,7 +380,7 @@
             <!-- Queued tasks -->
             <TaskCategoryDropdown
                 category="QUEUED"
-                opened={tasks.tasks.filter((task) => task.state === "QUEUED").length > 0}
+                opened={data.tasks.filter((task) => task.state === "QUEUED").length > 0}
             />
 
             <!-- Completed tasks -->

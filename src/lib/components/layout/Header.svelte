@@ -7,7 +7,7 @@
      */
 
     // States, persisted states, and cookies
-    import { files, partitions, ui } from "$lib/states.svelte";
+    import { data, ui } from "$lib/states.svelte";
     import { authToken, authTokenCreatedAt } from "$lib/persisted.svelte";
 
     // Icons
@@ -30,19 +30,19 @@
         <a href="/" class="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-slate-100">
             <Home className="size-6 stroke-linagora-500 fill-transparent" /> OpenRAG Indexer
         </a>
-        {#if partitions.currentPartition}
+        {#if data.currentPartition.partition}
             <ChevronDown className="size-4 -rotate-90 stroke-3 stroke-linagora-500" />
             <a
-                href="/partition/{partitions.currentPartition.partition}"
+                href="/partition/{data.currentPartition.partition.partition}"
                 class="flex items-center gap-2 rounded-lg px-2 py-1 hover:bg-slate-100"
             >
-                {partitions.currentPartition.partition}
+                {data.currentPartition.partition.partition}
             </a>
         {/if}
-        {#if files.currentFile}
+        {#if data.currentFile}
             <ChevronDown className="size-4 -rotate-90 stroke-3 stroke-linagora-500" />
             <span class="px-2">
-                {files.currentFile}
+                {data.currentFile.metadata.filename}
             </span>
         {/if}
     </div>
@@ -51,20 +51,20 @@
     <div class="flex items-center space-x-4">
         <!-- Lock access to the indexer -->
         <button
-            class="cursor-pointer group flex items-center gap-2 rounded-xl border-none px-4 py-2 hover:bg-slate-100 transition-colors font-medium text-slate-500 hover:text-slate-900"
+            class="cursor-pointer group flex items-center gap-2 rounded-xl border-none px-4 py-2 hover:bg-slate-100  font-medium text-slate-500 hover:text-slate-900"
             onclick={() => {
                 authTokenCreatedAt.current = null; // Clear the Auth Token creation time
                 authToken.current = null; // Clear the Auth Token
-                window.location.reload(); // Reload the page to reset the state
+                window.location.reload(); // Reload the page to reset the states
             }}
         >
-            <Lock className="size-5 fill-slate-500 transition-colors group-hover:fill-slate-900" />
+            <Lock className="size-5 fill-slate-500  group-hover:fill-slate-900" />
             Lock access
         </button>
 
         <!-- Upload files -->
         <button
-            class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-linagora-500 px-4 py-2 font-semibold text-white transition-colors hover:bg-linagora-600 focus:outline-none"
+            class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-linagora-500 px-4 py-2 font-semibold text-white  hover:bg-linagora-600 focus:outline-none"
             onclick={openUploadModal}
         >
             <Upload className="size-5 stroke-3" /> Upload files

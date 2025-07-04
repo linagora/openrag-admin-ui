@@ -1,71 +1,48 @@
 <script lang="ts">
+    /**
+     * This file represents the "file" view.
+     * It displays all the metadata about a single file,
+     * and allows the user to view the different extracts of the file.
+     * @author Ulysse Bouchet for LINAGORA
+     */
+
     // Utilities
-    import { onMount, tick } from "svelte";
-    import { page } from "$app/state";
-    import { goto } from "$app/navigation";
+    import { tick } from "svelte";
     import { marked } from "marked";
     import * as api from "$lib/api";
     import { formatDate } from "$lib/utils";
 
     // Stores
-    import { partitions, files } from "$lib/states.svelte";
+    import { data } from "$lib/states.svelte";
 
     // Icons
     import File from "$lib/icons/File.svelte";
     import ChevronDown from "$lib/icons/ChevronDown.svelte";
 
     // Types
-    import type { RAGExtract, RAGFile } from "$lib/types";
+    import type { RAGExtract } from "$lib/types";
 
     // Properties
-    let file: RAGFile | null = null; // The file to display
     let selectedExtract: string | null = null; // The currently selected document
     let selectedExtractContent: RAGExtract | null = null; // The content of the selected document
 
-    const selectExtract = async (extract: string) => {
+    /**
+     * Select a new extract to display to the user.
+     * @param extract The id of the extract to display
+     */
+    async function selectExtract(extract: string) {
         selectedExtractContent = await api.fetchExtract(extract);
 
         if (selectedExtractContent) selectedExtract = extract;
         await tick(); // Wait for DOM to update
 
+        // Display the extract
         const extractDiv = document.getElementById("extract-content");
         if (extractDiv) extractDiv.innerHTML = await marked.parse(selectedExtractContent.page_content);
-    };
-
-    onMount(async () => {
-        if (!partitions.partitions || partitions.partitions.length === 0) {
-            // Fetch partitions if not already fetched
-            partitions.partitions = await api.fetchPartitions();
-        }
-
-        if (page.params.partition) {
-            // Fetch the partition from the URL parameter
-            const partition = page.params.partition;
-            // Set the current partition in the store
-            partitions.currentPartition =
-                partitions.partitions.find((p) => p.partition === partition) || null;
-        }
-
-        if (page.params.file) {
-            // Fetch the partition from the URL parameter
-            const file = page.params.file;
-            // Set the current partition in the store
-            files.currentFile = file;
-        }
-
-        if (!partitions.currentPartition?.partition) {
-            goto("/");
-            return;
-        } else if (!files.currentFile) {
-            goto(`/partition/${partitions.currentPartition.partition}`);
-            return;
-        }
-
-        file = await api.fetchFile(partitions.currentPartition?.partition, files.currentFile);
-    });
+    }
 </script>
 
-{#if file && file.documents}
+{#if data.currentFile && data.currentFile.documents}
     <div class="p4 flex h-full max-h-full divide-x divide-slate-200">
         <div class="flex w-128 flex-col bg-slate-50">
             <span class="top-0 w-full border-b border-slate-200 bg-white px-4 py-2 font-bold"> File metadata </span>
@@ -73,36 +50,36 @@
                 <span class="mb-4 self-center font-bold">Basic metadata</span>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">File ID</span>
-                    <span>{file?.metadata.file_id}</span>
+                    <span>{data.currentFile.metadata.file_id}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Filename</span>
-                    <span>{file?.metadata.filename}</span>
+                    <span>{data.currentFile.metadata.filename}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Partition</span>
-                    <span>{file?.metadata.partition}</span>
+                    <span>{data.currentFile.metadata.partition}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Source</span>
-                    <span>{file?.metadata.source}</span>
+                    <span>{data.currentFile.metadata.source}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Created</span>
-                    <span>{formatDate(file?.metadata.created_at)}</span>
+                    <span>{formatDate(data.currentFile.metadata.created_at)}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Size</span>
-                    <span>{file?.metadata.file_size}</span>
+                    <span>{data.currentFile.metadata.file_size}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Page</span>
-                    <span>{file?.metadata.page}</span>
+                    <span>{data.currentFile.metadata.page}</span>
                 </div>
-                {#if Object.entries(file.metadata).length > 7}
+                {#if Object.entries(data.currentFile.metadata).length > 7}
                     <div class="mx-4 my-4 border-t border-slate-200"></div>
                     <span class="mb-4 self-center font-bold">Additional metadata</span>
-                    {#each Object.entries(file.metadata) as [key, value]}
+                    {#each Object.entries(data.currentFile.metadata) as [key, value]}
                         {#if !["file_id", "filename", "partition", "source", "page", "file_size", "created_at"].includes(key)}
                             <div class="mb-2 flex flex-col space-y-1">
                                 <span class="font-bold">{key}</span>
@@ -115,10 +92,10 @@
         </div>
         <div class="flex flex-col bg-slate-50">
             <span class="top-0 w-full border-b border-slate-200 bg-white px-4 py-2 text-center font-bold">
-                Extracts ({file.documents.length})
+                Extracts ({data.currentFile.documents.length})
             </span>
             <div class="flex max-h-full flex-col items-center divide-y divide-slate-200 overflow-y-auto">
-                {#each file?.documents as document}
+                {#each data.currentFile.documents as document}
                     <button
                         class="group flex w-full cursor-pointer items-center justify-center space-x-2 px-4 py-2 {document.link
                             .split('/')

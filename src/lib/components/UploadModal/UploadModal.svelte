@@ -1,11 +1,17 @@
 <script lang="ts">
+    /**
+     * This file represents the file upload modal.
+     * It allows the user to select a partition, some files, and other data to upload one or multiple files.
+     * @author Ulysse Bouchet for LINAGORA
+     */
+
     // Utilities
     import { onMount } from "svelte";
     import { v4 as uuidv4 } from "uuid";
     import * as api from "$lib/api";
 
     // States & persisted states
-    import { ui, tasks, partitions } from "$lib/states.svelte";
+    import { ui, data } from "$lib/states.svelte";
     import { activeUploads } from "$lib/persisted.svelte";
 
     // Components
@@ -26,10 +32,8 @@
     // Form properties
     let selectedPartition: RAGPartition | null = $state(null);
     let files: FileList | undefined = $state();
-    let fileID: string | undefined = $state();
     let fileIDMethodSelected: "random" | "filename" = $state("random");
     let metadata: string | undefined = $state();
-    let hasUnsavedChanges = $state(false);
 
     // UI properties
     let showDropdown = $state(false);
@@ -40,43 +44,16 @@
     let partitionLabelRef: HTMLLabelElement | undefined = $state();
     let partitionButtonRef: HTMLButtonElement | undefined = $state();
 
-    // Locally sets a selected partition when a new one should be created
-    const createNewPartition = (event: Event) => {
-        const input = event.target as HTMLInputElement;
-        hasUnsavedChanges = true;
-
-        if (input.value === "") {
-            selectedPartition = partitions.partitions[0];
-        } else {
-            selectedPartition = { partition: input.value, created_at: "-1", file_count: -1 };
-        }
-    };
-
-    // Generate a random file ID when a file is loaded
-    const loadFiles = () => {
-        if (files && files.length > 0) {
-            fileID = files.length === 1 ? uuidv4() : undefined;
-            hasUnsavedChanges = true;
-        }
-    };
-
-    // Update metadata
-    const handleMetadataChange = () => {
-        hasUnsavedChanges = true;
-    };
-
-    // Uploads the file to the partition then close the modal if successful
-    const uploadFiles = async () => {
-        if (!files || files.length === 0) {
+    /**
+     * Upload the file(s) to a partition and close the modal once done.
+     */
+    async function uploadFiles() {
+        if (!files) {
             alert("No file(s) specified.");
             return;
         }
         if (!selectedPartition || selectedPartition === null) {
-            alert("No partition selected");
-            return;
-        }
-        if (files.length === 1 && !fileID) {
-            alert("No file ID specified");
+            alert("No partition selected.");
             return;
         }
 
@@ -95,32 +72,46 @@
                 newActiveTask.file_ids.push(fileID);
             }
 
-            tasks.tasks = await api.fetchTasks(); // Refresh tasks
-            console.log("Add files to active task:", newActiveTask);
+            data.tasks = await api.fetchTasks(); // Refresh tasks
+            console.log("Created a new active task :", newActiveTask);
             activeUploads.current = [...activeUploads.current, newActiveTask]; // Add to active tasks
-            console.log("Active tasks after upload:", $state.snapshot(activeUploads.current));
 
-            hasUnsavedChanges = false;
+            files = undefined;
             closeUploadModal();
         } catch (error) {
             console.error("Error uploading file(s) :", error);
         }
         uploading = false;
-    };
+    }
 
-    // Closes the upload modal (and the dropdown, so it's not opened when the modal appears again)
-    const closeUploadModal = () => {
-        if (hasUnsavedChanges && files) {
-            if (!confirm("You have unsaved changes. Are you sure you want to close the modal?")) {
-                return;
-            }
+    /**
+     * Locally create a partition before uploading, actualizing on input
+     * @param event The event fired by the input
+     */
+    function createNewPartition(event: Event) {
+        const input = event.target as HTMLInputElement;
+
+        if (input.value === "") {
+            selectedPartition = data.partitions[0];
+        } else {
+            selectedPartition = { partition: input.value, created_at: "-1", file_count: -1 };
         }
+    }
+
+    /**
+     * Closes the upload modal (and the dropdown, so it's not opened when the modal appears again)
+     */
+    function closeUploadModal() {
+        if (files && !confirm("You have unsaved changes. Are you sure you want to close the modal?")) return;
+
         ui.showUploadModal = false;
         showDropdown = false;
-    };
+    }
 
-    // Close the dropdown when clicking outside it
-    const closeDropdown = (event: MouseEvent) => {
+    /**
+     * Close the dropdown when clicking outside of it
+     */
+    function closeDropdown(event: MouseEvent) {
         if (
             showDropdown &&
             dropdownRef &&
@@ -132,23 +123,27 @@
         ) {
             showDropdown = false;
         }
-    };
+    }
 
-    // Toggles open and close the dropdown
-    const togglePartitionDropdown = () => {
+    /**
+     * Toggles the dropdown opened and closed
+     */
+    function togglePartitionDropdown() {
         showDropdown = !showDropdown;
-    };
+    }
 
-    // Handle key events for the modal
-    const handleKeyboardShortcuts = (event: KeyboardEvent) => {
-        if (event.key === "Escape") {
-            closeUploadModal();
-        }
-    };
+    /**
+     * Handle key events for the modal
+     * Escape : closes the modal
+     * @param event the KeyboardEvent
+     */
+    function handleKeyboardShortcuts(event: KeyboardEvent) {
+        if (event.key === "Escape") closeUploadModal();
+    }
 
     // When the component is first initialised
     onMount(() => {
-        selectedPartition = partitions.currentPartition ?? partitions.partitions[0];
+        selectedPartition = data.currentPartition.partition ?? data.partitions[0];
 
         // Add event listeners for keydown and outside clicks
         window.addEventListener("keydown", handleKeyboardShortcuts);
@@ -181,7 +176,7 @@
 
         <button
             onclick={closeUploadModal}
-            class="flex aspect-square cursor-pointer items-center justify-center rounded-full p-1 transition-colors hover:bg-slate-100"
+            class="flex aspect-square cursor-pointer items-center justify-center rounded-full p-1 hover:bg-slate-100"
             aria-label="Close upload modal"
         >
             <Close className="size-4 stroke-3" />
@@ -196,7 +191,7 @@
             for="partition-btn"
         >
             <span>
-                {partitions.partitions.length === 0 ? "Create a partition" : "Select or create a partition"}
+                {data.partitions.length === 0 ? "Create a partition" : "Select or create a partition"}
             </span>
 
             {#if selectedPartition?.file_count === -1}
@@ -204,12 +199,12 @@
             {/if}
         </label>
 
-        {#if partitions.partitions.length !== 0}
+        {#if data.partitions.length !== 0}
             <!-- Partition selection dropdown -->
             <button
                 bind:this={partitionButtonRef}
                 id="partition-btn"
-                class="flex cursor-pointer items-center justify-between rounded-md border border-slate-200 px-4 py-2 transition-colors
+                class="flex cursor-pointer items-center justify-between rounded-md border border-slate-200 px-4 py-2
 				hover:border-slate-300 hover:bg-slate-50
 				{showDropdown ? 'focus:border-slate-400 focus:bg-slate-100 focus:outline-none ' : ''}"
                 onclick={togglePartitionDropdown}
@@ -225,11 +220,7 @@
                     {/if}
                 </span>
 
-                <ChevronDown
-                    className="size-4 stroke-2 stroke-slate-500 transition-transform duration-300 {showDropdown
-                        ? 'rotate-180'
-                        : ''}"
-                />
+                <ChevronDown className="size-4 stroke-2 stroke-slate-500   {showDropdown ? 'rotate-180' : ''}" />
             </button>
 
             {#if showDropdown}
@@ -242,7 +233,7 @@
             <input
                 id="partition-btn"
                 class="w-full cursor-pointer rounded-md border border-slate-200 px-4 py-2 text-left
-				transition-colors placeholder:text-linagora-500 hover:border-slate-300 hover:bg-slate-50
+				 placeholder:text-linagora-500 hover:border-slate-300 hover:bg-slate-50
 				focus:cursor-text focus:border-slate-400 focus:bg-slate-100 focus:outline-none focus:placeholder:text-slate-400"
                 type="text"
                 placeholder="+ Add a new partition"
@@ -256,7 +247,7 @@
         <label class="mb-2 cursor-pointer font-medium" for="file-upload-btn"> Select one or multiple files </label>
 
         <label
-            class="group cursor-pointer rounded-md border-2 border-dashed border-slate-300 px-4 py-6 transition-colors
+            class="group cursor-pointer rounded-md border-2 border-dashed border-slate-300 px-4 py-6
 			hover:border-linagora-300 hover:bg-linagora-50/30 focus:outline-none"
             for="file-upload-btn"
         >
@@ -265,20 +256,20 @@
                     <!-- Display file name -->
                     <div class="flex items-center gap-2">
                         <File className="size-5 stroke-2 fill-linagora-500 stroke-linagora-500" />
-                        <span class="text-slate-700 transition-colors group-hover:text-linagora-500">
+                        <span class="text-slate-700 group-hover:text-linagora-500">
                             {files[0].name.split(".")[0]}
                         </span>
                     </div>
                 {:else if files && files?.length > 1}
                     <!-- Display file list with count -->
                     <div class="flex max-h-60 flex-col gap-2 overflow-y-scroll">
-                        <span class="text-xs text-slate-500 transition-colors group-hover:text-linagora-400">
+                        <span class="text-xs text-slate-500 group-hover:text-linagora-400">
                             {files.length} files selected :
                         </span>
                         {#each files as file}
                             <div class="flex items-center gap-2">
                                 <File className="size-5 stroke-2 fill-linagora-500 stroke-linagora-500" />
-                                <span class="text-slate-700 transition-colors group-hover:text-linagora-500">
+                                <span class="text-slate-700 group-hover:text-linagora-500">
                                     {file.name.split(".")[0]}
                                 </span>
                             </div>
@@ -288,15 +279,13 @@
             {:else}
                 <!-- Display file upload button button -->
                 <div class="flex flex-col items-center justify-center">
-                    <Upload
-                        className="size-10 stroke-2 stroke-slate-500 transition-colors group-hover:stroke-linagora-500 mb-2"
-                    />
-                    <p class="text-slate-500 transition-colors group-hover:text-linagora-500">Click to browse files</p>
+                    <Upload className="size-10 stroke-2 stroke-slate-500  group-hover:stroke-linagora-500 mb-2" />
+                    <p class="text-slate-500 group-hover:text-linagora-500">Click to browse files</p>
                 </div>
             {/if}
         </label>
 
-        <input id="file-upload-btn" type="file" accept=".pdf" multiple bind:files class="hidden" onchange={loadFiles} />
+        <input id="file-upload-btn" type="file" accept=".pdf" multiple bind:files class="hidden" />
     </div>
 
     {#if files}
@@ -315,8 +304,7 @@
                 id="file-metadata-input"
                 placeholder="&#123; &quot;key&quot;: &quot;value&quot; &#125;"
                 bind:value={metadata}
-                oninput={handleMetadataChange}
-                class="min-h-32 rounded-md border border-slate-200 px-4 py-2 transition-colors placeholder:text-slate-400
+                class="min-h-32 rounded-md border border-slate-200 px-4 py-2 placeholder:text-slate-400
 				hover:cursor-text hover:border-slate-300 hover:bg-slate-50
 				focus:border-slate-400 focus:bg-slate-100 focus:outline-none"
             ></textarea>
@@ -326,14 +314,14 @@
     <!-- Cancel and Upload buttons -->
     <div class="flex space-x-4 self-end">
         <button
-            class="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 font-medium text-slate-500 transition-colors hover:bg-slate-50 focus:border-slate-300 focus:outline-none"
+            class="flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 px-4 py-2 font-medium text-slate-500 hover:bg-slate-50 focus:border-slate-300 focus:outline-none"
             onclick={closeUploadModal}
         >
             Cancel
         </button>
 
         <button
-            class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-linagora-500 px-4 py-2 font-semibold text-white transition-colors
+            class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-linagora-500 px-4 py-2 font-semibold text-white
 			hover:bg-linagora-600 focus:border-linagora-700 focus:outline-none disabled:cursor-not-allowed disabled:bg-linagora-300"
             onclick={uploadFiles}
             disabled={!files || !selectedPartition || uploading}

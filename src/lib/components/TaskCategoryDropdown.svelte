@@ -1,16 +1,16 @@
 <script lang="ts">
-    // Import states
-    import {  tasks } from "$lib/states.svelte";
+    // Import utilities
+    import { getStyleFromTaskState } from "$lib/utils";
 
-    // Import components
-    import ChevronDown from "$lib/icons/ChevronDown.svelte";
+    // Import states
+    import { data } from "$lib/states.svelte";
 
     // Import icons
     import Folder from "$lib/icons/Folder.svelte";
-    import type { RAGTaskStatus } from "$lib/types";
-    import { getStyleFromTaskState } from "$lib/utils";
+    import ChevronDown from "$lib/icons/ChevronDown.svelte";
 
     // Import types
+    import type { RAGTaskStatus } from "$lib/types";
 
     // Properties
     let {
@@ -21,9 +21,12 @@
         opened?: boolean; // Optional, defaults to false
     } = $props();
 
-    const toggleDropdown = () => {
+    /**
+     * Toggles the dropdown opened & closed
+     */
+    function toggleDropdown() {
         opened = !opened;
-    };
+    }
 </script>
 
 <div class={opened ? "h-full overflow-y-auto" : ""}>
@@ -33,7 +36,7 @@
 		{opened ? ' border-b shadow' : ''}"
     >
         <span class="text-xs font-semibold text-slate-500">
-            {category} ({tasks.tasks.filter((task) => task.state === category).length})
+            {category} ({data.tasks.filter((task) => task.state === category).length})
         </span>
         <ChevronDown
             className="absolute right-3 size-3 stroke-slate-500 stroke-3
@@ -44,7 +47,7 @@
         <div class="divide-y divide-slate-200 h-full">
             <!-- Completed tasks should be links to the file page -->
             {#if category === "COMPLETED"}
-                {#each tasks.tasks.filter((task) => task.state === category) as task}
+                {#each data.tasks.filter((task) => task.state === category) as task}
                     <a
                         href={`/partition/${task.details.partition}/file/${task.details.file_id}`}
                         class="flex flex-col space-y-1 space-x-2 overflow-x-hidden px-4 py-3 break-all hover:bg-slate-100"
@@ -60,7 +63,7 @@
                     </a>
                 {/each}
             {:else}
-                {#each tasks.tasks.filter((task) => task.state === category) as task}
+                {#each data.tasks.filter((task) => task.state === category) as task}
                     <div class="flex flex-col space-y-1 space-x-2 overflow-x-hidden px-4 py-3 break-all">
                         <div class="flex items-center space-x-1">
                             <Folder className="size-4 fill-linagora-500" />

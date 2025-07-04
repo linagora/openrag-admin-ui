@@ -1,6 +1,12 @@
 <script lang="ts">
+    /**
+     * This file represents the file upload modal.
+     * It allows the user to select a partition, some files, and other data to upload one or multiple files.
+     * @author Ulysse Bouchet for LINAGORA
+     */
+
     // Import states
-    import { partitions } from "$lib/states.svelte";
+    import { data } from "$lib/states.svelte";
 
     // Types
     import type { RAGPartition } from "$lib/types";
@@ -17,28 +23,35 @@
     // UI Properties
     let searchFilter: string = $state("");
 
-    // Select a partition and fire onSelect when a partition is selected
-    const selectPartition = (partition: RAGPartition) => {
+    /**
+     * Select a partition and fire onSelect when a partition is selected
+     * @param partition the partition to select
+     */
+    function selectPartition(partition: RAGPartition) {
         selectedPartition = partition;
         if (onSelect) onSelect(partition);
-    };
+    }
 
-    // Locally sets a selected partition when a new one should be created
-    const updateNewPartition = (event: Event) => {
+    /**
+     * Locally creates a new partition, actualized on input
+     * @param event the input
+     */
+    function updateNewPartition(event: Event) {
         const input = event.target as HTMLInputElement;
 
         if (input.value === "") {
-            selectedPartition = partitions.partitions[0];
+            selectedPartition = data.partitions[0];
         } else {
-            selectedPartition = { partition: input.value, created_at: -1 };
+            selectedPartition = { partition: input.value, created_at: "-1", file_count: -1 };
         }
-    };
+    }
 
-    // Fire onSelect when Enter is pressed in the new partition input
+    /**
+     * Fire onSelect when the "Enter" key is pressed in the new partition input
+     * @param event the KeyboardEvent
+     */
     const selectNewPartition = (event: KeyboardEvent) => {
-        if (event.key === "Enter" && onSelect && selectedPartition) {
-            onSelect(selectedPartition);
-        }
+        if (event.key === "Enter" && onSelect && selectedPartition) onSelect(selectedPartition);
     };
 </script>
 
@@ -54,13 +67,13 @@
         aria-label="Search partitions"
     />
 
-    {#if partitions.partitions.filter((p) => p.partition.includes(searchFilter)).length === 0}
+    {#if data.partitions.filter((p) => p.partition.includes(searchFilter)).length === 0}
         <span class="w-full cursor-text px-4 py-2 text-start text-sm text-slate-400 italic">
             No matching partitions found. Check your spelling, or create a new one.
         </span>
     {/if}
 
-    {#each partitions.partitions.filter((p) => p.partition.includes(searchFilter)) as partition}
+    {#each data.partitions.filter((p) => p.partition.includes(searchFilter)) as partition}
         <button
             class="w-full cursor-pointer px-4 py-2 text-left hover:bg-slate-50"
             onclick={() => selectPartition(partition)}
@@ -72,7 +85,7 @@
     <div class="relative flex w-full items-center">
         <input
             id="new-partition-input"
-            class="text w-full px-4 py-2 placeholder:text-linagora-500 hover:bg-slate-50 {selectedPartition?.created_at ===
+            class="text w-full px-4 py-2 placeholder:text-linagora-500 hover:bg-slate-50 {selectedPartition?.file_count ===
             -1
                 ? ''
                 : 'cursor-pointer'} focus:cursor-text focus:outline-none focus:placeholder:text-slate-400"
@@ -80,16 +93,16 @@
             placeholder="+ Add a new partition"
             oninput={updateNewPartition}
             onkeydown={selectNewPartition}
-            value={selectedPartition?.created_at === -1 ? selectedPartition.partition : ""}
+            value={selectedPartition?.file_count === -1 ? selectedPartition.partition : ""}
             aria-label="Add new partition"
         />
 
-        {#if selectedPartition?.created_at === -1}
+        {#if selectedPartition?.file_count === -1}
             <button
                 onclick={() => {
                     if (onSelect && selectedPartition) onSelect(selectedPartition);
                 }}
-                class="absolute right-2 cursor-pointer rounded bg-linagora-500 px-2 py-1 text-xs font-semibold text-white transition-all hover:bg-linagora-600"
+                class="absolute right-2 cursor-pointer rounded bg-linagora-500 px-2 py-1 text-xs font-semibold text-white hover:bg-linagora-600"
             >
                 Create
             </button>
