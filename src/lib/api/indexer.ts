@@ -1,4 +1,8 @@
-// API client for backend services
+// Base URL and auth token
+import { API_BASE_URL } from ".";
+import { authToken } from "$lib/persisted.svelte";
+
+// Types
 import type {
     RAGExtract,
     RAGFile,
@@ -8,39 +12,6 @@ import type {
     RAGTaskInList,
     RAGTaskStatus,
 } from "$lib/types";
-import { authToken } from "./persisted.svelte";
-
-// Removes the trailing slash from the base URL if it exists
-const normalizeUrl = (url: string): string => {
-    return url.endsWith("/") ? url.slice(0, -1) : url;
-};
-
-// Retrieve the API base URL from the environment
-export const API_BASE_URL = normalizeUrl(import.meta.env.VITE_API_BASE_URL);
-
-export async function login(authToken: string): Promise<boolean> {
-    console.log("Trying to log in...");
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/health_check`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${authToken}`, // Pass the AUTH_TOKEN as a Bearer token
-            },
-            credentials: "include", // Include headers in the request
-        });
-
-        if (!response.ok) {
-            throw new Error(`Failed to log in: ${response.status} ${response.statusText}`);
-        }
-    } catch (err) {
-        throw err;
-    }
-
-    console.log("Log in successful.");
-    return true;
-}
 
 /**
  * Fetches all available partitions

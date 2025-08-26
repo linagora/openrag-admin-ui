@@ -4,7 +4,7 @@
  */
 
 // Import types
-import type { RAGFile, RAGFileInList, RAGPartition, RAGTaskInList } from "$lib/types";
+import type { RAGFile, RAGFileInList, RAGPartition, RAGTaskInList, Actor } from "$lib/types";
 
 // UI States
 export const ui: { showUploadModal: boolean; showLoginPage: boolean } = $state({
@@ -13,7 +13,7 @@ export const ui: { showUploadModal: boolean; showLoginPage: boolean } = $state({
 });
 
 // Data states
-export const data: {
+export const indexerData: {
     partitions: RAGPartition[];
     currentPartition: { partition: RAGPartition | null; files: RAGFileInList[] };
     currentFile: RAGFile | null;
@@ -23,4 +23,10 @@ export const data: {
     currentPartition: { partition: null, files: [] }, // Current partition selected by the user
     currentFile: null, // Current file selected by the user
     tasks: [], // List of all the tasks
+});
+
+export const dashboardData: {
+    actors: Actor[];
+} = $state({
+    actors: [], // List of all the actors
 });

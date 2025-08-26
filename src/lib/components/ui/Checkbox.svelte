@@ -32,7 +32,7 @@
 
 <label
 	for={id}
-	class="relative flex size-5 cursor-pointer items-center justify-center rounded border {checkboxClasses} {checked
+	class="relative flex size-5 cursor-pointer items-center justify-center rounded-md border {checkboxClasses} {checked
 		? ' border-linagora-500 bg-linagora-500'
 		: ' border-slate-300 bg-white'}"
 >

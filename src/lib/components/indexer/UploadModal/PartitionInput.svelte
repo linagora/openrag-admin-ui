@@ -6,7 +6,7 @@
      */
 
     // Import states
-    import { data } from "$lib/states.svelte";
+    import { indexerData } from "$lib/states.svelte";
 
     // Types
     import type { RAGPartition } from "$lib/types";
@@ -40,7 +40,7 @@
         const input = event.target as HTMLInputElement;
 
         if (input.value === "") {
-            selectedPartition = data.partitions[0];
+            selectedPartition = indexerData.partitions[0];
         } else {
             selectedPartition = { partition: input.value, created_at: "-1", file_count: -1 };
         }
@@ -56,7 +56,7 @@
 </script>
 
 <div
-    class="absolute top-full left-0 z-50 mt-1 flex w-full cursor-pointer flex-col items-start divide-y-1 divide-solid divide-slate-200 rounded-md border border-slate-200 bg-white py-1"
+    class="absolute shadow-lg top-full left-0 z-50 mt-1 flex w-full overflow-hidden cursor-pointer flex-col items-start divide-y-1 divide-solid divide-slate-200 rounded-2xl border border-slate-200 bg-white pt-1"
 >
     <input
         id="search-filter-input"
@@ -67,13 +67,13 @@
         aria-label="Search partitions"
     />
 
-    {#if data.partitions.filter((p) => p.partition.includes(searchFilter)).length === 0}
+    {#if indexerData.partitions.filter((p) => p.partition.includes(searchFilter)).length === 0}
         <span class="w-full cursor-text px-4 py-2 text-start text-sm text-slate-400 italic">
             No matching partitions found. Check your spelling, or create a new one.
         </span>
     {/if}
 
-    {#each data.partitions.filter((p) => p.partition.includes(searchFilter)) as partition}
+    {#each indexerData.partitions.filter((p) => p.partition.includes(searchFilter)) as partition}
         <button
             class="w-full cursor-pointer px-4 py-2 text-left hover:bg-slate-50"
             onclick={() => selectPartition(partition)}
@@ -102,7 +102,7 @@
                 onclick={() => {
                     if (onSelect && selectedPartition) onSelect(selectedPartition);
                 }}
-                class="absolute right-2 cursor-pointer rounded bg-linagora-500 px-2 py-1 text-xs font-semibold text-white hover:bg-linagora-600"
+                class="absolute right-2 cursor-pointer rounded-lg bg-linagora-500 px-2 py-1 text-xs font-semibold text-white hover:bg-linagora-600"
             >
                 Create
             </button>

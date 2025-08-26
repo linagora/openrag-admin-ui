@@ -67,7 +67,7 @@
 	tabindex="0"
 	onclick={toggleCheckbox}
 	onkeydown={handleKeydown}
-	class="relative flex size-5 cursor-pointer items-center justify-center rounded border {checkboxClasses} {checked !==
+	class="relative flex size-5 cursor-pointer items-center justify-center rounded-md border {checkboxClasses} {checked !==
 	'none'
 		? 'border-linagora-500 bg-linagora-500'
 		: 'border-slate-300 bg-white'}"

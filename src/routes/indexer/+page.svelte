@@ -11,13 +11,13 @@
     import * as api from "$lib/api";
 
     // States & persisted states
-    import { data } from "$lib/states.svelte";
+    import { indexerData } from "$lib/states.svelte";
     import { activeUploads, displayMode } from "$lib/persisted.svelte";
 
     // Components
     import Checkbox from "$lib/components/ui/Checkbox.svelte";
     import TernaryCheckbox from "$lib/components/ui/TernaryCheckbox.svelte";
-    import TaskCategoryDropdown from "$lib/components/TaskCategoryDropdown.svelte";
+    import TaskCategoryDropdown from "$lib/components/indexer/TaskCategoryDropdown.svelte";
 
     // Icons
     import PartialCircle from "$lib/icons/PartialCircle.svelte";
@@ -99,7 +99,7 @@
             selectedPartitions = new Set(selectedPartitions); // Force refresh
         } else {
             // Select all partitions
-            selectedPartitions = new Set(data.partitions);
+            selectedPartitions = new Set(indexerData.partitions);
         }
     }
 
@@ -110,7 +110,7 @@
     async function deletePartition(partition: RAGPartition) {
         const success = await api.deletePartition(partition.partition);
         if (success) {
-            data.partitions = await api.fetchPartitions();
+            indexerData.partitions = await api.fetchPartitions();
             selectedPartitions.delete(partition);
         }
     }
@@ -134,7 +134,7 @@
         selectAllStatus =
             selectedPartitions.size === 0
                 ? "none"
-                : selectedPartitions.size === data.partitions.length
+                : selectedPartitions.size === indexerData.partitions.length
                   ? "full"
                   : "partial";
     });
@@ -149,14 +149,14 @@
                 <TernaryCheckbox checked={selectAllStatus} onChange={toggleSelectAll} />
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <button onclick={toggleSelectAll} class="ml-2 cursor-pointer text-sm text-slate-600" tabindex="0">
-                    {selectedPartitions.size} of {data.partitions.length} partitions selected
+                    {selectedPartitions.size} of {indexerData.partitions.length} partitions selected
                 </button>
             </div>
 
             <div class="flex items-center mr-3 pr-3 border-r border-slate-300">
                 <!-- Sorting method -->
                 <button
-                    class="cursor-pointer rounded p-1 hover:bg-slate-100"
+                    class="cursor-pointer rounded-xl p-1 hover:bg-slate-100"
                     onclick={() => {
                         invertedSorting = invertedSorting === 1 ? -1 : 1;
                     }}
@@ -164,7 +164,7 @@
                     <Sort className="size-5 fill-slate-500 {invertedSorting === -1 ? 'rotate-x-180' : ''}" />
                 </button>
                 <select
-                    class="cursor-pointer rounded hover:bg-slate-100 py-1 px-2 text-sm text-slate-500 appearance-none"
+                    class="cursor-pointer rounded-xl hover:bg-slate-100 py-1 px-2 text-sm text-slate-500 appearance-none"
                     onchange={changeSortingMethod}
                 >
                     <option value="default">Default</option>
@@ -182,7 +182,7 @@
                 }}
             >
                 <List
-                    className="inline size-8 p-1 hover:bg-slate-100 rounded {displayMode.current === 'list'
+                    className="inline size-8 p-1 hover:bg-slate-100 rounded-xl {displayMode.current === 'list'
                         ? 'fill-slate-500'
                         : 'fill-slate-300'}"
                 />
@@ -194,7 +194,7 @@
                 }}
             >
                 <Grid
-                    className="inline size-8 hover:bg-slate-100 p-1 rounded {displayMode.current === 'grid'
+                    className="inline size-8 hover:bg-slate-100 p-1 rounded-xl {displayMode.current === 'grid'
                         ? 'fill-slate-500'
                         : 'fill-slate-300'}"
                 />
@@ -202,7 +202,7 @@
         </div>
 
         <!-- No partitions -->
-        {#if data.partitions.length === 0}
+        {#if indexerData.partitions.length === 0}
             <div class="flex h-full w-full items-center justify-center">
                 <span class="text-center text-sm text-slate-500">
                     No partitions available. Please wait a bit for the partitions to be fetched, or start indexing files
@@ -212,13 +212,13 @@
         {:else if displayMode.current === "list"}
             <!-- Partition list -->
             <div class="flex flex-col">
-                {#each data.partitions.toSorted(sortingMethod) as partition}
-                    <div class="group flex items-center space-x-4 border-b border-slate-200 px-4 hover:bg-slate-100">
+                {#each indexerData.partitions.toSorted(sortingMethod) as partition}
+                    <div class="group flex items-center space-x-4 border-b border-slate-200 px-4 hover:bg-slate-50">
                         <Checkbox
                             checked={selectedPartitions.has(partition)}
                             onChange={() => toggleSelect(partition)}
                         />
-                        <a href="/partition/{partition.partition}" class="flex w-full items-center space-x-3 py-4">
+                        <a href="/indexer/partition/{partition.partition}" class="flex w-full items-center space-x-3 py-4">
                             <Folder className="size-6 fill-linagora-500 stroke-3" />
                             <div class="grow flex items-center space-x-2">
                                 <span>{partition.partition}</span>
@@ -236,7 +236,7 @@
                             aria-label={`Delete partition ${partition.partition}`}
                         >
                             <Trash
-                                className="size-7 fill-transparent stroke-red-300 hover:stroke-red-500 cursor-pointer rounded p-1 hover:bg-red-100/75"
+                                className="size-7 fill-transparent stroke-red-300 hover:stroke-red-500 cursor-pointer rounded-xl p-1 hover:bg-red-100/75"
                             />
                         </button>
                     </div>
@@ -244,8 +244,8 @@
             </div>
         {:else}
             <!-- Partition grid -->
-            <div class="grid {data.tasks.length > 0 ? 'grid-cols-6' : 'grid-cols-8'} gap-4 p-4">
-                {#each data.partitions.toSorted(sortingMethod) as partition}
+            <div class="grid {indexerData.tasks.length > 0 ? 'grid-cols-6' : 'grid-cols-8'} gap-4 p-4">
+                {#each indexerData.partitions.toSorted(sortingMethod) as partition}
                     {@const selected = selectedPartitions.has(partition)}
                     <div class="group relative aspect-square">
                         <Checkbox
@@ -261,12 +261,13 @@
                             aria-label={`Delete partition ${partition.partition}`}
                         >
                             <Trash
-                                className="size-7 fill-transparent stroke-red-300 hover:stroke-red-500 cursor-pointer rounded p-0.5 hover:bg-red-50"
+                                className="size-7 fill-transparent stroke-red-300 hover:stroke-red-500 cursor-pointer rounded-xl p-0.5 hover:bg-red-50"
                             />
                         </button>
                         <a
-                            href="/partition/{partition.partition}"
-                            class="absolute w-full h-full top-0 left-0 flex flex-col items-center rounded-lg border border-slate-200 bg-white shadow-md hover:shadow-lg p-2 text-center"
+                            href="/indexer/partition/{partition.partition}"
+                            class="absolute w-full h-full top-0 left-0 flex flex-col items-center rounded-2xl border border-slate-200 bg-white shadow-md
+                            hover:shadow-lg hover:bg-slate-50 p-2 text-center"
                         >
                             <Folder className="mt-6 size-12 fill-linagora-500 stroke-3" />
                             <span class="font-bold">{partition.partition}</span>
@@ -305,7 +306,7 @@
         {/if}
     </div>
 
-    {#if data.tasks.length > 0}
+    {#if indexerData.tasks.length > 0}
         <!-- Current tasks -->
         <div class="flex w-96 min-w-96 flex-col border-l border-slate-200">
             <span
@@ -350,16 +351,16 @@
                 </div>
             {/if}
             <div
-                class="sticky top-0 z-10 flex w-full items-center justify-center space-x-1 border-b shadow border-slate-200 bg-slate-100 py-2"
+                class="sticky top-0 z-10 flex w-full items-center justify-center space-x-1 border-b shadow border-slate-200 bg-slate-50 py-2"
             >
                 <span class="text-xs font-semibold text-slate-500">
-                    ACTIVE ({data.tasks.filter(
+                    ACTIVE ({indexerData.tasks.filter(
                         (task) => task.state === "SERIALIZING" || task.state === "CHUNKING" || task.state == "INSERTING"
                     ).length})
                 </span>
             </div>
             <div class="h-full min-h-96 divide-y divide-slate-200 overflow-y-auto">
-                {#each data.tasks.filter((task) => task.state !== "COMPLETED" && task.state !== "FAILED" && task.state !== "QUEUED") as task}
+                {#each indexerData.tasks.filter((task) => task.state !== "COMPLETED" && task.state !== "FAILED" && task.state !== "QUEUED") as task}
                     <div
                         class="flex flex-col space-y-1 space-x-2 overflow-x-hidden border-b border-slate-200 px-4 py-3 break-all"
                     >
@@ -380,7 +381,7 @@
             <!-- Queued tasks -->
             <TaskCategoryDropdown
                 category="QUEUED"
-                opened={data.tasks.filter((task) => task.state === "QUEUED").length > 0}
+                opened={indexerData.tasks.filter((task) => task.state === "QUEUED").length > 0}
             />
 
             <!-- Completed tasks -->

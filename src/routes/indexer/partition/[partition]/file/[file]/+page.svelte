@@ -13,7 +13,7 @@
     import { formatDate } from "$lib/utils";
 
     // Stores
-    import { data } from "$lib/states.svelte";
+    import { indexerData } from "$lib/states.svelte";
 
     // Icons
     import File from "$lib/icons/File.svelte";
@@ -42,44 +42,44 @@
     }
 </script>
 
-{#if data.currentFile && data.currentFile.documents}
+{#if indexerData.currentFile && indexerData.currentFile.documents}
     <div class="p4 flex h-full max-h-full divide-x divide-slate-200">
-        <div class="flex w-128 flex-col bg-slate-50">
+        <div class="flex w-128 flex-col">
             <span class="top-0 w-full border-b border-slate-200 bg-white px-4 py-2 font-bold"> File metadata </span>
             <div class="flex max-h-full flex-col overflow-y-auto p-4 text-sm">
                 <span class="mb-4 self-center font-bold">Basic metadata</span>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">File ID</span>
-                    <span>{data.currentFile.metadata.file_id}</span>
+                    <span>{indexerData.currentFile.metadata.file_id}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Filename</span>
-                    <span>{data.currentFile.metadata.filename}</span>
+                    <span>{indexerData.currentFile.metadata.filename}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Partition</span>
-                    <span>{data.currentFile.metadata.partition}</span>
+                    <span>{indexerData.currentFile.metadata.partition}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Source</span>
-                    <span>{data.currentFile.metadata.source}</span>
+                    <span>{indexerData.currentFile.metadata.source}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Created</span>
-                    <span>{formatDate(data.currentFile.metadata.created_at)}</span>
+                    <span>{formatDate(indexerData.currentFile.metadata.created_at)}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Size</span>
-                    <span>{data.currentFile.metadata.file_size}</span>
+                    <span>{indexerData.currentFile.metadata.file_size}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
                     <span class="font-bold">Page</span>
-                    <span>{data.currentFile.metadata.page}</span>
+                    <span>{indexerData.currentFile.metadata.page}</span>
                 </div>
-                {#if Object.entries(data.currentFile.metadata).length > 7}
+                {#if Object.entries(indexerData.currentFile.metadata).length > 7}
                     <div class="mx-4 my-4 border-t border-slate-200"></div>
                     <span class="mb-4 self-center font-bold">Additional metadata</span>
-                    {#each Object.entries(data.currentFile.metadata) as [key, value]}
+                    {#each Object.entries(indexerData.currentFile.metadata) as [key, value]}
                         {#if !["file_id", "filename", "partition", "source", "page", "file_size", "created_at"].includes(key)}
                             <div class="mb-2 flex flex-col space-y-1">
                                 <span class="font-bold">{key}</span>
@@ -90,18 +90,18 @@
                 {/if}
             </div>
         </div>
-        <div class="flex flex-col bg-slate-50">
+        <div class="flex flex-col">
             <span class="top-0 w-full border-b border-slate-200 bg-white px-4 py-2 text-center font-bold">
-                Extracts ({data.currentFile.documents.length})
+                Extracts ({indexerData.currentFile.documents.length})
             </span>
             <div class="flex max-h-full flex-col items-center divide-y divide-slate-200 overflow-y-auto">
-                {#each data.currentFile.documents as document}
+                {#each indexerData.currentFile.documents as document}
                     <button
                         class="group flex w-full cursor-pointer items-center justify-center space-x-2 px-4 py-2 {document.link
                             .split('/')
                             .pop() === selectedExtract
-                            ? 'bg-slate-100 font-bold '
-                            : 'hover:bg-slate-100 '}"
+                            ? 'bg-slate-50 font-bold '
+                            : 'hover:bg-slate-50 '}"
                         onclick={() => selectExtract(document.link.split("/").pop() || "")}
                     >
                         <File className="fill-linagora-500 size-6" />
@@ -118,14 +118,14 @@
             </div>
         </div>
 
-        <div class="flex w-7/12 max-w-7/12 flex-col bg-slate-50">
+        <div class="flex w-7/12 max-w-7/12 flex-col">
             <span class="top-0 border-b border-slate-200 bg-white px-4 py-2 text-center font-bold"> Preview </span>
             <div class="flex h-full flex-col items-center divide-y divide-slate-200 overflow-y-auto">
                 {#if !selectedExtract}
                     <span class="my-auto text-slate-500"> Select an extract to preview its content. </span>
                 {:else}
                     <div
-                        class="prose prose-pre:max-w-full w-full max-w-none bg-slate-100 p-8 text-sm"
+                        class="prose prose-pre:max-w-full w-full max-w-none p-8 text-sm"
                         id="extract-content"
                     ></div>
                 {/if}

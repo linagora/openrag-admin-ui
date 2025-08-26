@@ -14,6 +14,7 @@ export const authToken = persistedState<string | null>("AUTH_TOKEN", null);
 export const authTokenCreatedAt = persistedState<number | null>("authTokenCreatedAt", null); // Timestamp of when the Auth Token was created, used to delete the token after a certain time
 
 // UI states
+export const navbarCollapsed = persistedState("navbarCollapsed", false); // Whether the navbar is collapsed or not
 export const displayMode = persistedState("displayMode", "list"); // Display mode of the application, either "grid" or "list"
 
 // Tasks states

@@ -11,7 +11,7 @@
     import * as api from "$lib/api";
 
     // States & persisted states
-    import { data } from "$lib/states.svelte";
+    import { indexerData } from "$lib/states.svelte";
     import { displayMode } from "$lib/persisted.svelte";
 
     // Components
@@ -102,7 +102,7 @@
             selectedFiles = new Set(selectedFiles); // Force refresh
         } else {
             // Select all files
-            selectedFiles = new Set(data.currentPartition.files);
+            selectedFiles = new Set(indexerData.currentPartition.files);
         }
     }
 
@@ -111,8 +111,8 @@
      * @param file the file to delete
      */
     async function deleteFile(file: RAGFileInList) {
-        if (data.currentPartition?.partition) {
-            const success: boolean = await api.deleteFile(data.currentPartition.partition.partition, file.file_id);
+        if (indexerData.currentPartition?.partition) {
+            const success: boolean = await api.deleteFile(indexerData.currentPartition.partition.partition, file.file_id);
             if (success) {
                 selectedFiles.delete(file);
                 refreshFileList();
@@ -133,14 +133,14 @@
      * and redirects the user if the partition became empty.
      */
     async function refreshFileList() {
-        if (!data.currentPartition?.partition) {
+        if (!indexerData.currentPartition?.partition) {
             console.log("No partition found, redirecting to partition list.");
             goto("/");
             return;
         }
 
         try {
-            data.currentPartition.files = await api.fetchFilesFromPartition(data.currentPartition.partition?.partition);
+            indexerData.currentPartition.files = await api.fetchFilesFromPartition(indexerData.currentPartition.partition?.partition);
         } catch (error: any) {
             if (error.message.includes("404")) {
                 // A 404 error indicates that the partition has been deleted since no files are left
@@ -155,13 +155,13 @@
         selectAllStatus =
             selectedFiles.size === 0
                 ? "none"
-                : selectedFiles.size === data.currentPartition.files.length
+                : selectedFiles.size === indexerData.currentPartition.files.length
                   ? "full"
                   : "partial";
     });
 </script>
 
-{#if data.currentPartition.files.length === 0}
+{#if indexerData.currentPartition.files.length === 0}
     <div class="flex h-full items-center justify-center">
         <span class="text-sm text-slate-500">
             No files available. Please wait a bit for the files to be fetched, or start indexing files now.
@@ -175,14 +175,14 @@
                 <TernaryCheckbox checked={selectAllStatus} onChange={toggleSelectAll} />
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <button onclick={toggleSelectAll} class="ml-2 cursor-pointer text-sm text-slate-600" tabindex="0">
-                    {selectedFiles.size} of {data.currentPartition.files.length} files selected
+                    {selectedFiles.size} of {indexerData.currentPartition.files.length} files selected
                 </button>
             </div>
 
             <div class="flex items-center mr-3 pr-3 border-r border-slate-300">
                 <!-- Sorting method -->
                 <button
-                    class="cursor-pointer rounded p-1 hover:bg-slate-100"
+                    class="cursor-pointer rounded-xl p-1 hover:bg-slate-100"
                     onclick={() => {
                         invertedSorting = invertedSorting === 1 ? -1 : 1;
                     }}
@@ -190,7 +190,7 @@
                     <Sort className="size-5 fill-slate-500 {invertedSorting === -1 ? 'rotate-x-180' : ''}" />
                 </button>
                 <select
-                    class="cursor-pointer rounded hover:bg-slate-100 py-1 px-2 text-sm text-slate-500 appearance-none"
+                    class="cursor-pointer rounded-xl hover:bg-slate-100 py-1 px-2 text-sm text-slate-500 appearance-none"
                     onchange={changeSortingMethod}
                 >
                     <option value="default">Default</option>
@@ -208,7 +208,7 @@
                     }}
                 >
                     <List
-                        className="inline size-8 p-1 hover:bg-slate-100 rounded {displayMode.current === 'list'
+                        className="inline size-8 p-1 hover:bg-slate-100 rounded-xl {displayMode.current === 'list'
                             ? 'fill-slate-500'
                             : 'fill-slate-300'}"
                     />
@@ -220,7 +220,7 @@
                     }}
                 >
                     <Grid
-                        className="inline size-8 hover:bg-slate-100 p-1 rounded {displayMode.current === 'grid'
+                        className="inline size-8 hover:bg-slate-100 p-1 rounded-xl {displayMode.current === 'grid'
                             ? 'fill-slate-500'
                             : 'fill-slate-300'}"
                     />
@@ -231,11 +231,11 @@
         {#if displayMode.current === "list"}
             <!-- File list -->
             <div class="flex flex-col">
-                {#each data.currentPartition.files.toSorted(sortingMethod) as file}
-                    <div class="group flex items-center space-x-4 border-b border-slate-200 px-4 hover:bg-slate-100">
+                {#each indexerData.currentPartition.files.toSorted(sortingMethod) as file}
+                    <div class="group flex items-center space-x-4 border-b border-slate-200 px-4 hover:bg-slate-50">
                         <Checkbox checked={selectedFiles.has(file)} onChange={() => toggleSelect(file)} />
                         <a
-                            href="/partition/{data.currentPartition?.partition?.partition}/file/{file.file_id}"
+                            href="/indexer/partition/{indexerData.currentPartition?.partition?.partition}/file/{file.file_id}"
                             class="flex w-full items-center space-x-3 py-4"
                             title="id: {file.file_id}"
                         >
@@ -252,7 +252,7 @@
                         </a>
                         <button onclick={() => deleteFile(file)} aria-label={`Delete file ${file.file_id}`}>
                             <Trash
-                                className="size-8 fill-transparent stroke-red-500 hover:stroke-red-600 cursor-pointer rounded p-1 hover:bg-slate-200"
+                                className="size-8 fill-transparent stroke-red-500 hover:stroke-red-600 cursor-pointer rounded-xl p-1 hover:bg-slate-200"
                             />
                         </button>
                     </div>
@@ -261,7 +261,7 @@
         {:else}
             <!-- Partition grid -->
             <div class="grid grid-cols-8 gap-4 p-4">
-                {#each data.currentPartition.files.toSorted(sortingMethod) as file}
+                {#each indexerData.currentPartition.files.toSorted(sortingMethod) as file}
                     {@const selected = selectedFiles.has(file)}
                     <div class="group relative aspect-square">
                         <Checkbox
@@ -277,12 +277,13 @@
                             aria-label={`Delete file ${file.file_id}`}
                         >
                             <Trash
-                                className="size-7 fill-transparent stroke-red-300 hover:stroke-red-500 cursor-pointer rounded p-0.5 hover:bg-red-50"
+                                className="size-7 fill-transparent stroke-red-300 hover:stroke-red-500 cursor-pointer rounded-xl p-0.5 hover:bg-red-50"
                             />
                         </button>
                         <a
-                            href="/partition/{data.currentPartition?.partition?.partition}/file/{file.file_id}"
-                            class="absolute w-full h-full top-0 left-0 flex flex-col items-center rounded-lg border border-slate-200 bg-white shadow-md hover:shadow-lg p-2 text-center"
+                            href="/indexer/partition/{indexerData.currentPartition?.partition?.partition}/file/{file.file_id}"
+                            class="absolute w-full h-full top-0 left-0 flex flex-col items-center rounded-2xl border border-slate-200 bg-white shadow-md
+                            hover:shadow-lg hover:bg-slate-50 p-2 text-center"
                             title="id: {file.file_id}"
                         >
                             <File className="mt-6 size-12 fill-linagora-500 stroke-3" />
