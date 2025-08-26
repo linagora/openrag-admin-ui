@@ -17,7 +17,6 @@
     // Components
     import PartitionInput from "$lib/components/indexer/UploadModal/PartitionInput.svelte";
     import Pip from "$lib/components/ui/Pip.svelte";
-    import FileIdSwitch from "$lib/components/indexer/UploadModal/FileIDSwitch.svelte";
 
     // Icons
     import Upload from "$lib/icons/Upload.svelte";
@@ -32,7 +31,6 @@
     // Form properties
     let selectedPartition: RAGPartition | null = $state(null);
     let files: FileList | undefined = $state();
-    let fileIDMethodSelected: "random" | "filename" = $state("random");
     let metadata: string | undefined = $state();
 
     // UI properties
@@ -66,7 +64,7 @@
 
             // Upload all the files
             for (const file of files) {
-                const fileID = fileIDMethodSelected === "random" ? uuidv4() : file.name;
+                const fileID = uuidv4();
 
                 await api.addFile(file, selectedPartition.partition, fileID, metadata);
                 newActiveTask.file_ids.push(fileID);
@@ -292,14 +290,6 @@
         </div>
 
         {#if files}
-            <!-- File ID -->
-            <div class="relative flex flex-col">
-                <label class="mb-2 cursor-pointer font-medium" for="file-id-input">
-                    Select an option for file IDs
-                </label>
-                <FileIdSwitch bind:selectedOption={fileIDMethodSelected} />
-            </div>
-
             <!-- File metadata -->
             <div class="relative flex flex-col">
                 <label class="mb-2 cursor-pointer font-medium" for="file-metadata-input">
