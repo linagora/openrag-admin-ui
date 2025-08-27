@@ -9,15 +9,19 @@
     // Utilities
     import { tick } from "svelte";
     import { marked } from "marked";
-    import * as api from "$lib/api";
     import { formatDate } from "$lib/utils";
+    import * as api from "$lib/api";
 
     // Stores
     import { indexerData } from "$lib/states.svelte";
 
+    // Components
+    import ExtractModal from "$lib/components/indexer/ExtractModal.svelte";
+
     // Icons
     import File from "$lib/icons/File.svelte";
     import ChevronDown from "$lib/icons/ChevronDown.svelte";
+    import Expand from "$lib/icons/Expand.svelte";
 
     // Types
     import type { RAGExtract } from "$lib/types";
@@ -26,6 +30,7 @@
     let selectedExtract: string | null = $state(null); // The currently selected document
     let selectedExtractContent: RAGExtract | null = $state(null); // The content of the selected document
     let extractContainer: HTMLDivElement | null = $state(null);
+    let showExtractModal = $state(false);
 
     /**
      * Select a new extract to display to the user.
@@ -44,7 +49,21 @@
             extractContainer.scrollTop = 0;
         }
     }
+
+    async function openExtractModal() {
+        showExtractModal = true;
+        await tick(); // Wait for DOM to update
+
+        const extractDiv = document.getElementById("extract-full");
+        if (selectedExtractContent && extractDiv) {
+            extractDiv.innerHTML = await marked.parse(selectedExtractContent.page_content);
+        }
+    }
 </script>
+
+{#if showExtractModal}
+    <ExtractModal bind:showExtractModal {selectedExtract} />
+{/if}
 
 {#if indexerData.currentFile && indexerData.currentFile.documents}
     <div class="p4 flex h-full max-h-full divide-x divide-slate-200">
@@ -123,15 +142,22 @@
         </div>
 
         <div class="flex w-7/12 max-w-7/12 flex-col">
-            <span class="top-0 border-b border-slate-200 bg-white px-4 py-2 text-center font-bold"> Preview </span>
-            <div
-                bind:this={extractContainer}
-                class="flex h-full flex-col items-center divide-y divide-slate-200 overflow-y-auto"
-            >
+            <div class="relative flex items-center justify-center bg-white border-b border-slate-200">
+                <span class="px-4 py-2 text-center font-bold"> Preview </span>
+                {#if selectedExtract}
+                    <button onclick={openExtractModal} class="absolute right-3 cursor-pointer">
+                        <Expand className="size-6 p-1 rounded-full hover:bg-slate-100" />
+                    </button>
+                {/if}
+            </div>
+            <div bind:this={extractContainer} class="flex h-full flex-col items-center overflow-y-auto">
                 {#if !selectedExtract}
                     <span class="my-auto text-slate-500"> Select an extract to preview its content. </span>
                 {:else}
-                    <div class="prose prose-pre:max-w-full w-full max-w-full p-8 text-sm wrap-anywhere" id="extract-content"></div>
+                    <div
+                        class="prose prose-pre:max-w-full w-full max-w-full p-8 text-sm wrap-anywhere"
+                        id="extract-content"
+                    ></div>
                 {/if}
             </div>
         </div>

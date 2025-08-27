@@ -6,11 +6,13 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 COPY . .
+
 ARG VITE_API_BASE_URL
 ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
 
 ARG VITE_INCLUDE_CREDENTIALS
 ENV VITE_INCLUDE_CREDENTIALS=${VITE_INCLUDE_CREDENTIALS}
+
 RUN npm run build
 
 FROM node:23-alpine AS production

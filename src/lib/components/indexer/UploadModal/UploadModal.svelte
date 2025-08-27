@@ -176,10 +176,10 @@
 
         <button
             onclick={closeUploadModal}
-            class="flex aspect-square cursor-pointer items-center justify-center rounded-full p-1 hover:bg-slate-100"
+            class="flex items-center justify-center"
             aria-label="Close upload modal"
         >
-            <Close className="size-4 stroke-3" />
+            <Close className="size-6 stroke-3 rounded-full p-1 hover:bg-slate-100 cursor-pointer" />
         </button>
     </div>
 
