@@ -131,7 +131,7 @@
                 {#if !selectedExtract}
                     <span class="my-auto text-slate-500"> Select an extract to preview its content. </span>
                 {:else}
-                    <div class="prose prose-pre:max-w-full w-full max-w-none p-8 text-sm" id="extract-content"></div>
+                    <div class="prose prose-pre:max-w-full w-full max-w-full p-8 text-sm wrap-anywhere" id="extract-content"></div>
                 {/if}
             </div>
         </div>
