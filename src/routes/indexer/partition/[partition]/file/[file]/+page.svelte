@@ -23,8 +23,9 @@
     import type { RAGExtract } from "$lib/types";
 
     // Properties
-    let selectedExtract: string | null = null; // The currently selected document
-    let selectedExtractContent: RAGExtract | null = null; // The content of the selected document
+    let selectedExtract: string | null = $state(null); // The currently selected document
+    let selectedExtractContent: RAGExtract | null = $state(null); // The content of the selected document
+    let extractContainer: HTMLDivElement | null = $state(null);
 
     /**
      * Select a new extract to display to the user.
@@ -36,9 +37,12 @@
         if (selectedExtractContent) selectedExtract = extract;
         await tick(); // Wait for DOM to update
 
-        // Display the extract
+        // Display the extract && scroll to top
         const extractDiv = document.getElementById("extract-content");
-        if (extractDiv) extractDiv.innerHTML = await marked.parse(selectedExtractContent.page_content);
+        if (extractDiv && extractContainer) {
+            extractDiv.innerHTML = await marked.parse(selectedExtractContent.page_content);
+            extractContainer.scrollTop = 0;
+        }
     }
 </script>
 
@@ -120,14 +124,14 @@
 
         <div class="flex w-7/12 max-w-7/12 flex-col">
             <span class="top-0 border-b border-slate-200 bg-white px-4 py-2 text-center font-bold"> Preview </span>
-            <div class="flex h-full flex-col items-center divide-y divide-slate-200 overflow-y-auto">
+            <div
+                bind:this={extractContainer}
+                class="flex h-full flex-col items-center divide-y divide-slate-200 overflow-y-auto"
+            >
                 {#if !selectedExtract}
                     <span class="my-auto text-slate-500"> Select an extract to preview its content. </span>
                 {:else}
-                    <div
-                        class="prose prose-pre:max-w-full w-full max-w-none p-8 text-sm"
-                        id="extract-content"
-                    ></div>
+                    <div class="prose prose-pre:max-w-full w-full max-w-none p-8 text-sm" id="extract-content"></div>
                 {/if}
             </div>
         </div>
