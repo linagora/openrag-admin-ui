@@ -1,5 +1,5 @@
 // Base URL and auth token
-import { API_BASE_URL } from ".";
+import { getApiBaseUrl } from "./index";
 import { authToken } from "$lib/persisted.svelte";
 
 // Types
@@ -18,7 +18,7 @@ import type {
  */
 export const fetchPartitions = async (): Promise<RAGPartition[]> => {
     console.log("Fetching partitions...");
-    const response = await fetch(`${API_BASE_URL}/partition/`, {
+    const response = await fetch(`${getApiBaseUrl()}/partition/`, {
         headers: {
             Authorization: `Bearer ${authToken.current}`,
         },
@@ -38,7 +38,7 @@ export const fetchPartitions = async (): Promise<RAGPartition[]> => {
  */
 export const fetchTasks = async (status?: RAGTaskStatus | "ACTIVE"): Promise<RAGTaskInList[]> => {
     console.log(`Fetching tasks${status ? ` with ${status} status` : ``}...`);
-    const response = await fetch(`${API_BASE_URL}/queue/tasks${status ? `?status=${status}` : ""}`, {
+    const response = await fetch(`${getApiBaseUrl()}/queue/tasks${status ? `?status=${status}` : ""}`, {
         headers: {
             Authorization: `Bearer ${authToken.current}`,
         },
@@ -58,7 +58,7 @@ export const fetchTasks = async (status?: RAGTaskStatus | "ACTIVE"): Promise<RAG
  */
 export const fetchTask = async (task: string): Promise<RAGTask> => {
     console.log(`Fetching task ${task}...`);
-    const response = await fetch(`${API_BASE_URL}/indexer/task/${task}`, {
+    const response = await fetch(`${getApiBaseUrl()}/indexer/task/${task}`, {
         headers: {
             Authorization: `Bearer ${authToken.current}`,
         },
@@ -78,7 +78,7 @@ export const fetchTask = async (task: string): Promise<RAGTask> => {
  */
 export const fetchFilesFromPartition = async (partition: string): Promise<RAGFileInList[]> => {
     console.log(`Fetching files from partition "${partition}"...`);
-    const response = await fetch(`${API_BASE_URL}/partition/${partition}`, {
+    const response = await fetch(`${getApiBaseUrl()}/partition/${partition}`, {
         headers: {
             Authorization: `Bearer ${authToken.current}`,
         },
@@ -98,7 +98,7 @@ export const fetchFilesFromPartition = async (partition: string): Promise<RAGFil
  */
 export const fetchFile = async (partition: string, file_id: string): Promise<RAGFile> => {
     console.log(`Fetching file "${file_id}" from partition "${partition}"...`);
-    const response = await fetch(`${API_BASE_URL}/partition/${partition}/file/${file_id}`, {
+    const response = await fetch(`${getApiBaseUrl()}/partition/${partition}/file/${file_id}`, {
         headers: {
             Authorization: `Bearer ${authToken.current}`,
         },
@@ -118,7 +118,7 @@ export const fetchFile = async (partition: string, file_id: string): Promise<RAG
  */
 export const fetchExtract = async (extract_id: string): Promise<RAGExtract> => {
     console.log(`Fetching extract "${extract_id}"...`);
-    const response = await fetch(`${API_BASE_URL}/extract/${extract_id}`, {
+    const response = await fetch(`${getApiBaseUrl()}/extract/${extract_id}`, {
         headers: {
             Authorization: `Bearer ${authToken.current}`,
         },
@@ -138,7 +138,7 @@ export const fetchExtract = async (extract_id: string): Promise<RAGExtract> => {
  */
 export const deletePartition = async (partition: string): Promise<boolean> => {
     console.log(`Deleting partition "${partition}"...`);
-    const response = await fetch(`${API_BASE_URL}/partition/${partition}`, {
+    const response = await fetch(`${getApiBaseUrl()}/partition/${partition}`, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${authToken.current}`,
@@ -163,7 +163,7 @@ export const addFile = async (file: File, partition: string, file_id: string, me
     formData.append("file", file);
     if (metadata) formData.append("metadata", metadata);
 
-    const response = await fetch(`${API_BASE_URL}/indexer/partition/${partition}/file/${file_id}`, {
+    const response = await fetch(`${getApiBaseUrl()}/indexer/partition/${partition}/file/${file_id}`, {
         method: "POST",
         body: formData,
         headers: {
@@ -185,7 +185,7 @@ export const addFile = async (file: File, partition: string, file_id: string, me
  */
 export const deleteFile = async (partition: string, file_id: string): Promise<boolean> => {
     console.log(`Deleting file "${file_id}" from partition "${partition}"...`);
-    const response = await fetch(`${API_BASE_URL}/indexer/partition/${partition}/file/${file_id}`, {
+    const response = await fetch(`${getApiBaseUrl()}/indexer/partition/${partition}/file/${file_id}`, {
         method: "DELETE",
         headers: {
             Authorization: `Bearer ${authToken.current}`,

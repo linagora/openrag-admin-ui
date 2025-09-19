@@ -1,13 +1,14 @@
 // Base URL and auth token
-import { API_BASE_URL } from ".";
+import { getApiBaseUrl } from "./index";
 import { authToken } from "$lib/persisted.svelte";
+
 
 /**
  * Fetches all available actors
  */
 export const fetchActors = async () => {
     console.log("Fetching actors...");
-    const response = await fetch(`${API_BASE_URL}/actors/`, {
+    const response = await fetch(`${getApiBaseUrl()}/actors/`, {
         headers: {
             Authorization: `Bearer ${authToken.current}`,
         },
@@ -22,9 +23,10 @@ export const fetchActors = async () => {
     return data;
 };
 
+
 export const restartActor = async (actor_name: string) => {
     console.log(`Restarting actor ${actor_name}...`);
-    const response = await fetch(`${API_BASE_URL}/actors/${actor_name}/restart`, {
+    const response = await fetch(`${getApiBaseUrl()}/actors/${actor_name}/restart`, {
         method: "POST",
         headers: {
             Authorization: `Bearer ${authToken.current}`,

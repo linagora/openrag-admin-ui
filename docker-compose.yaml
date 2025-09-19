@@ -2,9 +2,9 @@ services:
   indexer-ui:
     build: 
       context: .
-      args:
-        - VITE_API_BASE_URL=${VITE_API_BASE_URL}
-        - VITE_INCLUDE_CREDENTIALS=${VITE_INCLUDE_CREDENTIALS}
+    environment:
+      - API_BASE_URL=${API_BASE_URL}
+      - INCLUDE_CREDENTIALS=${INCLUDE_CREDENTIALS}
     ports:
       - "${INDEXERUI_PORT:-3042}:3000"
     restart: unless-stopped

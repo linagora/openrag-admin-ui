@@ -33,17 +33,21 @@
 
     // Run when the component initializes for the first time
     onMount(async () => {
-        if (!api.INCLUDE_CREDENTIALS) {
+        await api.loadConfig();
+
+        if (!api.getIncludeCredentials()) {
             authToken.current = null;
             authTokenCreatedAt.current = null;
-
             ui.showLoginPage = false;
             loading = false;
             return;
         }
 
         // If the Auth Token is older than 24 hours, clear it
-        if (authTokenCreatedAt.current && Date.now() - authTokenCreatedAt.current > 24 * 60 * 60 * 1000) {
+        if (
+            authTokenCreatedAt.current &&
+            Date.now() - authTokenCreatedAt.current > 24 * 60 * 60 * 1000
+        ) {
             authToken.current = null;
             authTokenCreatedAt.current = null;
         }
@@ -51,7 +55,11 @@
         // Initial check to see if the user is already logged in
         if (authToken.current && (await api.login(authToken.current))) {
             ui.showLoginPage = false;
-        } else if (page.route.id !== "/" && page.route.id !== "/indexer" && page.route.id !== "/dashboard") {
+        } else if (
+            page.route.id !== "/" &&
+            page.route.id !== "/indexer" &&
+            page.route.id !== "/dashboard"
+        ) {
             goto("/"); // Redirect to home page to hide ids from URL
         }
 
@@ -61,7 +69,9 @@
 
 {#if loading}
     <!-- Loading screen -->
-    <div class="flex h-screen w-screen flex-col space-y-4 justify-center items-center">
+    <div
+        class="flex h-screen w-screen flex-col space-y-4 justify-center items-center"
+    >
         <span> Loading... </span>
         <PartialCircle className="animate-spin fill-linagora-500 size-8" />
     </div>

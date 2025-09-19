@@ -3,9 +3,25 @@ const normalizeUrl = (url: string): string => {
     return url.endsWith("/") ? url.slice(0, -1) : url;
 };
 
-// Retrieve the API base URL from the environment
-export const API_BASE_URL = normalizeUrl(import.meta.env.VITE_API_BASE_URL);
-export const INCLUDE_CREDENTIALS = import.meta.env.VITE_INCLUDE_CREDENTIALS === "true";
+// Retrieve the API base URL and credentials flag from dynamic config
+let API_BASE_URL = "";
+let INCLUDE_CREDENTIALS = false;
+
+export function getApiBaseUrl() {
+    return API_BASE_URL;
+}
+
+export function getIncludeCredentials() {
+    return INCLUDE_CREDENTIALS;
+}
+
+export async function loadConfig() {
+    const res = await fetch("/api/config");
+    if (!res.ok) throw new Error("Failed to load config");
+    const config = await res.json();
+    API_BASE_URL = normalizeUrl(config.API_BASE_URL);
+    INCLUDE_CREDENTIALS = !!config.INCLUDE_CREDENTIALS;
+}
 
 export async function login(authToken: string): Promise<boolean> {
     console.log("Trying to log in...");
