@@ -42,7 +42,9 @@
 
 {#if navbarCollapsed.current}
     <!-- Collapsed navbar -->
-    <div class="relative min-w-16 h-full bg-linagora-500 rounded-r-2xl flex flex-col items-center pt-4 pb-6">
+    <div
+        class="relative min-w-16 h-full bg-linagora-500 rounded-r-2xl flex flex-col items-center pt-4 pb-6"
+    >
         <a href="/">
             <OpenRAG
                 className="group size-12 rounded-2xl cursor-pointer hover:bg-linagora-600"
@@ -52,13 +54,17 @@
 
         <div class="h-px w-8 mt-4 mb-3 bg-linagora-600"></div>
 
-        <div class="flex flex-col space-y-1 text-white font-medium items-center">
+        <div
+            class="flex flex-col space-y-1 text-white font-medium items-center"
+        >
             <!-- Home -->
             <a
                 href="/"
                 title="Home"
                 class="p-2 rounded-2xl
-                {currentRoute === 'home' ? 'bg-linagora-700' : 'bg-linagora-500 hover:bg-linagora-600'}"
+                {currentRoute === 'home'
+                    ? 'bg-linagora-700'
+                    : 'bg-linagora-500 hover:bg-linagora-600'}"
             >
                 <Home className="size-6 stroke-white fill-transparent" />
             </a>
@@ -67,7 +73,9 @@
                 href="/indexer/"
                 title="Indexer"
                 class="p-2 rounded-2xl
-                {currentRoute === 'indexer' ? 'bg-linagora-700' : 'bg-linagora-500 hover:bg-linagora-600'}"
+                {currentRoute === 'indexer'
+                    ? 'bg-linagora-700'
+                    : 'bg-linagora-500 hover:bg-linagora-600'}"
             >
                 <FileStorage className="size-6 fill-white" />
             </a>
@@ -76,13 +84,15 @@
                 href="/dashboard/"
                 title="Dashboard"
                 class="p-2 rounded-2xl
-                {currentRoute === 'dashboard' ? 'bg-linagora-700' : 'bg-linagora-500 hover:bg-linagora-600'}"
+                {currentRoute === 'dashboard'
+                    ? 'bg-linagora-700'
+                    : 'bg-linagora-500 hover:bg-linagora-600'}"
             >
                 <Dashboard className="size-6 fill-white" />
             </a>
         </div>
 
-        {#if api.INCLUDE_CREDENTIALS}
+        {#if api.getIncludeCredentials()}
             <div class="h-px w-8 mt-4 mb-3 bg-linagora-600"></div>
 
             <!-- Lock access to the indexer -->
@@ -96,7 +106,9 @@
                     window.location.reload(); // Reload the page to reset the states
                 }}
             >
-                <Lock className="size-6 fill-linagora-900 group-hover:fill-linagora-950" />
+                <Lock
+                    className="size-6 fill-linagora-900 group-hover:fill-linagora-950"
+                />
             </button>
         {/if}
 
@@ -117,13 +129,18 @@
     </div>
 {:else}
     <!-- Opened navbar -->
-    <div class="relative min-w-64 h-full bg-linagora-500 rounded-r-2xl flex flex-col p-6">
+    <div
+        class="relative min-w-64 h-full bg-linagora-500 rounded-r-2xl flex flex-col p-6"
+    >
         <a href="/">
             <div
                 class="group w-full pr-4 py-1 text-2xl text-white font-bold self-center mb-2 flex items-center space-x-1.5 rounded-3xl cursor-pointer
             hover:bg-linagora-600"
             >
-                <OpenRAG className="group size-16 cursor-pointer" circleClassName="group-hover:fill-linagora-600" />
+                <OpenRAG
+                    className="group size-16 cursor-pointer"
+                    circleClassName="group-hover:fill-linagora-600"
+                />
                 <span> OpenRAG </span>
             </div>
         </a>
@@ -135,38 +152,53 @@
             <a
                 href="/"
                 class="relative p-2 flex items-center space-x-2 rounded-2xl
-                {currentRoute === 'home' ? 'bg-linagora-700' : 'bg-linagora-500 hover:bg-linagora-600'}"
+                {currentRoute === 'home'
+                    ? 'bg-linagora-700'
+                    : 'bg-linagora-500 hover:bg-linagora-600'}"
             >
-                <Home className="size-6 stroke-white fill-transparent" /> <span> Home </span>
+                <Home className="size-6 stroke-white fill-transparent" />
+                <span> Home </span>
                 {#if currentRoute === "home"}
-                    <div class="absolute right-3 size-1 rounded-full bg-white"></div>
+                    <div
+                        class="absolute right-3 size-1 rounded-full bg-white"
+                    ></div>
                 {/if}
             </a>
             <!-- Indexer -->
             <a
                 href="/indexer"
                 class="relative p-2 flex items-center space-x-2 rounded-2xl
-                {currentRoute === 'indexer' ? 'bg-linagora-700' : 'bg-linagora-500 hover:bg-linagora-600'}"
+                {currentRoute === 'indexer'
+                    ? 'bg-linagora-700'
+                    : 'bg-linagora-500 hover:bg-linagora-600'}"
             >
-                <FileStorage className="size-6 fill-white" /> <span> Indexer </span>
+                <FileStorage className="size-6 fill-white" />
+                <span> Indexer </span>
                 {#if currentRoute === "indexer"}
-                    <div class="absolute right-3 size-1 rounded-full bg-white"></div>
+                    <div
+                        class="absolute right-3 size-1 rounded-full bg-white"
+                    ></div>
                 {/if}
             </a>
             <!-- Dashboard -->
             <a
                 href="/dashboard"
                 class="relative p-2 flex items-center space-x-2 rounded-2xl
-                {currentRoute === 'dashboard' ? 'bg-linagora-700' : 'bg-linagora-500 hover:bg-linagora-600'}"
+                {currentRoute === 'dashboard'
+                    ? 'bg-linagora-700'
+                    : 'bg-linagora-500 hover:bg-linagora-600'}"
             >
-                <Dashboard className="size-6 fill-white" /> <span> Dashboard </span>
+                <Dashboard className="size-6 fill-white" />
+                <span> Dashboard </span>
                 {#if currentRoute === "dashboard"}
-                    <div class="absolute right-3 size-1 rounded-full bg-white"></div>
+                    <div
+                        class="absolute right-3 size-1 rounded-full bg-white"
+                    ></div>
                 {/if}
             </a>
         </div>
 
-        {#if api.INCLUDE_CREDENTIALS}
+        {#if api.getIncludeCredentials()}
             <div class="h-px mt-4 mb-3 bg-linagora-600"></div>
 
             <!-- Lock access to the indexer -->
@@ -179,11 +211,13 @@
                     window.location.reload(); // Reload the page to reset the states
                 }}
             >
-                <Lock className="size-6 fill-linagora-900 group-hover:fill-linagora-950" />
+                <Lock
+                    className="size-6 fill-linagora-900 group-hover:fill-linagora-950"
+                />
                 Lock access
             </button>
         {/if}
-        
+
         <div class="grow"></div>
 
         <div class="flex flex-col items-center">
