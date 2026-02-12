@@ -11,6 +11,7 @@ import type {
     RAGTask,
     RAGTaskInList,
     RAGTaskStatus,
+    UserInfo,
 } from "$lib/types";
 
 /**
@@ -198,4 +199,24 @@ export const deleteFile = async (partition: string, file_id: string): Promise<bo
 
     console.log(`File "${file_id}" deleted successfully.`);
     return true;
+};
+
+/**
+ * Fetches current user information
+ */
+export const fetchUserInfo = async (): Promise<UserInfo> => {
+    console.log("Fetching user info...");
+    const response = await fetch(`${getApiBaseUrl()}/users/info`, {
+        headers: {
+            Authorization: `Bearer ${authToken.current}`,
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error(`Failed to fetch user info: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log("User info fetched: ", data);
+    return data;
 };

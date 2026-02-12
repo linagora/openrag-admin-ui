@@ -15,6 +15,18 @@
     // Properties
     let { children } = $props();
     let refreshTasksInterval: number | undefined;
+    let refreshUserInfoInterval: number | undefined;
+
+    /**
+     * Function to refresh user info periodically.
+     */
+    async function refreshUserInfo() {
+        try {
+            indexerData.userInfo = await api.fetchUserInfo();
+        } catch (error) {
+            console.error("Failed to refresh user info:", error);
+        }
+    }
 
     /**
      * Function to refresh tasks periodically.
@@ -50,8 +62,16 @@
     async function handleRouting() {
         if (ui.showLoginPage) return;
 
-        // Load partitions
+        // Load partitions and user info
         indexerData.partitions = await api.fetchPartitions();
+        
+        // Fetch user info (for quota display)
+        try {
+            indexerData.userInfo = await api.fetchUserInfo();
+            refreshUserInfoInterval = setInterval(refreshUserInfo, 5000); // Refresh every 5 seconds
+        } catch (error) {
+            console.error("Failed to fetch user info:", error);
+        }
 
         if (page.route.id === "/indexer") {
             // Reset navigation states
@@ -110,6 +130,7 @@
             console.log("Leaving indexer, clearing intervals.");
             // Clear any intervals or timeouts here if needed
             clearInterval(refreshTasksInterval);
+            clearInterval(refreshUserInfoInterval);
         };
     });
 </script>

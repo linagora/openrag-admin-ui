@@ -36,11 +36,68 @@
     // UI properties
     let showDropdown = $state(false);
     let uploading = $state(false);
+    let quotaWarning: string | null = $state(null);
 
     // UI elements
     let dropdownRef: HTMLDivElement | undefined = $state();
     let partitionLabelRef: HTMLLabelElement | undefined = $state();
     let partitionButtonRef: HTMLButtonElement | undefined = $state();
+    let fileInputRef: HTMLInputElement | undefined = $state();
+
+    /**
+     * Check if quota is infinite (-1 means infinite)
+     */
+    let isQuotaInfinite = $derived(
+        indexerData.userInfo?.file_quota === -1
+    );
+
+    /**
+     * Calculate remaining upload slots based on quota
+     * Returns Infinity if quota is infinite, otherwise returns remaining slots (minimum 0)
+     */
+    let remainingQuota = $derived(
+        isQuotaInfinite
+            ? Infinity
+            : Math.max(0, (indexerData.userInfo?.file_quota ?? 0) - (indexerData.userInfo?.total_files ?? 0))
+    );
+
+    /**
+     * Handle file selection and enforce quota limits
+     */
+    function handleFileSelection(event: Event) {
+        const input = event.target as HTMLInputElement;
+        const selectedFiles = input.files;
+
+        if (!selectedFiles || selectedFiles.length === 0) {
+            files = undefined;
+            return;
+        }
+
+        // If quota is infinite, allow all files
+        if (isQuotaInfinite) {
+            files = selectedFiles;
+            return;
+        }
+
+        // If user selected more files than remaining quota, truncate and warn
+        if (selectedFiles.length > remainingQuota) {
+            quotaWarning = `You can only upload ${remainingQuota} more file${remainingQuota > 1 ? 's' : ''} due to your quota limit. Only the first ${remainingQuota} file${remainingQuota > 1 ? 's' : ''} will be uploaded.`;
+            
+            // Create a new DataTransfer to hold the truncated file list
+            const dt = new DataTransfer();
+            for (let i = 0; i < remainingQuota; i++) {
+                dt.items.add(selectedFiles[i]);
+            }
+            files = dt.files;
+            
+            // Update the input element to reflect the truncated selection
+            if (fileInputRef) {
+                fileInputRef.files = dt.files;
+            }
+        } else {
+            files = selectedFiles;
+        }
+    }
 
     /**
      * Upload the file(s) to a partition and close the modal once done.
@@ -155,6 +212,46 @@
     });
 </script>
 
+<!-- Quota warning popup -->
+{#if quotaWarning}
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <div
+        class="fixed inset-0 z-[200] flex items-center justify-center bg-slate-500/30 backdrop-blur-xs"
+        onclick={() => quotaWarning = null}
+        role="dialog"
+        tabindex="-1"
+    >
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <div 
+            class="relative bg-white rounded-2xl shadow-xl p-6 max-w-md mx-4"
+            onclick={(e) => e.stopPropagation()}
+            role="alertdialog"
+            tabindex="-1"
+        >
+            <!-- Warning icon -->
+            <div class="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full bg-amber-100">
+                <svg class="size-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            
+            <!-- Title -->
+            <h3 class="text-lg font-semibold text-center text-slate-800 mb-2">Quota Limit Reached</h3>
+            
+            <!-- Message -->
+            <p class="text-sm text-center text-slate-600 mb-6">{quotaWarning}</p>
+            
+            <!-- OK Button -->
+            <button
+                class="w-full py-2 px-4 bg-linagora-500 hover:bg-linagora-600 text-white font-semibold rounded-xl cursor-pointer transition-colors"
+                onclick={() => quotaWarning = null}
+            >
+                OK
+            </button>
+        </div>
+    </div>
+{/if}
+
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <div
     class="absolute top-0 left-0 z-100 h-screen w-screen bg-slate-500/20 backdrop-blur-xs"
@@ -247,9 +344,21 @@
         <div class="relative flex flex-col">
             <label class="mb-2 cursor-pointer font-medium" for="file-upload-btn"> Select one or multiple files </label>
 
+            <!-- Remaining quota info -->
+            {#if !isQuotaInfinite}
+                <p class="mb-2 text-sm {remainingQuota === 0 ? 'text-red-500' : 'text-slate-500'}">
+                    {#if remainingQuota === 0}
+                        You have reached your file quota limit.
+                    {:else}
+                        You can upload up to {remainingQuota} more file{remainingQuota > 1 ? 's' : ''}.
+                    {/if}
+                </p>
+            {/if}
+
             <label
                 class="group cursor-pointer rounded-3xl border-2 border-dashed border-slate-300 px-4 py-6
-			hover:border-linagora-300 hover:bg-linagora-50/30 focus:outline-none"
+			hover:border-linagora-300 hover:bg-linagora-50/30 focus:outline-none
+            {remainingQuota === 0 ? 'opacity-50 pointer-events-none' : ''}"
                 for="file-upload-btn"
             >
                 {#if files}
@@ -286,7 +395,7 @@
                 {/if}
             </label>
 
-            <input id="file-upload-btn" type="file" accept=".pdf" multiple bind:files class="hidden" />
+            <input id="file-upload-btn" type="file" accept=".pdf" multiple bind:this={fileInputRef} onchange={handleFileSelection} class="hidden" disabled={remainingQuota === 0} />
         </div>
 
         {#if files}
