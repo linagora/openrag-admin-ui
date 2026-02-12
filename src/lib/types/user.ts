@@ -6,7 +6,7 @@
 import { ListFormat } from "typescript";
 
 /**
- * Represents user information (from the GET /user/info endpoint)
+ * Represents user information (from the GET /users/info endpoint)
  */
 export interface UserInfo {
     id: string;
