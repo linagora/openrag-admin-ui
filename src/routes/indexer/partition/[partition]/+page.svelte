@@ -247,7 +247,7 @@
                                 </span>
                             </div>
                             <span class="text-xs text-slate-500">
-                                Created: {formatDate(file.created_at)}
+                                Created: {formatDate(file.indexed_at)}
                             </span>
                         </a>
                         <button onclick={() => deleteFile(file)} aria-label={`Delete file ${file.file_id}`}>
