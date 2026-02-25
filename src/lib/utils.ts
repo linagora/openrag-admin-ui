@@ -11,11 +11,14 @@ import type { ActiveUpload } from "$lib/types";
 
 /**
  * Formats a date
- * @param dateString an ISO 8601 formatted date string
- * @returns a date in the French format
+ * @param dateString an ISO 8601 formatted date string (or null/undefined for files without a date)
+ * @returns a localised date string, or "—" if the value is absent or unparseable
  */
-export function formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleString("fr");
+export function formatDate(dateString: string | null | undefined): string {
+    if (!dateString) return "—";
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return "—";
+    return d.toLocaleString("fr");
 }
 
 /**
