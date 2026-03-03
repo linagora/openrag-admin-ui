@@ -355,12 +355,12 @@
             >
                 <span class="text-xs font-semibold text-slate-500">
                     ACTIVE ({indexerData.tasks.filter(
-                        (task) => task.state === "SERIALIZING" || task.state === "CHUNKING" || task.state == "INSERTING"
+                        (task) => task.state === "SERIALIZING" || task.state === "CHUNKING" || task.state === "INSERTING"
                     ).length})
                 </span>
             </div>
             <div class="h-full min-h-96 divide-y divide-slate-200 overflow-y-auto">
-                {#each indexerData.tasks.filter((task) => task.state !== "COMPLETED" && task.state !== "FAILED" && task.state !== "QUEUED") as task}
+                {#each indexerData.tasks.filter((task) => task.state !== "COMPLETED" && task.state !== "FAILED" && task.state !== "QUEUED" && task.state !== "CANCELLED") as task}
                     <div
                         class="flex flex-col space-y-1 space-x-2 overflow-x-hidden border-b border-slate-200 px-4 py-3 break-all"
                     >
@@ -389,6 +389,9 @@
 
             <!-- Failed tasks -->
             <TaskCategoryDropdown category="FAILED" />
+
+            <!-- Cancelled tasks -->
+            <TaskCategoryDropdown category="CANCELLED" />
         </div>
     {/if}
 </div>

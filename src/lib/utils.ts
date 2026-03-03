@@ -38,6 +38,8 @@ export function getStyleFromTaskState(state: string): string {
             return "text-linagora-500";
         case "FAILED":
             return "text-red-500";
+        case "CANCELLED":
+            return "text-orange-400";
         default:
             return "text-black";
     }

@@ -5,9 +5,9 @@
 
 /**
  * Represents the status of a task during the indexation process.
- * The status can be one of the following: QUEUED, SERIALIZING, CHUNKING, INSERTING, COMPLETED, FAILED.
+ * The status can be one of the following: QUEUED, SERIALIZING, CHUNKING, INSERTING, COMPLETED, FAILED, CANCELLED.
  */
-export type RAGTaskStatus = "QUEUED" | "SERIALIZING" | "CHUNKING" | "INSERTING" | "COMPLETED" | "FAILED";
+export type RAGTaskStatus = "QUEUED" | "SERIALIZING" | "CHUNKING" | "INSERTING" | "COMPLETED" | "FAILED" | "CANCELLED";
 
 /**
  *  Represents a task in the list of tasks (from the GET /queue/tasks/ endpoint).

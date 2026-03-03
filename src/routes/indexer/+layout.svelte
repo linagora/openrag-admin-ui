@@ -34,7 +34,7 @@
      * If a task is completed, it fetches the latest partitions.
      */
     async function refreshTasks() {
-        let currentTasks = indexerData.tasks.filter((task) => task.state !== "COMPLETED" && task.state !== "FAILED");
+        let currentTasks = indexerData.tasks.filter((task) => task.state !== "COMPLETED" && task.state !== "FAILED" && task.state !== "CANCELLED");
 
         // If there are no tasks to refresh, exit early
         if (currentTasks.length === 0) return;
@@ -68,7 +68,7 @@
         // Fetch user info (for quota display)
         try {
             indexerData.userInfo = await api.fetchUserInfo();
-            refreshUserInfoInterval = setInterval(refreshUserInfo, 5000); // Refresh every 5 seconds
+            refreshUserInfoInterval = setInterval(refreshUserInfo, 10000); // Refresh every 10 seconds
         } catch (error) {
             console.error("Failed to fetch user info:", error);
         }
