@@ -18,17 +18,8 @@
         PENDING_CREATION: "text-yellow-500",
     };
 
-    const restartableClasses = [
-        "TaskStateManager",
-        "MarkerPool",
-        "SerializerQueue",
-        "Indexer",
-        "MilvusDB",
-        "llmSemaphore",
-        "vlmSemaphore",
-    ];
-
     let restartingActors = $state<string[]>([]);
+    const aliveActors = $derived(dashboardData.actors.filter((a) => a.state !== "DEAD"));
 
     async function restartActor(actor: Actor) {
         restartingActors = [...restartingActors, actor.name];
@@ -72,7 +63,7 @@
         </tr>
     </thead>
     <tbody class="divide-y divide-slate-200 border-b border-slate-200">
-        {#each dashboardData.actors as actor}
+        {#each aliveActors as actor}
             <tr class="text-slate-700">
                 <td class="font-mono">{actor.actor_id}</td>
                 <td class=""> {actor.namespace} </td>
@@ -81,24 +72,24 @@
                 </td>
                 <td class="">{actor.name !== "" ? actor.name : "-"}</td>
                 <td
-                    class="font-medium {stateColors[actor.state]} 
+                    class="font-medium {stateColors[actor.state]}
                     {dashboardData.actors.some((actor) => actor.state === 'PENDING_CREATION') ? '' : 'text-center'}"
                 >
                     {actor.state}
                 </td>
                 <td class="flex items-center justify-center">
                     <button
-                        title={!restartableClasses.includes(actor.class_name)
+                        title={actor.name === ""
                             ? "This actor cannot be restarted"
                             : "Restart this actor"}
                         class="rounded-lg
-                        {!restartableClasses.includes(actor.class_name)
+                        {actor.name === ""
                             ? ' cursor-not-allowed fill-slate-200'
                             : restartingActors.includes(actor.name)
                               ? ' animate-spin cursor-not-allowed fill-slate-400'
                               : ' cursor-pointer fill-slate-400 hover:fill-slate-700 hover:bg-slate-100'}
                             "
-                        disabled={!restartableClasses.includes(actor.class_name) ||
+                        disabled={actor.name === "" ||
                             restartingActors.includes(actor.name)}
                         onclick={() => restartActor(actor)}
                     >
