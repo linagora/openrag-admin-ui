@@ -197,7 +197,7 @@
                     <option value="id">ID</option>
                     <option value="name">Name</option>
                     <option value="size">Size</option>
-                    <option value="date">Date created</option>
+                    <option value="date">Date Indexed</option>
                 </select>
             </div>
             <div class="flex items-center pr-3">
@@ -247,7 +247,8 @@
                                 </span>
                             </div>
                             <span class="text-xs text-slate-500">
-                                Created: {formatDate(file.indexed_at ?? file.created_at)}
+                                Indexed at : {formatDate(file.indexed_at ?? file.created_at)}
+                                <!-- For backwards compatibility, if indexed_at is not available, created_at will be used instead. -->
                             </span>
                         </a>
                         <button onclick={() => deleteFile(file)} aria-label={`Delete file ${file.file_id}`}>
