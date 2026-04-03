@@ -1,6 +1,7 @@
 <script lang="ts">
     // Utilities
     import * as api from "$lib/api";
+    import { _ } from "svelte-i18n";
 
     // States
     import { dashboardData } from "$lib/states.svelte";
@@ -34,26 +35,24 @@
 <table class="min-w-full table-fixed text-sm">
     <thead>
         <tr class="sticky top-0 bg-white text-slate-600 shadow-[0_1px_0_0_theme(colors.slate.200)] z-10">
-            <th class="w-76">Actor ID</th>
-            <th class="w-84">Namespace</th>
-            <th class="w-40">Class</th>
-            <th>Name</th>
+            <th class="w-76">{$_('dashboard.actor_id')}</th>
+            <th class="w-84">{$_('dashboard.namespace')}</th>
+            <th class="w-40">{$_('dashboard.class')}</th>
+            <th>{$_('dashboard.actor_name')}</th>
             <th
                 class={dashboardData.actors.some((actor) => actor.state === "PENDING_CREATION")
                     ? "w-44"
                     : "w-24 !text-center"}
             >
-                State
+                {$_('dashboard.state')}
             </th>
             <th class="w-28">
                 <div class="flex items-center justify-center space-x-1.5">
-                    <span> Restart </span>
+                    <span> {$_('dashboard.restart')} </span>
                     <button
                         class="cursor-pointer"
                         onclick={() => {
-                            alert(
-                                "Restarting an actor will create a new instance, and the old one will be killed. This means that multiple instances will appear in the list."
-                            );
+                            alert($_('dashboard.restart_info'));
                         }}
                     >
                         <HelpCircle className="size-4 fill-slate-500 translate-y-0.25 hover:fill-slate-600" />
@@ -80,8 +79,8 @@
                 <td class="flex items-center justify-center">
                     <button
                         title={actor.name === ""
-                            ? "This actor cannot be restarted"
-                            : "Restart this actor"}
+                            ? $_('dashboard.cannot_restart')
+                            : $_('dashboard.restart_actor')}
                         class="rounded-lg
                         {actor.name === ""
                             ? ' cursor-not-allowed fill-slate-200'

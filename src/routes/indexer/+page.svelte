@@ -10,6 +10,7 @@
     // Utilities
     import { formatDate, getUploadProgress, getStyleFromTaskState } from "$lib/utils";
     import * as api from "$lib/api";
+    import { _ } from "svelte-i18n";
 
     // States & persisted states
     import { indexerData } from "$lib/states.svelte";
@@ -121,9 +122,7 @@
      */
     async function deleteAllSelectedPartitions() {
         if (
-            confirm(
-                `You are about to delete ${selectedPartitions.size} partitions.\nAre you sure you want to proceed ?`
-            )
+            confirm($_('indexer.confirm_delete_partitions', { values: { count: selectedPartitions.size } }))
         )
             for (const partition of selectedPartitions) {
                 await deletePartition(partition);
@@ -150,7 +149,7 @@
                 <TernaryCheckbox checked={selectAllStatus} onChange={toggleSelectAll} />
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <button onclick={toggleSelectAll} class="ml-2 cursor-pointer text-sm text-slate-600" tabindex="0">
-                    {selectedPartitions.size} of {indexerData.partitions.length} partitions selected
+                    {$_('indexer.partitions_selected', { values: { selected: selectedPartitions.size, total: indexerData.partitions.length } })}
                 </button>
             </div>
 
@@ -168,10 +167,10 @@
                     class="cursor-pointer rounded-xl hover:bg-slate-100 py-1 px-2 text-sm text-slate-500 appearance-none"
                     onchange={changeSortingMethod}
                 >
-                    <option value="default">Default</option>
-                    <option value="name">Name</option>
-                    <option value="date">Date created</option>
-                    <option value="size">File count</option>
+                    <option value="default">{$_('common.default')}</option>
+                    <option value="name">{$_('common.name')}</option>
+                    <option value="date">{$_('indexer.date_created')}</option>
+                    <option value="size">{$_('indexer.file_count')}</option>
                 </select>
             </div>
 
@@ -206,8 +205,7 @@
         {#if indexerData.partitions.length === 0}
             <div class="flex h-full w-full items-center justify-center">
                 <span class="text-center text-sm text-slate-500">
-                    No partitions available. Please wait a bit for the partitions to be fetched, or start indexing files
-                    now.
+                    {$_('indexer.no_partitions')}
                 </span>
             </div>
         {:else if displayMode.current === "list"}
@@ -225,11 +223,11 @@
                                 <span>{partition.partition}</span>
                                 <span class="text-xs text-slate-500">
                                     ({partition.file_count}
-                                    {partition.file_count === 1 ? "file" : "files"})
+                                    {partition.file_count === 1 ? $_('indexer.file_singular') : $_('indexer.file_plural')})
                                 </span>
                             </div>
                             <span class="text-xs text-slate-500">
-                                Created: {formatDate(partition.created_at)}
+                                {$_('indexer.created_date', { values: { date: formatDate(partition.created_at) } })}
                             </span>
                         </a>
                         <button
@@ -274,7 +272,7 @@
                             <span class="font-bold">{partition.partition}</span>
                             <span class="mt-0.5 text-xs text-slate-500">
                                 {partition.file_count}
-                                {partition.file_count === 1 ? "file" : "files"}
+                                {partition.file_count === 1 ? $_('indexer.file_singular') : $_('indexer.file_plural')}
                             </span>
                             <div class="grow"></div>
                             <span class="mb-1 text-xs text-slate-500">
@@ -295,13 +293,13 @@
                 class="sticky bottom-0 left-0 z-10 flex w-full items-center justify-between border-t border-slate-200 bg-white p-4"
             >
                 <span class="text-slate-600">
-                    {selectedPartitions.size} partition{selectedPartitions.size > 1 ? "s" : ""} selected
+                    {$_('indexer.n_partitions_selected', { values: { count: selectedPartitions.size } })}
                 </span>
                 <button
                     class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-red-500 px-4 py-2 font-semibold text-white  hover:bg-red-600 focus:outline-none"
                     onclick={deleteAllSelectedPartitions}
                 >
-                    <Trash className="size-5 fill-transparent stroke-white" /> Delete selected
+                    <Trash className="size-5 fill-transparent stroke-white" /> {$_('indexer.delete_selected')}
                 </button>
             </footer>
         {/if}
@@ -313,7 +311,7 @@
             <span
                 class="flex font-bold items-center justify-center border-b border-slate-200 bg-white py-3 text-sm text-slate-600"
             >
-                Tasks
+                {$_('indexer.tasks')}
             </span>
 
             {#if activeUploads.current.length > 0}
@@ -323,8 +321,8 @@
                         <div class="bg-white px-4 py-3 space-y-1 flex flex-col">
                             {#if progress.status === "IN PROGRESS"}
                                 <span class="text-xs">
-                                    Uploading {activeTask.file_ids.length} file(s) to partition "{activeTask.partition}"...
-                                    ({activeTask.file_ids.length - progress.completedFiles - progress.failedFiles} left)
+                                    {$_('indexer.uploading_files', { values: { count: activeTask.file_ids.length, partition: activeTask.partition } })}
+                                    {$_('indexer.files_left', { values: { count: activeTask.file_ids.length - progress.completedFiles - progress.failedFiles } })}
                                 </span>
                                 <div class="flex items-center space-x-2">
                                     <div class="relative h-1 w-full bg-slate-200 rounded-full">
@@ -339,12 +337,11 @@
                                 </div>
                             {:else if progress.status === "FAILED"}
                                 <div class="text-xs text-red-500">
-                                    Upload failed for {progress.failedFiles} out of {activeTask.file_ids.length} file(s)
-                                    to partition "{activeTask.partition}".
+                                    {$_('indexer.upload_failed', { values: { failed: progress.failedFiles, total: activeTask.file_ids.length, partition: activeTask.partition } })}
                                 </div>
                             {:else}
                                 <div class="text-xs text-green-500">
-                                    {activeTask.file_ids.length} file(s) uploaded to partition "{activeTask.partition}".
+                                    {$_('indexer.upload_success', { values: { count: activeTask.file_ids.length, partition: activeTask.partition } })}
                                 </div>
                             {/if}
                         </div>
@@ -355,9 +352,9 @@
                 class="sticky top-0 z-10 flex w-full items-center justify-center space-x-1 border-b shadow border-slate-200 bg-slate-50 py-2"
             >
                 <span class="text-xs font-semibold text-slate-500">
-                    ACTIVE ({indexerData.tasks.filter(
+                    {$_('indexer.active_count', { values: { count: indexerData.tasks.filter(
                         (task) => task.state === "SERIALIZING" || task.state === "CHUNKING" || task.state === "INSERTING"
-                    ).length})
+                    ).length } })}
                 </span>
             </div>
             <div class="h-full min-h-96 divide-y divide-slate-200 overflow-y-auto">
