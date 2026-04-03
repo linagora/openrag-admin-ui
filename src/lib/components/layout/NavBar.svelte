@@ -2,6 +2,7 @@
     // Utilities
     import { page } from "$app/state";
     import * as api from "$lib/api";
+    import { _ } from "svelte-i18n";
 
     // Persisted states
     import { navbarCollapsed } from "$lib/persisted.svelte";
@@ -56,7 +57,7 @@
             <!-- Home -->
             <a
                 href="/"
-                title="Home"
+                title={$_('nav.home')}
                 class="p-2 rounded-2xl
                 {currentRoute === 'home' ? 'bg-linagora-700' : 'bg-linagora-500 hover:bg-linagora-600'}"
             >
@@ -65,7 +66,7 @@
             <!-- Indexer -->
             <a
                 href="/indexer/"
-                title="Indexer"
+                title={$_('nav.indexer')}
                 class="p-2 rounded-2xl
                 {currentRoute === 'indexer' ? 'bg-linagora-700' : 'bg-linagora-500 hover:bg-linagora-600'}"
             >
@@ -74,7 +75,7 @@
             <!-- Dashboard -->
             <a
                 href="/dashboard/"
-                title="Dashboard"
+                title={$_('nav.dashboard')}
                 class="p-2 rounded-2xl
                 {currentRoute === 'dashboard' ? 'bg-linagora-700' : 'bg-linagora-500 hover:bg-linagora-600'}"
             >
@@ -87,7 +88,7 @@
 
             <!-- Lock access to the indexer -->
             <button
-                title="Lock access"
+                title={$_('nav.lock_access')}
                 class="cursor-pointer group rounded-2xl p-2 font-medium text-linagora-900
             hover:bg-linagora-600 hover:text-linagora-950"
                 onclick={() => {
@@ -137,7 +138,7 @@
                 class="relative p-2 flex items-center space-x-2 rounded-2xl
                 {currentRoute === 'home' ? 'bg-linagora-700' : 'bg-linagora-500 hover:bg-linagora-600'}"
             >
-                <Home className="size-6 stroke-white fill-transparent" /> <span> Home </span>
+                <Home className="size-6 stroke-white fill-transparent" /> <span> {$_('nav.home')} </span>
                 {#if currentRoute === "home"}
                     <div class="absolute right-3 size-1 rounded-full bg-white"></div>
                 {/if}
@@ -148,7 +149,7 @@
                 class="relative p-2 flex items-center space-x-2 rounded-2xl
                 {currentRoute === 'indexer' ? 'bg-linagora-700' : 'bg-linagora-500 hover:bg-linagora-600'}"
             >
-                <FileStorage className="size-6 fill-white" /> <span> Indexer </span>
+                <FileStorage className="size-6 fill-white" /> <span> {$_('nav.indexer')} </span>
                 {#if currentRoute === "indexer"}
                     <div class="absolute right-3 size-1 rounded-full bg-white"></div>
                 {/if}
@@ -159,7 +160,7 @@
                 class="relative p-2 flex items-center space-x-2 rounded-2xl
                 {currentRoute === 'dashboard' ? 'bg-linagora-700' : 'bg-linagora-500 hover:bg-linagora-600'}"
             >
-                <Dashboard className="size-6 fill-white" /> <span> Dashboard </span>
+                <Dashboard className="size-6 fill-white" /> <span> {$_('nav.dashboard')} </span>
                 {#if currentRoute === "dashboard"}
                     <div class="absolute right-3 size-1 rounded-full bg-white"></div>
                 {/if}
@@ -180,14 +181,14 @@
                 }}
             >
                 <Lock className="size-6 fill-linagora-900 group-hover:fill-linagora-950" />
-                Lock access
+                {$_('nav.lock_access')}
             </button>
         {/if}
         
         <div class="grow"></div>
 
         <div class="flex flex-col items-center">
-            <span class="text-xs text-linagora-200"> LINAGORA - 2025</span>
+            <span class="text-xs text-linagora-200"> {$_('nav.logo_text')}</span>
         </div>
 
         <button

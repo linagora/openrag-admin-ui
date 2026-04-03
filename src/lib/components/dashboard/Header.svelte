@@ -7,6 +7,7 @@
      */
 
     import * as api from "$lib/api";
+    import { _ } from "svelte-i18n";
 
     // States, persisted states, and cookies
     import { dashboardData } from "$lib/states.svelte";
@@ -43,16 +44,16 @@
     <!-- Navigation between files and partitions -->
     <div class="flex items-center space-x-2 text-xl font-bold">
         <a href="/dashboard" class="flex items-center gap-3 rounded-xl px-2 py-1 hover:bg-slate-100">
-            <Dashboard className="size-6 fill-linagora-500" /> Dashboard
+            <Dashboard className="size-6 fill-linagora-500" /> {$_('nav.dashboard')}
         </a>
     </div>
 
     <!-- Action buttons -->
     <div class="flex items-center space-x-6">
         {#if countdown > 0}
-            <span class="">Auto-refresh in {countdown}...</span>
+            <span class="">{$_('dashboard.auto_refresh_in', { values: { countdown } })}</span>
         {:else}
-            <span class="">Auto-refreshing...</span>
+            <span class="">{$_('dashboard.auto_refreshing')}</span>
         {/if}
         <!-- Upload files -->
         <button
@@ -60,7 +61,7 @@
             class="flex items-center gap-2 rounded-2xl border-none bg-linagora-500 px-4 py-2 font-semibold text-white hover:bg-linagora-600
             {refreshing ? 'cursor-not-allowed opacity-50' : 'cursor-pointer '}"
         >
-            <Refresh className="size-5 fill-white {refreshing ? 'animate-spin' : ''}" /> Refresh list
+            <Refresh className="size-5 fill-white {refreshing ? 'animate-spin' : ''}" /> {$_('dashboard.refresh_list')}
         </button>
     </div>
 </header>
