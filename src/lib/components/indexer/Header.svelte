@@ -6,6 +6,8 @@
      * @author Ulysse Bouchet for LINAGORA
      */
 
+    import { base } from "$app/paths";
+
     // States, persisted states, and cookies
     import { indexerData, ui } from "$lib/states.svelte";
 
@@ -52,13 +54,13 @@
 <header class="flex items-center justify-between p-4 pb-0">
     <!-- Navigation between files and partitions -->
     <div class="flex items-center space-x-2 text-xl font-bold">
-        <a href="/indexer" class="flex items-center gap-3 rounded-xl px-2 py-1 hover:bg-slate-100">
+        <a href="{base}/indexer" class="flex items-center gap-3 rounded-xl px-2 py-1 hover:bg-slate-100">
             <FileStorage className="size-6 fill-linagora-500" /> Indexer
         </a>
         {#if indexerData.currentPartition.partition}
             <ChevronDown className="size-4 -rotate-90 stroke-3 stroke-linagora-500" />
             <a
-                href="/indexer/partition/{indexerData.currentPartition.partition.partition}"
+                href="{base}/indexer/partition/{indexerData.currentPartition.partition.partition}"
                 class="flex items-center gap-2 rounded-xl px-2 py-1 hover:bg-slate-100"
             >
                 {indexerData.currentPartition.partition.partition}

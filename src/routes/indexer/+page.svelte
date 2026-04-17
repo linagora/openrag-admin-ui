@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     /**
      * This file serves as the main page for the application.
      * It displays a list of partitions, allows users to select and delete them,
@@ -218,7 +219,7 @@
                             checked={selectedPartitions.has(partition)}
                             onChange={() => toggleSelect(partition)}
                         />
-                        <a href="/indexer/partition/{partition.partition}" class="flex w-full items-center space-x-3 py-4">
+                        <a href="{base}/indexer/partition/{partition.partition}" class="flex w-full items-center space-x-3 py-4">
                             <Folder className="size-6 fill-linagora-500 stroke-3" />
                             <div class="grow flex items-center space-x-2">
                                 <span>{partition.partition}</span>
@@ -265,7 +266,7 @@
                             />
                         </button>
                         <a
-                            href="/indexer/partition/{partition.partition}"
+                            href="{base}/indexer/partition/{partition.partition}"
                             class="absolute w-full h-full top-0 left-0 flex flex-col items-center rounded-2xl border border-slate-200 bg-white shadow-md
                             hover:shadow-lg hover:bg-slate-50 p-2 text-center"
                         >

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     /**
      * This file corresponds to the header component of the application.
      * It displays the current partition and file, provides a button to upload files,
@@ -42,7 +43,7 @@
 <header class="flex items-center justify-between p-4 pb-0">
     <!-- Navigation between files and partitions -->
     <div class="flex items-center space-x-2 text-xl font-bold">
-        <a href="/dashboard" class="flex items-center gap-3 rounded-xl px-2 py-1 hover:bg-slate-100">
+        <a href="{base}/dashboard" class="flex items-center gap-3 rounded-xl px-2 py-1 hover:bg-slate-100">
             <Dashboard className="size-6 fill-linagora-500" /> Dashboard
         </a>
     </div>

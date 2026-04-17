@@ -7,6 +7,10 @@ RUN npm ci
 
 COPY . .
 
+# Optional subpath mounting (e.g. /indexerui). Pass via
+# `docker build --build-arg BASE_PATH=/indexerui` or in docker-compose.yaml.
+ARG BASE_PATH=""
+ENV BASE_PATH=${BASE_PATH}
 RUN npm run build
 
 FROM node:23-alpine AS production

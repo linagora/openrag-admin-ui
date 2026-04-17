@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     // Utilities
     import { page } from "$app/state";
     import { goto } from "$app/navigation";
@@ -65,7 +66,7 @@
 
         //     if (!data.currentPartition?.partition) {
         //         console.log("No partition found, redirecting to partition list.");
-        //         goto("/");
+        //         goto(`${base}/`);
         //         return;
         //     }
 
@@ -77,7 +78,7 @@
 
         //     if (!data.currentPartition?.partition) {
         //         console.log("No partition found, redirecting to partition list.");
-        //         goto("/");
+        //         goto(`${base}/`);
         //         return;
         //     }
 

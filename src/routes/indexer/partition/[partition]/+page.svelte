@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     /**
      * This file represents the "partition" view.
      * It displays the files present in a partition, with options to sort or delete them.
@@ -135,7 +136,7 @@
     async function refreshFileList() {
         if (!indexerData.currentPartition?.partition) {
             console.log("No partition found, redirecting to partition list.");
-            goto("/");
+            goto(`${base}/`);
             return;
         }
 
@@ -145,7 +146,7 @@
             if (error.message.includes("404")) {
                 // A 404 error indicates that the partition has been deleted since no files are left
                 console.log("Partition is now empty and has been deleted, redirecting to partition list.");
-                goto("/");
+                goto(`${base}/`);
             } else console.error("Error refreshing files:", error);
         }
     }
@@ -235,7 +236,7 @@
                     <div class="group flex items-center space-x-4 border-b border-slate-200 px-4 hover:bg-slate-50">
                         <Checkbox checked={selectedFiles.has(file)} onChange={() => toggleSelect(file)} />
                         <a
-                            href="/indexer/partition/{indexerData.currentPartition?.partition?.partition}/file/{file.file_id}"
+                            href="{base}/indexer/partition/{indexerData.currentPartition?.partition?.partition}/file/{file.file_id}"
                             class="flex w-full items-center space-x-3 py-4"
                             title="id: {file.file_id}"
                         >
@@ -282,7 +283,7 @@
                             />
                         </button>
                         <a
-                            href="/indexer/partition/{indexerData.currentPartition?.partition?.partition}/file/{file.file_id}"
+                            href="{base}/indexer/partition/{indexerData.currentPartition?.partition?.partition}/file/{file.file_id}"
                             class="absolute w-full h-full top-0 left-0 flex flex-col items-center rounded-2xl border border-slate-200 bg-white shadow-md
                             hover:shadow-lg hover:bg-slate-50 p-2 text-center"
                             title="id: {file.file_id}"
