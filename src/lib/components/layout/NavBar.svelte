@@ -21,6 +21,17 @@
         navbarCollapsed.current = !navbarCollapsed.current;
     }
 
+    function handleLogout() {
+        if (api.isOidcMode()) {
+            // oidc: invalidate backend session and end IdP SSO
+            window.location.href = `${api.getApiBaseUrl()}/auth/logout`;
+        } else {
+            authTokenCreatedAt.current = null; // Clear the Auth Token creation time
+            authToken.current = null; // Clear the Auth Token
+            window.location.reload(); // Reload the page to reset the states
+        }
+    }
+
     $effect(() => {
         handleRouting();
     });
@@ -92,19 +103,15 @@
             </a>
         </div>
 
-        {#if api.getIncludeCredentials()}
+        {#if api.getIncludeCredentials() || api.isOidcMode()}
             <div class="h-px w-8 mt-4 mb-3 bg-linagora-600"></div>
 
-            <!-- Lock access to the indexer -->
+            <!-- Lock access / Logout -->
             <button
-                title="Lock access"
+                title={api.isOidcMode() ? "Logout" : "Lock access"}
                 class="cursor-pointer group rounded-2xl p-2 font-medium text-linagora-900
             hover:bg-linagora-600 hover:text-linagora-950"
-                onclick={() => {
-                    authTokenCreatedAt.current = null; // Clear the Auth Token creation time
-                    authToken.current = null; // Clear the Auth Token
-                    window.location.reload(); // Reload the page to reset the states
-                }}
+                onclick={handleLogout}
             >
                 <Lock
                     className="size-6 fill-linagora-900 group-hover:fill-linagora-950"
@@ -198,23 +205,19 @@
             </a>
         </div>
 
-        {#if api.getIncludeCredentials()}
+        {#if api.getIncludeCredentials() || api.isOidcMode()}
             <div class="h-px mt-4 mb-3 bg-linagora-600"></div>
 
-            <!-- Lock access to the indexer -->
+            <!-- Lock access / Logout -->
             <button
                 class="cursor-pointer group flex items-center gap-2 rounded-2xl p-2 font-medium text-linagora-900
             hover:bg-linagora-600 hover:text-linagora-950"
-                onclick={() => {
-                    authTokenCreatedAt.current = null; // Clear the Auth Token creation time
-                    authToken.current = null; // Clear the Auth Token
-                    window.location.reload(); // Reload the page to reset the states
-                }}
+                onclick={handleLogout}
             >
                 <Lock
                     className="size-6 fill-linagora-900 group-hover:fill-linagora-950"
                 />
-                Lock access
+                {api.isOidcMode() ? "Logout" : "Lock access"}
             </button>
         {/if}
 

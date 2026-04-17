@@ -1,6 +1,5 @@
-// Base URL and auth token
-import { getApiBaseUrl } from "./index";
-import { authToken } from "$lib/persisted.svelte";
+// Base URL and auth helpers
+import { getApiBaseUrl, authFetch } from "./index";
 
 // Types
 import type {
@@ -19,11 +18,7 @@ import type {
  */
 export const fetchPartitions = async (): Promise<RAGPartition[]> => {
     console.log("Fetching partitions...");
-    const response = await fetch(`${getApiBaseUrl()}/partition/`, {
-        headers: {
-            Authorization: `Bearer ${authToken.current}`,
-        },
-    });
+    const response = await authFetch(`${getApiBaseUrl()}/partition/`);
 
     if (!response.ok) {
         throw new Error(`Failed to fetch partitions: ${response.status} ${response.statusText}`);
@@ -39,11 +34,9 @@ export const fetchPartitions = async (): Promise<RAGPartition[]> => {
  */
 export const fetchTasks = async (status?: RAGTaskStatus | "ACTIVE"): Promise<RAGTaskInList[]> => {
     console.log(`Fetching tasks${status ? ` with ${status} status` : ``}...`);
-    const response = await fetch(`${getApiBaseUrl()}/queue/tasks${status ? `?status=${status}` : ""}`, {
-        headers: {
-            Authorization: `Bearer ${authToken.current}`,
-        },
-    });
+    const response = await authFetch(
+        `${getApiBaseUrl()}/queue/tasks${status ? `?status=${status}` : ""}`
+    );
 
     if (!response.ok) {
         throw new Error(`Failed to fetch tasks: ${response.status} ${response.statusText}`);
@@ -59,11 +52,7 @@ export const fetchTasks = async (status?: RAGTaskStatus | "ACTIVE"): Promise<RAG
  */
 export const fetchTask = async (task: string): Promise<RAGTask> => {
     console.log(`Fetching task ${task}...`);
-    const response = await fetch(`${getApiBaseUrl()}/indexer/task/${task}`, {
-        headers: {
-            Authorization: `Bearer ${authToken.current}`,
-        },
-    });
+    const response = await authFetch(`${getApiBaseUrl()}/indexer/task/${task}`);
 
     if (!response.ok) {
         throw new Error(`Failed to fetch task: ${response.status} ${response.statusText}`);
@@ -79,11 +68,7 @@ export const fetchTask = async (task: string): Promise<RAGTask> => {
  */
 export const fetchFilesFromPartition = async (partition: string): Promise<RAGFileInList[]> => {
     console.log(`Fetching files from partition "${partition}"...`);
-    const response = await fetch(`${getApiBaseUrl()}/partition/${partition}`, {
-        headers: {
-            Authorization: `Bearer ${authToken.current}`,
-        },
-    });
+    const response = await authFetch(`${getApiBaseUrl()}/partition/${partition}`);
 
     if (!response.ok) {
         throw new Error(`Failed to fetch files: ${response.status} ${response.statusText}`);
@@ -99,11 +84,7 @@ export const fetchFilesFromPartition = async (partition: string): Promise<RAGFil
  */
 export const fetchFile = async (partition: string, file_id: string): Promise<RAGFile> => {
     console.log(`Fetching file "${file_id}" from partition "${partition}"...`);
-    const response = await fetch(`${getApiBaseUrl()}/partition/${partition}/file/${file_id}`, {
-        headers: {
-            Authorization: `Bearer ${authToken.current}`,
-        },
-    });
+    const response = await authFetch(`${getApiBaseUrl()}/partition/${partition}/file/${file_id}`);
 
     if (!response.ok) {
         throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
@@ -119,11 +100,7 @@ export const fetchFile = async (partition: string, file_id: string): Promise<RAG
  */
 export const fetchExtract = async (extract_id: string): Promise<RAGExtract> => {
     console.log(`Fetching extract "${extract_id}"...`);
-    const response = await fetch(`${getApiBaseUrl()}/extract/${extract_id}`, {
-        headers: {
-            Authorization: `Bearer ${authToken.current}`,
-        },
-    });
+    const response = await authFetch(`${getApiBaseUrl()}/extract/${extract_id}`);
 
     if (!response.ok) {
         throw new Error(`Failed to fetch extract: ${response.status} ${response.statusText}`);
@@ -139,11 +116,8 @@ export const fetchExtract = async (extract_id: string): Promise<RAGExtract> => {
  */
 export const deletePartition = async (partition: string): Promise<boolean> => {
     console.log(`Deleting partition "${partition}"...`);
-    const response = await fetch(`${getApiBaseUrl()}/partition/${partition}`, {
+    const response = await authFetch(`${getApiBaseUrl()}/partition/${partition}`, {
         method: "DELETE",
-        headers: {
-            Authorization: `Bearer ${authToken.current}`,
-        },
     });
 
     if (!response.ok) {
@@ -164,12 +138,10 @@ export const addFile = async (file: File, partition: string, file_id: string, me
     formData.append("file", file);
     if (metadata) formData.append("metadata", metadata);
 
-    const response = await fetch(`${getApiBaseUrl()}/indexer/partition/${partition}/file/${file_id}`, {
+    // multipart/form-data: do NOT set Content-Type; the browser sets the boundary.
+    const response = await authFetch(`${getApiBaseUrl()}/indexer/partition/${partition}/file/${file_id}`, {
         method: "POST",
         body: formData,
-        headers: {
-            Authorization: `Bearer ${authToken.current}`,
-        },
     });
 
     if (!response.ok) {
@@ -186,11 +158,8 @@ export const addFile = async (file: File, partition: string, file_id: string, me
  */
 export const deleteFile = async (partition: string, file_id: string): Promise<boolean> => {
     console.log(`Deleting file "${file_id}" from partition "${partition}"...`);
-    const response = await fetch(`${getApiBaseUrl()}/indexer/partition/${partition}/file/${file_id}`, {
+    const response = await authFetch(`${getApiBaseUrl()}/indexer/partition/${partition}/file/${file_id}`, {
         method: "DELETE",
-        headers: {
-            Authorization: `Bearer ${authToken.current}`,
-        },
     });
 
     if (!response.ok) {
@@ -206,11 +175,7 @@ export const deleteFile = async (partition: string, file_id: string): Promise<bo
  */
 export const fetchUserInfo = async (): Promise<UserInfo> => {
     console.log("Fetching user info...");
-    const response = await fetch(`${getApiBaseUrl()}/users/info`, {
-        headers: {
-            Authorization: `Bearer ${authToken.current}`,
-        },
-    });
+    const response = await authFetch(`${getApiBaseUrl()}/users/info`);
 
     if (!response.ok) {
         throw new Error(`Failed to fetch user info: ${response.status} ${response.statusText}`);

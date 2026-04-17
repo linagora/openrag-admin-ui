@@ -1,6 +1,5 @@
-// Base URL and auth token
-import { getApiBaseUrl } from "./index";
-import { authToken } from "$lib/persisted.svelte";
+// Base URL and auth helpers
+import { getApiBaseUrl, authFetch } from "./index";
 
 
 /**
@@ -8,11 +7,7 @@ import { authToken } from "$lib/persisted.svelte";
  */
 export const fetchActors = async () => {
     console.log("Fetching actors...");
-    const response = await fetch(`${getApiBaseUrl()}/actors/`, {
-        headers: {
-            Authorization: `Bearer ${authToken.current}`,
-        },
-    });
+    const response = await authFetch(`${getApiBaseUrl()}/actors/`);
 
     if (!response.ok) {
         throw new Error(`Failed to fetch actors: ${response.status} ${response.statusText}`);
@@ -26,11 +21,8 @@ export const fetchActors = async () => {
 
 export const restartActor = async (actor_name: string) => {
     console.log(`Restarting actor ${actor_name}...`);
-    const response = await fetch(`${getApiBaseUrl()}/actors/${actor_name}/restart`, {
+    const response = await authFetch(`${getApiBaseUrl()}/actors/${actor_name}/restart`, {
         method: "POST",
-        headers: {
-            Authorization: `Bearer ${authToken.current}`,
-        },
     });
 
     if (!response.ok) {
