@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     // Utilities
     import { page } from "$app/state";
     import * as api from "$lib/api";
@@ -56,7 +57,7 @@
     <div
         class="relative min-w-16 h-full bg-linagora-500 rounded-r-2xl flex flex-col items-center pt-4 pb-6"
     >
-        <a href="/">
+        <a href="{base}/">
             <OpenRAG
                 className="group size-12 rounded-2xl cursor-pointer hover:bg-linagora-600"
                 circleClassName="group-hover:fill-linagora-600"
@@ -70,7 +71,7 @@
         >
             <!-- Home -->
             <a
-                href="/"
+                href="{base}/"
                 title="Home"
                 class="p-2 rounded-2xl
                 {currentRoute === 'home'
@@ -81,7 +82,7 @@
             </a>
             <!-- Indexer -->
             <a
-                href="/indexer/"
+                href="{base}/indexer/"
                 title="Indexer"
                 class="p-2 rounded-2xl
                 {currentRoute === 'indexer'
@@ -92,7 +93,7 @@
             </a>
             <!-- Dashboard -->
             <a
-                href="/dashboard/"
+                href="{base}/dashboard/"
                 title="Dashboard"
                 class="p-2 rounded-2xl
                 {currentRoute === 'dashboard'
@@ -139,7 +140,7 @@
     <div
         class="relative min-w-64 h-full bg-linagora-500 rounded-r-2xl flex flex-col p-6"
     >
-        <a href="/">
+        <a href="{base}/">
             <div
                 class="group w-full pr-4 py-1 text-2xl text-white font-bold self-center mb-2 flex items-center space-x-1.5 rounded-3xl cursor-pointer
             hover:bg-linagora-600"
@@ -157,7 +158,7 @@
         <div class="flex flex-col space-y-1 text-white font-medium">
             <!-- Home -->
             <a
-                href="/"
+                href="{base}/"
                 class="relative p-2 flex items-center space-x-2 rounded-2xl
                 {currentRoute === 'home'
                     ? 'bg-linagora-700'
@@ -173,7 +174,7 @@
             </a>
             <!-- Indexer -->
             <a
-                href="/indexer"
+                href="{base}/indexer"
                 class="relative p-2 flex items-center space-x-2 rounded-2xl
                 {currentRoute === 'indexer'
                     ? 'bg-linagora-700'
@@ -189,7 +190,7 @@
             </a>
             <!-- Dashboard -->
             <a
-                href="/dashboard"
+                href="{base}/dashboard"
                 class="relative p-2 flex items-center space-x-2 rounded-2xl
                 {currentRoute === 'dashboard'
                     ? 'bg-linagora-700'

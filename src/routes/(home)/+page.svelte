@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     // Icons
     import OpenRAG from "$lib/icons/OpenRAG.svelte";
     import FileStorage from "$lib/icons/FileStorage.svelte";
@@ -30,7 +31,7 @@
     <div class="flex space-x-6">
         <!-- Indexer -->
         <a
-            href="/indexer"
+            href="{base}/indexer"
             aria-label="Link to indexer"
             class="h-72 w-60 p-6 flex flex-col items-center
             rounded-3xl border border-slate-200 shadow-lg cursor-pointer
@@ -45,7 +46,7 @@
         </a>
         <!-- Dashboard -->
         <a
-            href="/dashboard"
+            href="{base}/dashboard"
             aria-label="Link to dashboard"
             class="h-72 w-60 p-6 flex flex-col items-center
             rounded-3xl border border-slate-200 shadow-lg cursor-pointer

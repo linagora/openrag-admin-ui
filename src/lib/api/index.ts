@@ -1,3 +1,5 @@
+import { base } from "$app/paths";
+
 // Removes the trailing slash from the base URL if it exists
 const normalizeUrl = (url: string): string => {
     return url.endsWith("/") ? url.slice(0, -1) : url;
@@ -25,7 +27,10 @@ export function isOidcMode() {
 }
 
 export async function loadConfig() {
-    const res = await fetch("/api/config");
+    // Prefix with SvelteKit's `base` (set via kit.paths.base / BASE_PATH env
+    // at build) so the call resolves correctly when indexer-ui is mounted
+    // under a subpath like /indexerui/.
+    const res = await fetch(`${base}/api/config`);
     if (!res.ok) throw new Error("Failed to load config");
     const config = await res.json();
     API_BASE_URL = normalizeUrl(config.API_BASE_URL);

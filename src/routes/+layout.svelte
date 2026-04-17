@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { base } from "$app/paths";
     /**
      * This file serves as the main layout for the application.
      * It handles authentication, UI state, data loading, and rendering of child components.
@@ -80,7 +81,7 @@
             page.route.id !== "/indexer" &&
             page.route.id !== "/dashboard"
         ) {
-            goto("/"); // Redirect to home page to hide ids from URL
+            goto(`${base}/`); // Redirect to home page to hide ids from URL
         }
 
         loading = false;
