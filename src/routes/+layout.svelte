@@ -35,6 +35,26 @@
     onMount(async () => {
         await api.loadConfig();
 
+        if (api.isOidcMode()) {
+            // oidc mode: no login screen, check auth via /users/info
+            ui.showLoginPage = false; // never show the password form
+            try {
+                const ok = await api.login(); // checks /users/info with credentials: "include"
+                if (!ok) {
+                    const next = encodeURIComponent(window.location.href);
+                    window.location.href = `${api.getApiBaseUrl()}/auth/login?next=${next}`;
+                    return; // stop here, browser is navigating
+                }
+            } catch {
+                const next = encodeURIComponent(window.location.href);
+                window.location.href = `${api.getApiBaseUrl()}/auth/login?next=${next}`;
+                return;
+            }
+            loading = false;
+            return;
+        }
+
+        // token mode: UNCHANGED from current implementation
         if (!api.getIncludeCredentials()) {
             authToken.current = null;
             authTokenCreatedAt.current = null;
