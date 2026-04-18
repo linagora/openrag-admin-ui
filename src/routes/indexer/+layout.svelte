@@ -63,16 +63,8 @@
     async function handleRouting() {
         if (ui.showLoginPage) return;
 
-        // Load partitions and user info
+        // Load partitions (userInfo is fetched by the root layout).
         indexerData.partitions = await api.fetchPartitions();
-        
-        // Fetch user info (for quota display)
-        try {
-            indexerData.userInfo = await api.fetchUserInfo();
-            refreshUserInfoInterval = setInterval(refreshUserInfo, 10000); // Refresh every 10 seconds
-        } catch (error) {
-            console.error("Failed to fetch user info:", error);
-        }
 
         if (page.route.id === "/indexer") {
             // Reset navigation states
@@ -127,9 +119,9 @@
     }
 
     onMount(() => {
+        refreshUserInfoInterval = setInterval(refreshUserInfo, 10000); // Refresh every 10 seconds
         return () => {
             console.log("Leaving indexer, clearing intervals.");
-            // Clear any intervals or timeouts here if needed
             clearInterval(refreshTasksInterval);
             clearInterval(refreshUserInfoInterval);
         };

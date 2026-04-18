@@ -70,7 +70,7 @@
         // await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate loading delay
 
         try {
-            if (await api.login(authTokenInput.value)) {
+            if ((await api.login(authTokenInput.value)).ok) {
                 // If the Auth Token is correct, store it in a cookie, hide the login page and access the app
                 authToken.current = authTokenInput.value; // Save the Auth Token in a cookie
                 authTokenCreatedAt.current = Date.now(); // Save the creation time of the Auth Token

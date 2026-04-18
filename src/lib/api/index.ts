@@ -1,4 +1,5 @@
 import { base } from "$app/paths";
+import type { UserInfo } from "$lib/types";
 
 // Removes the trailing slash from the base URL if it exists
 const normalizeUrl = (url: string): string => {
@@ -71,17 +72,25 @@ export async function authFetch(input: string, init?: RequestInit): Promise<Resp
     return response;
 }
 
-export async function login(authToken?: string): Promise<boolean> {
+export interface LoginResult {
+    ok: boolean;
+    // Present in OIDC mode when login succeeds: the /users/info payload
+    // fetched during the auth check. Callers can reuse it to avoid a second
+    // round-trip for the same data.
+    userInfo?: UserInfo;
+}
+
+export async function login(authToken?: string): Promise<LoginResult> {
     console.log("Trying to log in...");
 
     if (AUTH_MODE === "oidc") {
         const response = await fetch(`${API_BASE_URL}/users/info`, {
             credentials: "include",
         });
-        if (response.ok) {
-            console.log("Log in successful (oidc).");
-        }
-        return response.ok;
+        if (!response.ok) return { ok: false };
+        console.log("Log in successful (oidc).");
+        const userInfo = (await response.json()) as UserInfo;
+        return { ok: true, userInfo };
     }
 
     // token mode: existing behaviour
@@ -99,7 +108,7 @@ export async function login(authToken?: string): Promise<boolean> {
     }
 
     console.log("Log in successful.");
-    return true;
+    return { ok: true };
 }
 
 export * from "./indexer";
