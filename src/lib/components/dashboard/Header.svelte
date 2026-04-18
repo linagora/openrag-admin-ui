@@ -20,24 +20,29 @@
 
     let refreshing = $state(false);
     let countdown = $state(5);
+    let tickTimeout: ReturnType<typeof setTimeout> | undefined;
 
     async function refreshActors() {
         refreshing = true;
-        dashboardData.actors = await api.fetchActors();
-        refreshing = false;
-        countdown = 5;
+        try {
+            dashboardData.actors = await api.fetchActors();
+        } catch (err) {
+            console.error("Auto-refresh fetchActors failed:", err);
+        } finally {
+            refreshing = false;
+            countdown = 5;
+        }
     }
 
     async function tick() {
         countdown -= 1;
-
         if (countdown == 0) await refreshActors();
-
-        setTimeout(tick, 1000);
+        tickTimeout = setTimeout(tick, 1000);
     }
 
     onMount(() => {
-        setTimeout(tick, 1000);
+        tickTimeout = setTimeout(tick, 1000);
+        return () => clearTimeout(tickTimeout);
     });
 </script>
 
