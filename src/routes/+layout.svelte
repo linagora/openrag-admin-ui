@@ -60,12 +60,14 @@
             // oidc mode: no login screen, check auth via /users/info
             ui.showLoginPage = false; // never show the password form
             try {
-                const ok = await api.login(); // checks /users/info with credentials: "include"
-                if (!ok) {
+                const result = await api.login(); // checks /users/info with credentials: "include"
+                if (!result.ok) {
                     const next = encodeURIComponent(window.location.href);
                     window.location.href = `${api.getApiBaseUrl()}/auth/login?next=${next}`;
                     return; // stop here, browser is navigating
                 }
+                // Reuse the userInfo that login() already fetched.
+                if (result.userInfo) indexerData.userInfo = result.userInfo;
             } catch {
                 const next = encodeURIComponent(window.location.href);
                 window.location.href = `${api.getApiBaseUrl()}/auth/login?next=${next}`;
@@ -96,7 +98,7 @@
         }
 
         // Initial check to see if the user is already logged in
-        if (authToken.current && (await api.login(authToken.current))) {
+        if (authToken.current && (await api.login(authToken.current)).ok) {
             ui.showLoginPage = false;
             await loadUserInfo();
         } else if (
