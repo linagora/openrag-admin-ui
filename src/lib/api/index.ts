@@ -59,8 +59,9 @@ export async function authFetch(input: string, init?: RequestInit): Promise<Resp
 
     const response = await fetch(input, { ...init, headers, credentials });
 
-    // oidc auto-redirect on unauth
-    if (AUTH_MODE === "oidc" && (response.status === 401 || response.status === 403)) {
+    // oidc auto-redirect on unauth (401 only — 403 means authenticated but lacking
+    // permission, so re-login would just loop back to the same forbidden page).
+    if (AUTH_MODE === "oidc" && response.status === 401) {
         const next = encodeURIComponent(window.location.href);
         window.location.href = `${API_BASE_URL}/auth/login?next=${next}`;
         // Return a pending-forever response so callers don't see stale 401 data
