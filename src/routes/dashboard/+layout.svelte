@@ -6,13 +6,14 @@
     import * as api from "$lib/api";
 
     // States
-    import { ui, dashboardData } from "$lib/states.svelte";
+    import { ui, dashboardData, indexerData } from "$lib/states.svelte";
 
     // Components
     import Header from "$lib/components/dashboard/Header.svelte";
 
     // Properties
     let { children } = $props();
+    let loadError = $state<string | null>(null);
 
     /**
      * Function to refresh tasks periodically.
@@ -46,8 +47,25 @@
     async function handleRouting() {
         if (ui.showLoginPage) return;
 
-        // Load actors
-        dashboardData.actors = await api.fetchActors();
+        // /dashboard is admin-only. If we already know the user isn't admin,
+        // bounce them home instead of firing a request that will 403.
+        if (indexerData.userInfo && !indexerData.userInfo.is_admin) {
+            goto(`${base}/`);
+            return;
+        }
+
+        // Load actors. On 403 the backend has told us this user can't see the
+        // dashboard — show an access-denied state instead of a blank page.
+        loadError = null;
+        try {
+            dashboardData.actors = await api.fetchActors();
+        } catch (err) {
+            loadError =
+                err instanceof Error && err.message.includes("403")
+                    ? "You don't have permission to view the dashboard."
+                    : "Failed to load actors. Please try again later.";
+            console.error("fetchActors failed:", err);
+        }
 
         // if (page.route.id === "/indexer") {
         //     // Reset navigation states
@@ -97,5 +115,12 @@
 <Header />
 
 <div class="grow m-4 h-full overflow-scroll rounded-2xl border border-slate-200 bg-white shadow-sm">
-    {@render children()}
+    {#if loadError}
+        <div class="flex h-full flex-col items-center justify-center p-8 text-center space-y-2">
+            <span class="text-lg font-medium text-slate-700">{loadError}</span>
+            <a href="{base}/" class="text-linagora-600 hover:underline">Back to home</a>
+        </div>
+    {:else}
+        {@render children()}
+    {/if}
 </div>

@@ -5,6 +5,8 @@
     import FileStorage from "$lib/icons/FileStorage.svelte";
     import Dashboard from "$lib/icons/Dashboard.svelte";
     import { _ } from "svelte-i18n";
+    // State
+    import { indexerData } from "$lib/states.svelte";
 </script>
 
 <div class="grow px-12 pt-5 pb-8 h-full flex flex-col overflow-y-scroll">
@@ -43,20 +45,22 @@
                 {$_('home.go_to_indexer')}
             </span>
         </a>
-        <!-- Dashboard -->
-        <a
-            href="{base}/dashboard"
-            aria-label="Link to dashboard"
-            class="h-72 w-60 p-6 flex flex-col items-center
-            rounded-3xl border border-slate-200 shadow-lg cursor-pointer
-            hover:shadow-xl hover:bg-slate-50"
-        >
-            <Dashboard className="size-16 fill-linagora-500 mb-4" />
-            <span class="text-center font-medium"> {$_('home.dashboard_card_description')} </span>
-            <div class="grow"></div>
-            <span class="bg-linagora-500 px-4 py-2 rounded-2xl text-white font-medium hover:bg-linagora-600">
-                {$_('home.go_to_dashboard')}
-            </span>
-        </a>
+        {#if indexerData.userInfo?.is_admin}
+            <!-- Dashboard (admin only) -->
+            <a
+                href="{base}/dashboard"
+                aria-label="Link to dashboard"
+                class="h-72 w-60 p-6 flex flex-col items-center
+                rounded-3xl border border-slate-200 shadow-lg cursor-pointer
+                hover:shadow-xl hover:bg-slate-50"
+            >
+                <Dashboard className="size-16 fill-linagora-500 mb-4" />
+                <span class="text-center font-medium"> {$_('home.dashboard_card_description')} </span>
+                <div class="grow"></div>
+                <span class="bg-linagora-500 px-4 py-2 rounded-2xl text-white font-medium hover:bg-linagora-600">
+                    {$_('home.go_to_dashboard')}
+                </span>
+            </a>
+        {/if}
     </div>
 </div>
