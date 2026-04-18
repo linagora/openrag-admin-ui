@@ -108,17 +108,19 @@
             >
                 <FileStorage className="size-6 fill-white" />
             </a>
-            <!-- Dashboard -->
-            <a
-                href="{base}/dashboard/"
-                title={$_('nav.dashboard')}
-                class="p-2 rounded-2xl
-                {currentRoute === 'dashboard'
-                    ? 'bg-linagora-700'
-                    : 'bg-linagora-500 hover:bg-linagora-600'}"
-            >
-                <Dashboard className="size-6 fill-white" />
-            </a>
+            {#if indexerData.userInfo?.is_admin}
+                <!-- Dashboard (admin only) -->
+                <a
+                    href="{base}/dashboard/"
+                    title={$_('nav.dashboard')}
+                    class="p-2 rounded-2xl
+                    {currentRoute === 'dashboard'
+                        ? 'bg-linagora-700'
+                        : 'bg-linagora-500 hover:bg-linagora-600'}"
+                >
+                    <Dashboard className="size-6 fill-white" />
+                </a>
+            {/if}
         </div>
 
         {#if api.getIncludeCredentials() || api.isOidcMode()}
@@ -219,22 +221,24 @@
                     ></div>
                 {/if}
             </a>
-            <!-- Dashboard -->
-            <a
-                href="{base}/dashboard"
-                class="relative p-2 flex items-center space-x-2 rounded-2xl
-                {currentRoute === 'dashboard'
-                    ? 'bg-linagora-700'
-                    : 'bg-linagora-500 hover:bg-linagora-600'}"
-            >
-                <Dashboard className="size-6 fill-white" />
-                <span> {$_('nav.dashboard')} </span>
-                {#if currentRoute === "dashboard"}
-                    <div
-                        class="absolute right-3 size-1 rounded-full bg-white"
-                    ></div>
-                {/if}
-            </a>
+            {#if indexerData.userInfo?.is_admin}
+                <!-- Dashboard (admin only) -->
+                <a
+                    href="{base}/dashboard"
+                    class="relative p-2 flex items-center space-x-2 rounded-2xl
+                    {currentRoute === 'dashboard'
+                        ? 'bg-linagora-700'
+                        : 'bg-linagora-500 hover:bg-linagora-600'}"
+                >
+                    <Dashboard className="size-6 fill-white" />
+                    <span> {$_('nav.dashboard')} </span>
+                    {#if currentRoute === "dashboard"}
+                        <div
+                            class="absolute right-3 size-1 rounded-full bg-white"
+                        ></div>
+                    {/if}
+                </a>
+            {/if}
         </div>
 
         {#if api.getIncludeCredentials() || api.isOidcMode()}
