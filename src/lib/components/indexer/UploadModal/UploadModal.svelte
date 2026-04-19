@@ -10,6 +10,9 @@
     import { v4 as uuidv4 } from "uuid";
     import * as api from "$lib/api";
 
+    // i18n
+    import { _ } from "svelte-i18n";
+
     // States & persisted states
     import { ui, indexerData } from "$lib/states.svelte";
     import { activeUploads } from "$lib/persisted.svelte";
@@ -104,11 +107,11 @@
      */
     async function uploadFiles() {
         if (!files) {
-            alert("No file(s) specified.");
+            alert($_('upload.no_files'));
             return;
         }
         if (!selectedPartition || selectedPartition === null) {
-            alert("No partition selected.");
+            alert($_('upload.no_partition'));
             return;
         }
 
@@ -157,7 +160,7 @@
      * Closes the upload modal (and the dropdown, so it's not opened when the modal appears again)
      */
     function closeUploadModal() {
-        if (files && !confirm("You have unsaved changes. Are you sure you want to close the modal?")) return;
+        if (files && !confirm($_('upload.unsaved_changes'))) return;
 
         ui.showUploadModal = false;
         showDropdown = false;
@@ -269,7 +272,7 @@
 >
     <!-- Modal title and close button -->
     <div class="flex justify-between fixed w-full bg-white z-10 p-6">
-        <h1 id="upload-modal-title" class="text-xl font-semibold">Upload files</h1>
+        <h1 id="upload-modal-title" class="text-xl font-semibold">{$_('upload.title')}</h1>
 
         <button
             onclick={closeUploadModal}
@@ -289,7 +292,7 @@
                 for="partition-btn"
             >
                 <span>
-                    {indexerData.partitions.length === 0 ? "Create a partition" : "Select or create a partition"}
+                    {indexerData.partitions.length === 0 ? $_('upload.create_partition') : $_('upload.select_or_create')}
                 </span>
 
                 {#if selectedPartition?.file_count === -1}
@@ -334,7 +337,7 @@
 				 placeholder:text-linagora-500 hover:border-slate-300 hover:bg-slate-50
 				focus:cursor-text focus:border-slate-400 focus:bg-slate-100 focus:outline-none focus:placeholder:text-slate-400"
                     type="text"
-                    placeholder="+ Add a new partition"
+                    placeholder={$_('upload.add_new_partition')}
                     oninput={createNewPartition}
                 />
             {/if}
@@ -342,7 +345,7 @@
 
         <!-- Files upload input -->
         <div class="relative flex flex-col">
-            <label class="mb-2 cursor-pointer font-medium" for="file-upload-btn"> Select one or multiple files </label>
+            <label class="mb-2 cursor-pointer font-medium" for="file-upload-btn"> {$_('upload.select_files')} </label>
 
             <!-- Remaining quota info -->
             {#if !isQuotaInfinite}
@@ -374,7 +377,7 @@
                         <!-- Display file list with count -->
                         <div class="flex max-h-60 flex-col gap-2 overflow-y-scroll">
                             <span class="text-xs text-slate-500 group-hover:text-linagora-400">
-                                {files.length} files selected :
+                                {$_('upload.files_selected', { values: { count: files.length } })}
                             </span>
                             {#each files as file}
                                 <div class="flex items-center gap-2">
@@ -390,7 +393,7 @@
                     <!-- Display file upload button button -->
                     <div class="flex flex-col items-center justify-center">
                         <Upload className="size-10 stroke-2 stroke-slate-500  group-hover:stroke-linagora-500 mb-2" />
-                        <p class="text-slate-500 group-hover:text-linagora-500">Click to browse files</p>
+                        <p class="text-slate-500 group-hover:text-linagora-500">{$_('upload.click_to_browse')}</p>
                     </div>
                 {/if}
             </label>
@@ -402,7 +405,7 @@
             <!-- File metadata -->
             <div class="relative flex flex-col">
                 <label class="mb-2 cursor-pointer font-medium" for="file-metadata-input">
-                    {files.length === 1 ? "Metadata" : "Add metadata common to every file"}
+                    {files.length === 1 ? $_('upload.metadata_singular') : $_('upload.metadata_plural')}
                 </label>
                 <textarea
                     id="file-metadata-input"
@@ -422,7 +425,7 @@
             class="flex cursor-pointer items-center gap-2 rounded-2xl border border-slate-200 px-4 py-2 font-medium text-slate-500 hover:bg-slate-50 focus:border-slate-300 focus:outline-none"
             onclick={closeUploadModal}
         >
-            Cancel
+            {$_('common.cancel')}
         </button>
 
         <button
@@ -432,10 +435,10 @@
             disabled={!files || !selectedPartition || uploading}
         >
             {#if uploading}
-                <PartialCircle className="size-5 stroke-3 animate-spin fill-white" /> Uploading...
+                <PartialCircle className="size-5 stroke-3 animate-spin fill-white" /> {$_('upload.uploading')}
             {:else}
                 <Upload className="size-5 stroke-3" />
-                Upload File
+                {$_('upload.upload_file')}
             {/if}
         </button>
     </div>

@@ -10,6 +10,7 @@
     import { goto } from "$app/navigation";
     import { formatDate } from "$lib/utils";
     import * as api from "$lib/api";
+    import { _ } from "svelte-i18n";
 
     // States & persisted states
     import { indexerData } from "$lib/states.svelte";
@@ -125,7 +126,7 @@
      * Deletes all the selected files
      */
     async function deleteAllSelectedFiles() {
-        if (confirm(`You are about to delete ${selectedFiles.size} files.\nAre you sure you want to proceed ?`))
+        if (confirm($_('partition.confirm_delete_files', { values: { count: selectedFiles.size } })))
             for (const file of selectedFiles) await deleteFile(file);
     }
 
@@ -165,7 +166,7 @@
 {#if indexerData.currentPartition.files.length === 0}
     <div class="flex h-full items-center justify-center">
         <span class="text-sm text-slate-500">
-            No files available. Please wait a bit for the files to be fetched, or start indexing files now.
+            {$_('partition.no_files')}
         </span>
     </div>
 {:else}
@@ -176,7 +177,7 @@
                 <TernaryCheckbox checked={selectAllStatus} onChange={toggleSelectAll} />
                 <!-- svelte-ignore a11y_click_events_have_key_events -->
                 <button onclick={toggleSelectAll} class="ml-2 cursor-pointer text-sm text-slate-600" tabindex="0">
-                    {selectedFiles.size} of {indexerData.currentPartition.files.length} files selected
+                    {$_('partition.files_selected', { values: { selected: selectedFiles.size, total: indexerData.currentPartition.files.length } })}
                 </button>
             </div>
 
@@ -194,11 +195,11 @@
                     class="cursor-pointer rounded-xl hover:bg-slate-100 py-1 px-2 text-sm text-slate-500 appearance-none"
                     onchange={changeSortingMethod}
                 >
-                    <option value="default">Default</option>
-                    <option value="id">ID</option>
-                    <option value="name">Name</option>
-                    <option value="size">Size</option>
-                    <option value="date">Date Indexed</option>
+                    <option value="default">{$_('common.default')}</option>
+                    <option value="id">{$_('partition.id')}</option>
+                    <option value="name">{$_('common.name')}</option>
+                    <option value="size">{$_('partition.size')}</option>
+                    <option value="date">{$_('partition.date_indexed')}</option>
                 </select>
             </div>
             <div class="flex items-center pr-3">
@@ -248,8 +249,7 @@
                                 </span>
                             </div>
                             <span class="text-xs text-slate-500">
-                                Indexed at : {formatDate(file.indexed_at ?? file.created_at)}
-                                <!-- For backwards compatibility, if indexed_at is not available, created_at will be used instead. -->
+                                {$_('indexer.indexed_date', { values: { date: formatDate(file.indexed_at ?? file.created_at) } })}
                             </span>
                         </a>
                         <button onclick={() => deleteFile(file)} aria-label={`Delete file ${file.file_id}`}>
@@ -312,13 +312,13 @@
                 class="sticky bottom-0 left-0 z-10 flex w-full items-center justify-between border-t border-slate-200 bg-white p-4"
             >
                 <span class="text-slate-600">
-                    {selectedFiles.size} file{selectedFiles.size > 1 ? "s" : ""} selected
+                    {$_('partition.n_files_selected', { values: { count: selectedFiles.size } })}
                 </span>
                 <button
                     class="flex cursor-pointer items-center gap-2 rounded-xl border-none bg-red-500 px-4 py-2 font-semibold text-white hover:bg-red-600 focus:outline-none"
                     onclick={deleteAllSelectedFiles}
                 >
-                    <Trash className="size-5 fill-transparent stroke-white" /> Delete selected
+                    <Trash className="size-5 fill-transparent stroke-white" /> {$_('indexer.delete_selected')}
                 </button>
             </footer>
         {/if}

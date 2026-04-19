@@ -11,6 +11,7 @@
     import { marked } from "marked";
     import { formatDate } from "$lib/utils";
     import * as api from "$lib/api";
+    import { _ } from "svelte-i18n";
 
     // Stores
     import { indexerData } from "$lib/states.svelte";
@@ -68,40 +69,40 @@
 {#if indexerData.currentFile && indexerData.currentFile.documents}
     <div class="p4 flex h-full max-h-full divide-x divide-slate-200">
         <div class="flex w-128 flex-col">
-            <span class="top-0 w-full border-b border-slate-200 bg-white px-4 py-2 font-bold"> File metadata </span>
+            <span class="top-0 w-full border-b border-slate-200 bg-white px-4 py-2 font-bold"> {$_('file.metadata')} </span>
             <div class="flex max-h-full flex-col overflow-y-auto p-4 text-sm">
-                <span class="mb-4 self-center font-bold">Basic metadata</span>
+                <span class="mb-4 self-center font-bold">{$_('file.basic_metadata')}</span>
                 <div class="mb-2 flex flex-col space-y-1">
-                    <span class="font-bold">File ID</span>
+                    <span class="font-bold">{$_('file.file_id')}</span>
                     <span>{indexerData.currentFile.metadata.file_id}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
-                    <span class="font-bold">Filename</span>
+                    <span class="font-bold">{$_('file.filename')}</span>
                     <span>{indexerData.currentFile.metadata.filename}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
-                    <span class="font-bold">Partition</span>
+                    <span class="font-bold">{$_('file.partition')}</span>
                     <span>{indexerData.currentFile.metadata.partition}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
-                    <span class="font-bold">Source</span>
+                    <span class="font-bold">{$_('file.source')}</span>
                     <span>{indexerData.currentFile.metadata.source}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
-                    <span class="font-bold">Created</span>
+                    <span class="font-bold">{$_('file.created')}</span>
                     <span>{formatDate(indexerData.currentFile.metadata.created_at)}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
-                    <span class="font-bold">Size</span>
+                    <span class="font-bold">{$_('file.size')}</span>
                     <span>{indexerData.currentFile.metadata.file_size}</span>
                 </div>
                 <div class="mb-2 flex flex-col space-y-1">
-                    <span class="font-bold">Page</span>
+                    <span class="font-bold">{$_('file.page')}</span>
                     <span>{indexerData.currentFile.metadata.page}</span>
                 </div>
                 {#if Object.entries(indexerData.currentFile.metadata).length > 7}
                     <div class="mx-4 my-4 border-t border-slate-200"></div>
-                    <span class="mb-4 self-center font-bold">Additional metadata</span>
+                    <span class="mb-4 self-center font-bold">{$_('file.additional_metadata')}</span>
                     {#each Object.entries(indexerData.currentFile.metadata) as [key, value]}
                         {#if !["file_id", "filename", "partition", "source", "page", "file_size", "created_at"].includes(key)}
                             <div class="mb-2 flex flex-col space-y-1">
@@ -115,7 +116,7 @@
         </div>
         <div class="flex flex-col">
             <span class="top-0 w-full border-b border-slate-200 bg-white px-4 py-2 text-center font-bold">
-                Extracts ({indexerData.currentFile.documents.length})
+                {$_('file.extracts_count', { values: { count: indexerData.currentFile.documents.length } })}
             </span>
             <div class="flex max-h-full flex-col items-center divide-y divide-slate-200 overflow-y-auto">
                 {#each indexerData.currentFile.documents as document}
@@ -143,7 +144,7 @@
 
         <div class="flex w-7/12 max-w-7/12 flex-col">
             <div class="relative flex items-center justify-center bg-white border-b border-slate-200">
-                <span class="px-4 py-2 text-center font-bold"> Preview </span>
+                <span class="px-4 py-2 text-center font-bold"> {$_('file.preview')} </span>
                 {#if selectedExtract}
                     <button onclick={openExtractModal} class="absolute right-3 cursor-pointer">
                         <Expand className="size-6 p-1 rounded-full hover:bg-slate-100" />
@@ -152,7 +153,7 @@
             </div>
             <div bind:this={extractContainer} class="flex h-full flex-col items-center overflow-y-auto">
                 {#if !selectedExtract}
-                    <span class="my-auto text-slate-500"> Select an extract to preview its content. </span>
+                    <span class="my-auto text-slate-500"> {$_('file.select_extract')} </span>
                 {:else}
                     <div
                         class="prose prose-pre:max-w-full w-full max-w-full p-8 text-sm wrap-anywhere"

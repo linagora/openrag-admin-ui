@@ -11,6 +11,9 @@
     // States, persisted states, and cookies
     import { indexerData, ui } from "$lib/states.svelte";
 
+    // i18n
+    import { _ } from "svelte-i18n";
+
     // Icons
     import ChevronDown from "$lib/icons/ChevronDown.svelte";
     import Upload from "$lib/icons/Upload.svelte";
@@ -55,7 +58,7 @@
     <!-- Navigation between files and partitions -->
     <div class="flex items-center space-x-2 text-xl font-bold">
         <a href="{base}/indexer" class="flex items-center gap-3 rounded-xl px-2 py-1 hover:bg-slate-100">
-            <FileStorage className="size-6 fill-linagora-500" /> Indexer
+            <FileStorage className="size-6 fill-linagora-500" /> {$_('nav.indexer')}
         </a>
         {#if indexerData.currentPartition.partition}
             <ChevronDown className="size-4 -rotate-90 stroke-3 stroke-linagora-500" />
@@ -81,16 +84,16 @@
             <div class="flex items-center gap-4 text-base text-slate-600 border-r border-slate-300 pr-4">
                 <File className="size-6 fill-slate-400" />
                 <div class="flex flex-col">
-                    <span class="text-sm text-slate-400">Files</span>
+                    <span class="text-sm text-slate-400">{$_('indexer.files_label')}</span>
                     <span class="font-semibold text-lg">
-                        {indexerData.userInfo.file_count} indexed
+                        {$_('indexer.files_indexed', { values: { count: indexerData.userInfo.file_count } })}
                         {#if indexerData.userInfo.pending_files > 0}
-                            <span class="text-amber-500">+ {indexerData.userInfo.pending_files} pending</span>
+                            <span class="text-amber-500">{$_('indexer.files_pending', { values: { count: indexerData.userInfo.pending_files } })}</span>
                         {/if}
                     </span>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-sm text-slate-400">Quota</span>
+                    <span class="text-sm text-slate-400">{$_('indexer.quota_label')}</span>
                     <span class="font-semibold text-lg {quotaExceeded ? 'text-red-500' : ''}">
                         {indexerData.userInfo.total_files} / {isQuotaInfinite ? '∞' : indexerData.userInfo.file_quota}
                     </span>
@@ -106,9 +109,9 @@
                     : 'bg-linagora-500 hover:bg-linagora-600 cursor-pointer'}"
             onclick={openUploadModal}
             disabled={uploadsDisabled}
-            title={uploadsDisabled ? 'File quota reached' : ''}
+            title={uploadsDisabled ? $_('indexer.quota_reached_title') : ''}
         >
-            <Upload className="size-5 stroke-3" /> Upload files
+            <Upload className="size-5 stroke-3" /> {$_('indexer.upload_files')}
         </button>
     </div>
 </header>

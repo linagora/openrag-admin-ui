@@ -15,6 +15,10 @@
     import { goto } from "$app/navigation";
     import * as api from "$lib/api";
 
+    // i18n
+    import { isLoading as i18nLoading, _ } from "svelte-i18n";
+    import { initI18n } from "$lib/i18n";
+
     // States, persisted states, and cookies
     import { ui } from "$lib/states.svelte";
     import { authToken, authTokenCreatedAt } from "$lib/persisted.svelte";
@@ -27,7 +31,10 @@
     import PartialCircle from "$lib/icons/PartialCircle.svelte";
 
     // Properties
-    let { children } = $props();
+    let { data, children } = $props();
+
+    // Initialize i18n with server-provided default language
+    initI18n(data.defaultLanguage);
 
     // Reactive variables
     let loading = $state(true);
@@ -93,7 +100,7 @@
     <div
         class="flex h-screen w-screen flex-col space-y-4 justify-center items-center"
     >
-        <span> Loading... </span>
+        <span> {$_('common.loading')} </span>
         <PartialCircle className="animate-spin fill-linagora-500 size-8" />
     </div>
 {:else if ui.showLoginPage}
