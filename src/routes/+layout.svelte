@@ -16,7 +16,7 @@
     import * as api from "$lib/api";
 
     // States, persisted states, and cookies
-    import { ui } from "$lib/states.svelte";
+    import { ui, indexerData } from "$lib/states.svelte";
     import { authToken, authTokenCreatedAt } from "$lib/persisted.svelte";
 
     // Components
@@ -31,6 +31,19 @@
 
     // Reactive variables
     let loading = $state(true);
+
+    /**
+     * Fetch current user info as soon as the session is ready. Stored in the
+     * global `indexerData` state so the NavBar (and any other component) can
+     * use it regardless of the current route.
+     */
+    async function loadUserInfo() {
+        try {
+            indexerData.userInfo = await api.fetchUserInfo();
+        } catch (error) {
+            console.error("Failed to fetch user info:", error);
+        }
+    }
 
     // Run when the component initializes for the first time
     onMount(async () => {
@@ -51,6 +64,7 @@
                 window.location.href = `${api.getApiBaseUrl()}/auth/login?next=${next}`;
                 return;
             }
+            await loadUserInfo();
             loading = false;
             return;
         }
@@ -60,6 +74,7 @@
             authToken.current = null;
             authTokenCreatedAt.current = null;
             ui.showLoginPage = false;
+            await loadUserInfo();
             loading = false;
             return;
         }
@@ -76,6 +91,7 @@
         // Initial check to see if the user is already logged in
         if (authToken.current && (await api.login(authToken.current))) {
             ui.showLoginPage = false;
+            await loadUserInfo();
         } else if (
             page.route.id !== "/" &&
             page.route.id !== "/indexer" &&

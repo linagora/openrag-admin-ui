@@ -103,3 +103,4 @@ export async function login(authToken?: string): Promise<boolean> {
 
 export * from "./indexer";
 export * from "./dashboard";
+export * from "./users";

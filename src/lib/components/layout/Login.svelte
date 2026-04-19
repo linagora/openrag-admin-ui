@@ -1,6 +1,6 @@
 <script lang="ts">
     // Import states
-    import { ui } from "$lib/states.svelte";
+    import { ui, indexerData } from "$lib/states.svelte";
     import { authToken, authTokenCreatedAt } from "$lib/persisted.svelte";
 
     // Import icons
@@ -73,6 +73,11 @@
                 // If the Auth Token is correct, store it in a cookie, hide the login page and access the app
                 authToken.current = authTokenInput.value; // Save the Auth Token in a cookie
                 authTokenCreatedAt.current = Date.now(); // Save the creation time of the Auth Token
+                try {
+                    indexerData.userInfo = await api.fetchUserInfo();
+                } catch (err) {
+                    console.error("Failed to fetch user info after login:", err);
+                }
                 loading = false;
                 ui.showLoginPage = false;
             } else throw "Login failed.";
