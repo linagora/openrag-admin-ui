@@ -9,6 +9,12 @@
     import { navbarCollapsed } from "$lib/persisted.svelte";
     import { authToken, authTokenCreatedAt } from "$lib/persisted.svelte";
 
+    // States
+    import { indexerData } from "$lib/states.svelte";
+
+    // Components
+    import RegenerateTokenModal from "$lib/components/layout/RegenerateTokenModal.svelte";
+
     // Icons
     import ChevronDown from "$lib/icons/ChevronDown.svelte";
     import Dashboard from "$lib/icons/Dashboard.svelte";
@@ -16,11 +22,21 @@
     import Home from "$lib/icons/Home.svelte";
     import OpenRAG from "$lib/icons/OpenRAG.svelte";
     import Lock from "$lib/icons/Lock.svelte";
+    import Key from "$lib/icons/Key.svelte";
 
     let currentRoute: string = $state("");
+    let showRegenerateModal = $state(false);
 
     function toggleCollapse() {
         navbarCollapsed.current = !navbarCollapsed.current;
+    }
+
+    function openRegenerateModal() {
+        showRegenerateModal = true;
+    }
+
+    function closeRegenerateModal() {
+        showRegenerateModal = false;
     }
 
     function handleLogout() {
@@ -107,6 +123,20 @@
 
         {#if api.getIncludeCredentials() || api.isOidcMode()}
             <div class="h-px w-8 mt-4 mb-3 bg-linagora-600"></div>
+
+            <!-- Regenerate API token -->
+            {#if indexerData.userInfo}
+                <button
+                    title="Regenerate API token"
+                    class="cursor-pointer group rounded-2xl p-2 font-medium text-linagora-900
+                hover:bg-linagora-600 hover:text-linagora-950"
+                    onclick={openRegenerateModal}
+                >
+                    <Key
+                        className="size-6 fill-linagora-900 group-hover:fill-linagora-950"
+                    />
+                </button>
+            {/if}
 
             <!-- Lock access / Logout -->
             <button
@@ -210,6 +240,20 @@
         {#if api.getIncludeCredentials() || api.isOidcMode()}
             <div class="h-px mt-4 mb-3 bg-linagora-600"></div>
 
+            <!-- Regenerate API token -->
+            {#if indexerData.userInfo}
+                <button
+                    class="cursor-pointer group flex items-center gap-2 rounded-2xl p-2 font-medium text-linagora-900
+                hover:bg-linagora-600 hover:text-linagora-950"
+                    onclick={openRegenerateModal}
+                >
+                    <Key
+                        className="size-6 fill-linagora-900 group-hover:fill-linagora-950"
+                    />
+                    Regenerate API token
+                </button>
+            {/if}
+
             <!-- Lock access / Logout -->
             <button
                 class="cursor-pointer group flex items-center gap-2 rounded-2xl p-2 font-medium text-linagora-900
@@ -238,4 +282,8 @@
             <ChevronDown className="rotate-90 stroke-black stroke-3 size-3" />
         </button>
     </div>
+{/if}
+
+{#if showRegenerateModal}
+    <RegenerateTokenModal onClose={closeRegenerateModal} />
 {/if}
