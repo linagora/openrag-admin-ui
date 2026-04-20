@@ -8,6 +8,8 @@
 	"common.close": "Fermer",
 	"common.retry": "Réessayer",
 	"common.done": "Terminé",
+	"common.backend_unreachable": "Impossible de joindre le serveur. Vérifiez que l'API est démarrée.",
+	"common.backend_error": "Le serveur a renvoyé une erreur inattendue (code {status}).",
 
 	"nav.home": "Accueil",
 	"nav.indexer": "Indexeur",
