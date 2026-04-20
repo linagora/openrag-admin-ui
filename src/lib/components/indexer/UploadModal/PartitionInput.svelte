@@ -67,7 +67,7 @@
         type="text"
         placeholder={$_('upload.search_partitions')}
         bind:value={searchFilter}
-        aria-label="Search partitions"
+        aria-label={$_('upload.search_aria')}
     />
 
     {#if indexerData.partitions.filter((p) => p.partition.includes(searchFilter)).length === 0}
@@ -97,7 +97,7 @@
             oninput={updateNewPartition}
             onkeydown={selectNewPartition}
             value={selectedPartition?.file_count === -1 ? selectedPartition.partition : ""}
-            aria-label="Add new partition"
+            aria-label={$_('upload.add_new_aria')}
         />
 
         {#if selectedPartition?.file_count === -1}

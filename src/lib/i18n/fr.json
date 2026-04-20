@@ -4,6 +4,10 @@
 	"common.default": "Par défaut",
 	"common.name": "Nom",
 	"common.created": "Créé",
+	"common.ok": "OK",
+	"common.close": "Fermer",
+	"common.retry": "Réessayer",
+	"common.done": "Terminé",
 
 	"nav.home": "Accueil",
 	"nav.indexer": "Indexeur",
@@ -11,6 +15,7 @@
 	"nav.lock_access": "Verrouiller l'accès",
 	"nav.logout": "Déconnexion",
 	"nav.logo_text": "LINAGORA - 2025",
+	"nav.regenerate_token": "Régénérer le jeton d'API",
 
 	"login.access_protected": "Accès protégé",
 	"login.enter_token": "Entrez votre jeton d'authentification",
@@ -29,6 +34,8 @@
 	"home.go_to_indexer": "Aller à l'indexeur",
 	"home.dashboard_card_description": "Inspecter et redémarrer tous les acteurs Ray",
 	"home.go_to_dashboard": "Aller au tableau de bord",
+	"home.indexer_link_aria": "Lien vers l'indexeur",
+	"home.dashboard_link_aria": "Lien vers le tableau de bord",
 
 	"indexer.upload_files": "Télécharger des fichiers",
 	"indexer.partitions_selected": "{selected} sur {total} partitions sélectionnées",
@@ -53,6 +60,7 @@
 	"indexer.files_label": "Fichiers",
 	"indexer.quota_label": "Quota",
 	"indexer.quota_reached_title": "Quota de fichiers atteint",
+	"indexer.delete_partition_aria": "Supprimer la partition {partition}",
 
 	"partition.files_selected": "{selected} sur {total} fichiers sélectionnés",
 	"partition.no_files": "Aucun fichier disponible. Veuillez patienter un instant le temps que les fichiers soient récupérés, ou commencez à indexer des fichiers maintenant.",
@@ -61,6 +69,7 @@
 	"partition.date_indexed": "Date de création",
 	"partition.n_files_selected": "{count} {count, plural, one {fichier sélectionné} other {fichiers sélectionnés}}",
 	"partition.confirm_delete_files": "Vous êtes sur le point de supprimer {count} fichiers.\nÊtes-vous sûr de vouloir continuer ?",
+	"partition.delete_file_aria": "Supprimer le fichier {file}",
 
 	"file.metadata": "Métadonnées du fichier",
 	"file.basic_metadata": "Métadonnées de base",
@@ -95,6 +104,15 @@
 	"upload.search_partitions": "Rechercher des partitions...",
 	"upload.no_matching_partitions": "Aucune partition correspondante trouvée. Vérifiez l'orthographe ou créez-en une nouvelle.",
 	"upload.create": "Créer",
+	"upload.close_aria": "Fermer la fenêtre de téléchargement",
+	"upload.search_aria": "Rechercher des partitions",
+	"upload.add_new_aria": "Ajouter une nouvelle partition",
+	"upload.pip_new": "Nouvelle",
+	"upload.pip_new_lower": "nouvelle",
+	"upload.quota_limit_reached_title": "Quota atteint",
+	"upload.quota_warning": "Vous ne pouvez téléverser que {count, plural, one {# fichier supplémentaire} other {# fichiers supplémentaires}} en raison de votre quota. Seuls les {count, plural, one {premier fichier} other {# premiers fichiers}} seront téléversés.",
+	"upload.quota_reached": "Vous avez atteint la limite de votre quota de fichiers.",
+	"upload.can_upload_more": "Vous pouvez téléverser jusqu'à {count, plural, one {# fichier supplémentaire} other {# fichiers supplémentaires}}.",
 
 	"dashboard.actor_id": "ID de l'acteur",
 	"dashboard.namespace": "Espace de noms",
@@ -107,5 +125,22 @@
 	"dashboard.restart_actor": "Redémarrer cet acteur",
 	"dashboard.auto_refresh_in": "Actualisation auto dans {countdown}...",
 	"dashboard.auto_refreshing": "Actualisation en cours...",
-	"dashboard.refresh_list": "Actualiser la liste"
+	"dashboard.refresh_list": "Actualiser la liste",
+	"dashboard.no_permission": "Vous n'avez pas la permission de voir le tableau de bord.",
+	"dashboard.load_failed": "Échec du chargement des acteurs. Veuillez réessayer plus tard.",
+	"dashboard.back_to_home": "Retour à l'accueil",
+
+	"regenerate_token.title": "Régénérer le jeton d'API",
+	"regenerate_token.close_aria": "Fermer la fenêtre de régénération du jeton",
+	"regenerate_token.confirm_description": "Un nouveau jeton d'API va être généré pour votre compte. Le <strong>jeton actuel cessera de fonctionner immédiatement</strong>, et chaque intégration qui l'utilise devra être mise à jour.",
+	"regenerate_token.once_warning": "Le nouveau jeton n'est affiché qu'une seule fois — il n'est stocké que sous forme de hash en base de données, assurez-vous donc de le sauvegarder avant de fermer cette fenêtre.",
+	"regenerate_token.regenerate": "Régénérer le jeton",
+	"regenerate_token.generating": "Génération du nouveau jeton...",
+	"regenerate_token.copy_warning": "Copiez ce jeton et conservez-le en lieu sûr — il ne sera plus affiché.",
+	"regenerate_token.new_token_label": "Votre nouveau jeton d'API",
+	"regenerate_token.copy_title": "Copier le jeton dans le presse-papiers",
+	"regenerate_token.copied": "Copié !",
+	"regenerate_token.copy": "Copier",
+	"regenerate_token.user_info_not_loaded": "Les informations utilisateur ne sont pas encore chargées.",
+	"regenerate_token.unknown_error": "Erreur inconnue lors de la régénération du jeton."
 }

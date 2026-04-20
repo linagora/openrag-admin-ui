@@ -4,6 +4,7 @@
     import { page } from "$app/state";
     import { goto } from "$app/navigation";
     import * as api from "$lib/api";
+    import { _ } from "svelte-i18n";
 
     // States
     import { ui, dashboardData, indexerData } from "$lib/states.svelte";
@@ -62,8 +63,8 @@
         } catch (err) {
             loadError =
                 err instanceof Error && err.message.includes("403")
-                    ? "You don't have permission to view the dashboard."
-                    : "Failed to load actors. Please try again later.";
+                    ? $_('dashboard.no_permission')
+                    : $_('dashboard.load_failed');
             console.error("fetchActors failed:", err);
         }
 
@@ -118,7 +119,7 @@
     {#if loadError}
         <div class="flex h-full flex-col items-center justify-center p-8 text-center space-y-2">
             <span class="text-lg font-medium text-slate-700">{loadError}</span>
-            <a href="{base}/" class="text-linagora-600 hover:underline">Back to home</a>
+            <a href="{base}/" class="text-linagora-600 hover:underline">{$_('dashboard.back_to_home')}</a>
         </div>
     {:else}
         {@render children()}

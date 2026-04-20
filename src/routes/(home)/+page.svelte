@@ -33,7 +33,7 @@
         <!-- Indexer -->
         <a
             href="{base}/indexer"
-            aria-label="Link to indexer"
+            aria-label={$_('home.indexer_link_aria')}
             class="h-72 w-60 p-6 flex flex-col items-center
             rounded-3xl border border-slate-200 shadow-lg cursor-pointer
             hover:shadow-xl hover:bg-slate-50"
@@ -49,7 +49,7 @@
             <!-- Dashboard (admin only) -->
             <a
                 href="{base}/dashboard"
-                aria-label="Link to dashboard"
+                aria-label={$_('home.dashboard_link_aria')}
                 class="h-72 w-60 p-6 flex flex-col items-center
                 rounded-3xl border border-slate-200 shadow-lg cursor-pointer
                 hover:shadow-xl hover:bg-slate-50"
