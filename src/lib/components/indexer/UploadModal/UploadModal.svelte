@@ -84,7 +84,7 @@
 
         // If user selected more files than remaining quota, truncate and warn
         if (selectedFiles.length > remainingQuota) {
-            quotaWarning = `You can only upload ${remainingQuota} more file${remainingQuota > 1 ? 's' : ''} due to your quota limit. Only the first ${remainingQuota} file${remainingQuota > 1 ? 's' : ''} will be uploaded.`;
+            quotaWarning = $_('upload.quota_warning', { values: { count: remainingQuota } });
             
             // Create a new DataTransfer to hold the truncated file list
             const dt = new DataTransfer();
@@ -239,17 +239,17 @@
             </div>
             
             <!-- Title -->
-            <h3 class="text-lg font-semibold text-center text-slate-800 mb-2">Quota Limit Reached</h3>
-            
+            <h3 class="text-lg font-semibold text-center text-slate-800 mb-2">{$_('upload.quota_limit_reached_title')}</h3>
+
             <!-- Message -->
             <p class="text-sm text-center text-slate-600 mb-6">{quotaWarning}</p>
-            
+
             <!-- OK Button -->
             <button
                 class="w-full py-2 px-4 bg-linagora-500 hover:bg-linagora-600 text-white font-semibold rounded-xl cursor-pointer transition-colors"
                 onclick={() => quotaWarning = null}
             >
-                OK
+                {$_('common.ok')}
             </button>
         </div>
     </div>
@@ -277,7 +277,7 @@
         <button
             onclick={closeUploadModal}
             class="flex items-center justify-center"
-            aria-label="Close upload modal"
+            aria-label={$_('upload.close_aria')}
         >
             <Close className="size-6 stroke-3 rounded-full p-1 hover:bg-slate-100 cursor-pointer" />
         </button>
@@ -296,7 +296,7 @@
                 </span>
 
                 {#if selectedPartition?.file_count === -1}
-                    <Pip text="New" />
+                    <Pip text={$_('upload.pip_new')} />
                 {/if}
             </label>
 
@@ -317,7 +317,7 @@
                             {selectedPartition?.partition}
                         </span>
                         {#if selectedPartition?.file_count === -1}
-                            <Pip text="new" />
+                            <Pip text={$_('upload.pip_new_lower')} />
                         {/if}
                     </span>
 
@@ -351,9 +351,9 @@
             {#if !isQuotaInfinite}
                 <p class="mb-2 text-sm {remainingQuota === 0 ? 'text-red-500' : 'text-slate-500'}">
                     {#if remainingQuota === 0}
-                        You have reached your file quota limit.
+                        {$_('upload.quota_reached')}
                     {:else}
-                        You can upload up to {remainingQuota} more file{remainingQuota > 1 ? 's' : ''}.
+                        {$_('upload.can_upload_more', { values: { count: remainingQuota } })}
                     {/if}
                 </p>
             {/if}

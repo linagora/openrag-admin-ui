@@ -129,7 +129,7 @@
             <!-- Regenerate API token -->
             {#if indexerData.userInfo}
                 <button
-                    title="Regenerate API token"
+                    title={$_('nav.regenerate_token')}
                     class="cursor-pointer group rounded-2xl p-2 font-medium text-linagora-900
                 hover:bg-linagora-600 hover:text-linagora-950"
                     onclick={openRegenerateModal}
@@ -154,10 +154,6 @@
         {/if}
 
         <div class="grow"></div>
-
-        <div class="flex flex-col items-center">
-            <span class="text-xs text-linagora-200"> LOGO </span>
-        </div>
 
         <button
             onclick={toggleCollapse}
@@ -254,7 +250,7 @@
                     <Key
                         className="size-6 fill-linagora-900 group-hover:fill-linagora-950"
                     />
-                    Regenerate API token
+                    {$_('nav.regenerate_token')}
                 </button>
             {/if}
 

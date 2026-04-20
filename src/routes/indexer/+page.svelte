@@ -232,7 +232,7 @@
                         </a>
                         <button
                             onclick={() => deletePartition(partition)}
-                            aria-label={`Delete partition ${partition.partition}`}
+                            aria-label={$_('indexer.delete_partition_aria', { values: { partition: partition.partition } })}
                         >
                             <Trash
                                 className="size-7 fill-transparent stroke-red-300 hover:stroke-red-500 cursor-pointer rounded-xl p-1 hover:bg-red-100/75"
@@ -257,7 +257,7 @@
                         <button
                             class="hidden group-hover:block absolute top-2 right-2 z-10"
                             onclick={() => deletePartition(partition)}
-                            aria-label={`Delete partition ${partition.partition}`}
+                            aria-label={$_('indexer.delete_partition_aria', { values: { partition: partition.partition } })}
                         >
                             <Trash
                                 className="size-7 fill-transparent stroke-red-300 hover:stroke-red-500 cursor-pointer rounded-xl p-0.5 hover:bg-red-50"

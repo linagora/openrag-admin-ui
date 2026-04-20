@@ -4,6 +4,10 @@
 	"common.default": "Default",
 	"common.name": "Name",
 	"common.created": "Created",
+	"common.ok": "OK",
+	"common.close": "Close",
+	"common.retry": "Retry",
+	"common.done": "Done",
 
 	"nav.home": "Home",
 	"nav.indexer": "Indexer",
@@ -11,6 +15,7 @@
 	"nav.lock_access": "Lock access",
 	"nav.logout": "Logout",
 	"nav.logo_text": "LINAGORA - 2025",
+	"nav.regenerate_token": "Regenerate API token",
 
 	"login.access_protected": "Access protected",
 	"login.enter_token": "Enter your Auth Token",
@@ -29,6 +34,8 @@
 	"home.go_to_indexer": "Go to indexer",
 	"home.dashboard_card_description": "Inspect and restart all the Ray actors",
 	"home.go_to_dashboard": "Go to dashboard",
+	"home.indexer_link_aria": "Link to indexer",
+	"home.dashboard_link_aria": "Link to dashboard",
 
 	"indexer.upload_files": "Upload files",
 	"indexer.partitions_selected": "{selected} of {total} partitions selected",
@@ -53,6 +60,7 @@
 	"indexer.files_label": "Files",
 	"indexer.quota_label": "Quota",
 	"indexer.quota_reached_title": "File quota reached",
+	"indexer.delete_partition_aria": "Delete partition {partition}",
 
 	"partition.files_selected": "{selected} of {total} files selected",
 	"partition.no_files": "No files available. Please wait a bit for the files to be fetched, or start indexing files now.",
@@ -61,6 +69,7 @@
 	"partition.date_indexed": "Date created",
 	"partition.n_files_selected": "{count} {count, plural, one {file} other {files}} selected",
 	"partition.confirm_delete_files": "You are about to delete {count} files.\nAre you sure you want to proceed ?",
+	"partition.delete_file_aria": "Delete file {file}",
 
 	"file.metadata": "File metadata",
 	"file.basic_metadata": "Basic metadata",
@@ -95,6 +104,15 @@
 	"upload.search_partitions": "Search partitions...",
 	"upload.no_matching_partitions": "No matching partitions found. Check your spelling, or create a new one.",
 	"upload.create": "Create",
+	"upload.close_aria": "Close upload modal",
+	"upload.search_aria": "Search partitions",
+	"upload.add_new_aria": "Add new partition",
+	"upload.pip_new": "New",
+	"upload.pip_new_lower": "new",
+	"upload.quota_limit_reached_title": "Quota limit reached",
+	"upload.quota_warning": "You can only upload {count, plural, one {# more file} other {# more files}} due to your quota limit. Only the first {count, plural, one {file} other {# files}} will be uploaded.",
+	"upload.quota_reached": "You have reached your file quota limit.",
+	"upload.can_upload_more": "You can upload up to {count, plural, one {# more file} other {# more files}}.",
 
 	"dashboard.actor_id": "Actor ID",
 	"dashboard.namespace": "Namespace",
@@ -107,5 +125,22 @@
 	"dashboard.restart_actor": "Restart this actor",
 	"dashboard.auto_refresh_in": "Auto-refresh in {countdown}...",
 	"dashboard.auto_refreshing": "Auto-refreshing...",
-	"dashboard.refresh_list": "Refresh list"
+	"dashboard.refresh_list": "Refresh list",
+	"dashboard.no_permission": "You don't have permission to view the dashboard.",
+	"dashboard.load_failed": "Failed to load actors. Please try again later.",
+	"dashboard.back_to_home": "Back to home",
+
+	"regenerate_token.title": "Regenerate API token",
+	"regenerate_token.close_aria": "Close regenerate token modal",
+	"regenerate_token.confirm_description": "A new API token will be generated for your account. The <strong>current token will stop working immediately</strong>, and every integration that relies on it will need to be updated.",
+	"regenerate_token.once_warning": "The new token is shown exactly once — it is stored only as a hash in the database, so make sure to save it before closing this dialog.",
+	"regenerate_token.regenerate": "Regenerate token",
+	"regenerate_token.generating": "Generating new token...",
+	"regenerate_token.copy_warning": "Copy this token and store it safely — it will not be shown again.",
+	"regenerate_token.new_token_label": "Your new API token",
+	"regenerate_token.copy_title": "Copy token to clipboard",
+	"regenerate_token.copied": "Copied!",
+	"regenerate_token.copy": "Copy",
+	"regenerate_token.user_info_not_loaded": "User information is not loaded yet.",
+	"regenerate_token.unknown_error": "Unknown error while regenerating the token."
 }

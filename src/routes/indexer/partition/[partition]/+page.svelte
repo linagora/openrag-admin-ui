@@ -252,7 +252,7 @@
                                 {$_('indexer.indexed_date', { values: { date: formatDate(file.indexed_at ?? file.created_at) } })}
                             </span>
                         </a>
-                        <button onclick={() => deleteFile(file)} aria-label={`Delete file ${file.file_id}`}>
+                        <button onclick={() => deleteFile(file)} aria-label={$_('partition.delete_file_aria', { values: { file: file.file_id } })}>
                             <Trash
                                 className="size-8 fill-transparent stroke-red-500 hover:stroke-red-600 cursor-pointer rounded-xl p-1 hover:bg-slate-200"
                             />
@@ -276,7 +276,7 @@
                         <button
                             class="hidden group-hover:block absolute top-2 right-2 z-10"
                             onclick={() => deleteFile(file)}
-                            aria-label={`Delete file ${file.file_id}`}
+                            aria-label={$_('partition.delete_file_aria', { values: { file: file.file_id } })}
                         >
                             <Trash
                                 className="size-7 fill-transparent stroke-red-300 hover:stroke-red-500 cursor-pointer rounded-xl p-0.5 hover:bg-red-50"

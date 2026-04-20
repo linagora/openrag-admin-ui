@@ -10,6 +10,7 @@
 
     import { onMount } from "svelte";
     import * as api from "$lib/api";
+    import { _ } from "svelte-i18n";
     import { authToken, authTokenCreatedAt } from "$lib/persisted.svelte";
     import { indexerData } from "$lib/states.svelte";
 
@@ -30,7 +31,7 @@
     async function regenerate() {
         const user = indexerData.userInfo;
         if (!user) {
-            errorMessage = "User information is not loaded yet.";
+            errorMessage = $_('regenerate_token.user_info_not_loaded');
             step = "error";
             return;
         }
@@ -52,7 +53,7 @@
         } catch (err) {
             console.error("Token regeneration failed:", err);
             errorMessage =
-                err instanceof Error ? err.message : "Unknown error while regenerating the token.";
+                err instanceof Error ? err.message : $_('regenerate_token.unknown_error');
             step = "error";
         }
     }
@@ -98,12 +99,12 @@
             class="flex items-center gap-2 text-xl font-semibold"
         >
             <Key className="size-6 fill-linagora-500" />
-            Regenerate API token
+            {$_('regenerate_token.title')}
         </h1>
         <button
             onclick={onClose}
             class="flex items-center justify-center"
-            aria-label="Close regenerate token modal"
+            aria-label={$_('regenerate_token.close_aria')}
         >
             <Close
                 className="size-6 stroke-3 rounded-full p-1 hover:bg-slate-100 cursor-pointer"
@@ -114,15 +115,10 @@
     <div class="px-6 pb-6 flex flex-col space-y-4 overflow-y-auto">
         {#if step === "confirm"}
             <p class="text-slate-700">
-                A new API token will be generated for your account. The
-                <strong>current token will stop working immediately</strong>,
-                and every integration that relies on it will need to be
-                updated.
+                {@html $_('regenerate_token.confirm_description')}
             </p>
             <p class="text-sm text-slate-500">
-                The new token is shown exactly once — it is stored only as a
-                hash in the database, so make sure to save it before closing
-                this dialog.
+                {$_('regenerate_token.once_warning')}
             </p>
 
             <div class="flex justify-end gap-3 pt-2">
@@ -130,13 +126,13 @@
                     class="cursor-pointer rounded-2xl border border-slate-200 px-4 py-2 font-medium text-slate-500 hover:bg-slate-50"
                     onclick={onClose}
                 >
-                    Cancel
+                    {$_('common.cancel')}
                 </button>
                 <button
                     class="cursor-pointer rounded-2xl border-none bg-linagora-500 px-4 py-2 font-semibold text-white hover:bg-linagora-600"
                     onclick={regenerate}
                 >
-                    Regenerate token
+                    {$_('regenerate_token.regenerate')}
                 </button>
             </div>
         {:else if step === "loading"}
@@ -144,19 +140,18 @@
                 <PartialCircle
                     className="size-8 animate-spin fill-linagora-500"
                 />
-                <span class="text-slate-500">Generating new token...</span>
+                <span class="text-slate-500">{$_('regenerate_token.generating')}</span>
             </div>
         {:else if step === "success" && newToken}
             <div
                 class="rounded-2xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800"
             >
-                Copy this token and store it safely — it will not be shown
-                again.
+                {$_('regenerate_token.copy_warning')}
             </div>
 
             <div class="flex flex-col gap-2">
                 <label for="new-token" class="text-sm font-medium text-slate-600">
-                    Your new API token
+                    {$_('regenerate_token.new_token_label')}
                 </label>
                 <div class="flex items-stretch gap-2">
                     <input
@@ -169,10 +164,10 @@
                     <button
                         onclick={copyToken}
                         class="flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 font-medium text-slate-700 hover:bg-slate-50 cursor-pointer"
-                        title="Copy token to clipboard"
+                        title={$_('regenerate_token.copy_title')}
                     >
                         <Copy className="size-5 fill-slate-600" />
-                        {copied ? "Copied!" : "Copy"}
+                        {copied ? $_('regenerate_token.copied') : $_('regenerate_token.copy')}
                     </button>
                 </div>
             </div>
@@ -182,7 +177,7 @@
                     class="cursor-pointer rounded-2xl border-none bg-linagora-500 px-4 py-2 font-semibold text-white hover:bg-linagora-600"
                     onclick={onClose}
                 >
-                    Done
+                    {$_('common.done')}
                 </button>
             </div>
         {:else if step === "error"}
@@ -196,13 +191,13 @@
                     class="cursor-pointer rounded-2xl border border-slate-200 px-4 py-2 font-medium text-slate-500 hover:bg-slate-50"
                     onclick={onClose}
                 >
-                    Close
+                    {$_('common.close')}
                 </button>
                 <button
                     class="cursor-pointer rounded-2xl border-none bg-linagora-500 px-4 py-2 font-semibold text-white hover:bg-linagora-600"
                     onclick={() => (step = "confirm")}
                 >
-                    Retry
+                    {$_('common.retry')}
                 </button>
             </div>
         {/if}
