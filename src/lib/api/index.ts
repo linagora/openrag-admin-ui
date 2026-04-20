@@ -74,10 +74,6 @@ export async function authFetch(input: string, init?: RequestInit): Promise<Resp
 
 export interface LoginResult {
     ok: boolean;
-    // HTTP status when `ok` is false. Lets callers distinguish 401 (needs
-    // auth — redirect to login) from 403/5xx (backend problem — don't loop
-    // through the login flow).
-    status?: number;
     // Present in OIDC mode when login succeeds: the /users/info payload
     // fetched during the auth check. Callers can reuse it to avoid a second
     // round-trip for the same data.
@@ -91,7 +87,7 @@ export async function login(authToken?: string): Promise<LoginResult> {
         const response = await fetch(`${API_BASE_URL}/users/info`, {
             credentials: "include",
         });
-        if (!response.ok) return { ok: false, status: response.status };
+        if (!response.ok) return { ok: false };
         console.log("Log in successful (oidc).");
         const userInfo = (await response.json()) as UserInfo;
         return { ok: true, userInfo };
