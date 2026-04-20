@@ -72,7 +72,7 @@
 {#if navbarCollapsed.current}
     <!-- Collapsed navbar -->
     <div
-        class="relative min-w-16 h-full bg-linagora-500 rounded-r-2xl flex flex-col items-center pt-4 pb-6"
+        class="relative min-w-16 shrink-0 h-full bg-linagora-500 rounded-r-2xl flex flex-col items-center pt-4 pb-6"
     >
         <a href="{base}/">
             <OpenRAG
@@ -167,7 +167,7 @@
 {:else}
     <!-- Opened navbar -->
     <div
-        class="relative min-w-64 h-full bg-linagora-500 rounded-r-2xl flex flex-col p-6"
+        class="relative min-w-64 shrink-0 h-full bg-linagora-500 rounded-r-2xl flex flex-col p-6"
     >
         <a href="{base}/">
             <div
