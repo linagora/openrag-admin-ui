@@ -8,8 +8,6 @@
 	"common.close": "Close",
 	"common.retry": "Retry",
 	"common.done": "Done",
-	"common.backend_unreachable": "Unable to reach the backend. Check that the API is running.",
-	"common.backend_error": "Backend returned an unexpected error (status {status}).",
 
 	"nav.home": "Home",
 	"nav.indexer": "Indexer",
