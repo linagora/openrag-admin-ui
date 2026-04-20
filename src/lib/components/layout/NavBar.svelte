@@ -243,7 +243,7 @@
             <!-- Regenerate API token -->
             {#if indexerData.userInfo}
                 <button
-                    class="cursor-pointer group flex items-center gap-2 rounded-2xl p-2 font-medium text-linagora-900
+                    class="cursor-pointer group flex items-center gap-2 whitespace-nowrap rounded-2xl p-2 font-medium text-linagora-900
                 hover:bg-linagora-600 hover:text-linagora-950"
                     onclick={openRegenerateModal}
                 >
@@ -256,7 +256,7 @@
 
             <!-- Lock access / Logout -->
             <button
-                class="cursor-pointer group flex items-center gap-2 rounded-2xl p-2 font-medium text-linagora-900
+                class="cursor-pointer group flex items-center gap-2 whitespace-nowrap rounded-2xl p-2 font-medium text-linagora-900
             hover:bg-linagora-600 hover:text-linagora-950"
                 onclick={handleLogout}
             >
