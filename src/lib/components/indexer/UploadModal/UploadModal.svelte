@@ -38,6 +38,12 @@
 
     // UI properties
     let showDropdown = $state(false);
+
+    // ``accept`` attribute for the file picker, populated at mount from
+    // ``GET /indexer/supported/types``. Defaults to the cached value (or
+    // the fallback) so the picker is never blank if the user opens the
+    // modal before the fetch resolves.
+    let acceptAttr = $state(api.getSupportedAcceptAttribute());
     let uploading = $state(false);
     let quotaWarning: string | null = $state(null);
 
@@ -202,6 +208,15 @@
     // When the component is first initialised
     onMount(() => {
         selectedPartition = indexerData.currentPartition.partition ?? indexerData.partitions[0];
+
+        // Refresh the accept= list from the backend so the picker matches
+        // exactly what /indexer/supported/types reports — this means a new
+        // file format added server-side becomes available in the UI without
+        // a frontend release. Errors are swallowed (api falls back to a
+        // safe default).
+        api.fetchSupportedExtensions().then(() => {
+            acceptAttr = api.getSupportedAcceptAttribute();
+        });
 
         // Add event listeners for keydown and outside clicks
         window.addEventListener("keydown", handleKeyboardShortcuts);
@@ -398,7 +413,7 @@
                 {/if}
             </label>
 
-            <input id="file-upload-btn" type="file" accept=".pdf" multiple bind:this={fileInputRef} onchange={handleFileSelection} class="hidden" disabled={remainingQuota === 0} />
+            <input id="file-upload-btn" type="file" accept={acceptAttr} multiple bind:this={fileInputRef} onchange={handleFileSelection} class="hidden" disabled={remainingQuota === 0} />
         </div>
 
         {#if files}
