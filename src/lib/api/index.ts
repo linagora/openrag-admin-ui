@@ -11,6 +11,16 @@ let API_BASE_URL = "";
 let INCLUDE_CREDENTIALS = false;
 let AUTH_MODE: "token" | "oidc" = "token";
 
+// Cached list of file extensions accepted by the backend, fetched from
+// ``GET /indexer/supported/types`` on first call. Used by the Upload modal
+// so the file picker always matches what the backend will actually index.
+let SUPPORTED_EXTENSIONS: string[] | null = null;
+let SUPPORTED_EXTENSIONS_PROMISE: Promise<string[]> | null = null;
+
+// Fallback when the backend is unreachable at boot — keeps the UI usable
+// for the most common case (PDF) without breaking the upload entirely.
+const FALLBACK_EXTENSIONS = ["pdf"];
+
 export function getApiBaseUrl() {
     return API_BASE_URL;
 }
@@ -71,6 +81,75 @@ export async function authFetch(input: string, init?: RequestInit): Promise<Resp
 
     return response;
 }
+
+/**
+ * Fetch the list of file extensions the backend can index, exposed at
+ * ``GET /indexer/supported/types``. Result is cached for the lifetime of
+ * the SPA so subsequent Upload modal opens are instant.
+ *
+ * On error (network, 401 before auth, missing endpoint on older backends)
+ * we fall back to a conservative list (``["pdf"]``) so the picker still
+ * works for the historical default. Errors are logged but never thrown to
+ * keep the upload flow resilient.
+ */
+export async function fetchSupportedExtensions(): Promise<string[]> {
+    if (SUPPORTED_EXTENSIONS) return SUPPORTED_EXTENSIONS;
+    if (SUPPORTED_EXTENSIONS_PROMISE) return SUPPORTED_EXTENSIONS_PROMISE;
+
+    SUPPORTED_EXTENSIONS_PROMISE = (async () => {
+        try {
+            const res = await authFetch(`${API_BASE_URL}/indexer/supported/types`);
+            if (!res.ok) {
+                console.warn(
+                    `[supported-types] backend returned ${res.status} — falling back to ${FALLBACK_EXTENSIONS.join(",")}`
+                );
+                SUPPORTED_EXTENSIONS = [...FALLBACK_EXTENSIONS];
+                return SUPPORTED_EXTENSIONS;
+            }
+            const body = await res.json();
+            const exts = Array.isArray(body?.extensions) ? body.extensions : null;
+            if (!exts || exts.length === 0) {
+                console.warn(
+                    "[supported-types] backend returned no extensions — falling back"
+                );
+                SUPPORTED_EXTENSIONS = [...FALLBACK_EXTENSIONS];
+                return SUPPORTED_EXTENSIONS;
+            }
+            // Normalize: ensure each starts with a dot, lowercased, deduplicated.
+            const normalized = Array.from(
+                new Set(
+                    exts
+                        .filter((e: unknown): e is string => typeof e === "string")
+                        .map((e: string) => e.trim().toLowerCase())
+                        .filter((e: string) => e.length > 0)
+                        .map((e: string) => (e.startsWith(".") ? e.slice(1) : e))
+                )
+            ) as string[];
+            SUPPORTED_EXTENSIONS = normalized;
+            return SUPPORTED_EXTENSIONS;
+        } catch (e) {
+            console.warn("[supported-types] fetch failed:", e);
+            SUPPORTED_EXTENSIONS = [...FALLBACK_EXTENSIONS];
+            return SUPPORTED_EXTENSIONS;
+        } finally {
+            SUPPORTED_EXTENSIONS_PROMISE = null;
+        }
+    })();
+
+    return SUPPORTED_EXTENSIONS_PROMISE;
+}
+
+/**
+ * Build the ``accept`` attribute string for ``<input type="file">`` from
+ * the cached extensions list (or the fallback). Returns e.g.
+ * ``".pdf,.docx,.mp3,.wav"``. Empty array → empty string (browsers then
+ * accept any file, which is preferable to a forced PDF-only filter).
+ */
+export function getSupportedAcceptAttribute(): string {
+    const exts = SUPPORTED_EXTENSIONS ?? FALLBACK_EXTENSIONS;
+    return exts.map((e) => `.${e}`).join(",");
+}
+
 
 export interface LoginResult {
     ok: boolean;
